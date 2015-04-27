@@ -1,5 +1,6 @@
 # McLeod Pitch Method
-### Author: Sevag Hanssian <sevag.hanssian@gmail.com>
+##### Author: Sevag Hanssian <sevag.hanssian@gmail.com>
+
 
 ## Description
 
@@ -9,6 +10,7 @@ time-domain and FFT autocorrelation implementations.
 Adapted from the Java algorithm found here:
 
 https://github.com/JorenSix/TarsosDSP
+
 
 ## Install
 
