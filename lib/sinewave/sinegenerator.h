@@ -25,6 +25,7 @@ public:
 
     void generate_tone();
     void cleanup();
+
 };
 
 

@@ -12,22 +12,18 @@ sinegenerator::sinegenerator(double sampling_rate, double frequency) {
     sinegenerator::sampling_rate = sampling_rate;
     sinegenerator::inv_sampling_rate = 1.0 / sinegenerator::sampling_rate;
 
-    if (frequency >= 0) {
-        sinegenerator::frequency = frequency;
-    } else {
-        exit(-1);
-    }
+    sinegenerator::frequency = frequency;
 
     sinegenerator::tone_dual_channel = new double[SIZE];
     sinegenerator::size_dual_channel = SIZE;
 
-    sinegenerator::tone_single_channel = new double[SIZE/2];
-    sinegenerator::size_single_channel = SIZE/2;
+    sinegenerator::tone_single_channel = new double[SIZE / 2];
+    sinegenerator::size_single_channel = SIZE / 2;
 }
 
 void sinegenerator::generate_tone() {
-    int SINE_SIZE = SIZE/2;
-    int LUT_SIZE = SIZE/4;
+    int SINE_SIZE = SIZE / 2;
+    int LUT_SIZE = SIZE / 4;
 
     float floatf = (float) frequency;
     float delta_phi = floatf * inv_sampling_rate * LUT_SIZE;
@@ -52,9 +48,9 @@ void sinegenerator::generate_tone() {
     }
 
     for (j = 0; j < SIZE; j += 2) {
-        tone_dual_channel[j] = sine[j/2];
+        tone_dual_channel[j] = sine[j / 2];
         tone_dual_channel[j + 1] = tone_dual_channel[j];
-        tone_single_channel[j/2] = sine[j/2];
+        tone_single_channel[j / 2] = sine[j / 2];
     }
 }
 

@@ -22,6 +22,7 @@ public:
 
     double get_pitch(double *data);
     void cleanup();
+
 };
 
 #endif //MPM_MPM_H
