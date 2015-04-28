@@ -1,15 +1,15 @@
-# McLeod Pitch Method
+# Pitch Detection
 ##### Author: Sevag Hanssian <sevag.hanssian@gmail.com>
 
 
 ## Description
 
-C++ implementation of the McLeod Pitch Method. Comparison of
-time-domain and FFT autocorrelation implementations.
+C++ implementation of some pitch detection algorithms:
 
-Adapted from the Java algorithm found here:
-
-https://github.com/JorenSix/TarsosDSP
+* McLeod Pitch Method (time domain)
+* Goertzel
+* FFT
+* Autocorrelation
 
 
 ## Install
