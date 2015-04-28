@@ -18,11 +18,14 @@ sinegenerator::sinegenerator(double sampling_rate, double frequency) {
         exit(-1);
     }
 
-    sinegenerator::tone = new int[SIZE];
-    sinegenerator::size = SIZE;
+    sinegenerator::tone_dual_channel = new double[SIZE];
+    sinegenerator::size_dual_channel = SIZE;
+
+    sinegenerator::tone_single_channel = new double[SIZE/2];
+    sinegenerator::size_single_channel = SIZE/2;
 }
 
-void sinegenerator::generate_tone_dual_channel() {
+void sinegenerator::generate_tone() {
     int SINE_SIZE = SIZE/2;
     int LUT_SIZE = SIZE/4;
 
@@ -49,11 +52,13 @@ void sinegenerator::generate_tone_dual_channel() {
     }
 
     for (j = 0; j < SIZE; j += 2) {
-        tone[j] = sine[j / 2];
-        tone[j + 1] = tone[j];
+        tone_dual_channel[j] = sine[j/2];
+        tone_dual_channel[j + 1] = tone_dual_channel[j];
+        tone_single_channel[j/2] = sine[j/2];
     }
 }
 
 void sinegenerator::cleanup() {
-    delete[] tone;
+    delete[] tone_single_channel;
+    delete[] tone_dual_channel;
 }

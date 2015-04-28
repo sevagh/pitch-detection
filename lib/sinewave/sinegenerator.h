@@ -15,12 +15,15 @@ private:
     sinegenerator() { }
 
 public:
-    int size;
-    int *tone;
+    int size_single_channel;
+    int size_dual_channel;
+
+    double *tone_dual_channel;
+    double *tone_single_channel;
 
     sinegenerator(double sampling_rate, double frequency);
 
-    void generate_tone_dual_channel();
+    void generate_tone();
     void cleanup();
 };
 

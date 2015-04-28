@@ -1,20 +1,20 @@
 #include <iostream>
 #include "lib/sinewave/sinegenerator.h"
+#include "lib/mpm/mpm.h"
 
 using namespace std;
 
 int main() {
-    sinegenerator sinegenerator1 = sinegenerator(48000, 1000);
+    sinegenerator sinegenerator1 = sinegenerator(48000, 2000);
+    mpm mpm1 = mpm(48000, sinegenerator1.size_single_channel);
 
-    sinegenerator1.generate_tone_dual_channel();
+    sinegenerator1.generate_tone();
+    double pitch = mpm1.get_pitch(sinegenerator1.tone_single_channel);
 
-    int i = 0;
-
-    for (i = 0; i < sinegenerator1.size; i++) {
-        std::cout << sinegenerator1.tone[i] << endl;
-    }
+    std::cout << ("Pitch: %f", pitch) << endl;
 
     sinegenerator1.cleanup();
+    mpm1.cleanup();
 
     exit(0);
 }
