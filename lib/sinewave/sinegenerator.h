@@ -28,5 +28,4 @@ public:
 
 };
 
-
 #endif //MPM_SINEGENERATOR_H

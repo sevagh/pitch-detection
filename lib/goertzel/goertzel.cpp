@@ -2,10 +2,8 @@
 // Created by sevag on 4/28/15.
 //
 
-#include <stdint.h>
 #include "goertzel.h"
 #include <math.h>
-#include <stdlib.h>
 
 //frequency limits to loop around
 //dumb goertzel
@@ -16,7 +14,7 @@ goertzel::goertzel(double sampling_rate, int size) {
     goertzel::data_size = size;
 }
 
-uint64_t goertzel::goertzel_energy(int frequency, double *arr, int N) {
+double goertzel::goertzel_energy(int frequency, double *arr, int N) {
     float floatN = (float) N;
     float floatf = (float) frequency;
 
@@ -45,7 +43,7 @@ uint64_t goertzel::goertzel_energy(int frequency, double *arr, int N) {
     im = goertzel_im * Q1;
     E = re * re + im * im;
 
-    return (uint64_t) E / (floatN * 0.5f);
+    return E / (floatN * 0.5f);
 }
 
 float goertzel::get_snr(int frequency, double *arr, int N) {
@@ -53,8 +51,8 @@ float goertzel::get_snr(int frequency, double *arr, int N) {
 
     int index;
 
-    uint64_t total;
-    uint64_t E;
+    double total;
+    double E;
 
     total = 0;
     for (index = 0; index < N; index++)
@@ -62,7 +60,7 @@ float goertzel::get_snr(int frequency, double *arr, int N) {
 
     E = goertzel_energy(frequency, arr, N);
 
-    snr = 10.0f * log10((float) E / (float) (llabs(total - E)));
+    snr = 10.0f * log10((float) E / (float) (fabs(total - E)));
 
     return snr;
 }

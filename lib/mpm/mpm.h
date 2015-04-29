@@ -11,7 +11,8 @@ private:
     double sampling_rate;
     int data_size;
 
-    void normalized_square_difference(double *audio_buffer);
+    void normalized_square_difference_time_domain(double *audio_buffer);
+    void normalized_square_difference_fft(double *audio_buffer);
     void parabolic_interpolation(int tau);
     void peak_picking();
 
