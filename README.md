@@ -6,10 +6,10 @@
 
 C++ implementation of some pitch detection algorithms:
 
-* McLeod Pitch Method (time domain)
+* McLeod Pitch Method (with time domain and FFT nsdf)
 * Goertzel
-* FFT
-* Autocorrelation
+* DFT/FFT
+* Autocorrelation (time domain and FFT)
 
 
 ## Install

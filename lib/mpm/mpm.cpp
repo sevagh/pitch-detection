@@ -11,14 +11,6 @@
 
 #define MAX(a, b) ((a < b) ?  (b) : (a))
 
-#define MPM_FFT_NSDF
-
-#ifdef MPM_FFT_NSDF
-#define nsdf_func mpm::normalized_square_difference_fft
-#else
-#define nsdf_func mpm::normalized_square_difference_time_domain
-#endif
-
 double turning_point_x, turning_point_y;
 double *nsdf;
 
@@ -28,9 +20,10 @@ double *amp_estimates;
 
 int max_positions_ptr, period_estimates_ptr, amp_estimates_ptr;
 
-mpm::mpm(double sampling_rate, int size) {
+mpm::mpm(double sampling_rate, int size, int fft_flag) {
     mpm::sampling_rate = sampling_rate;
     mpm::data_size = size;
+    mpm::fft_flag = fft_flag;
 
     max_positions = new int[mpm::data_size];
     period_estimates = new double[mpm::data_size];
@@ -132,7 +125,11 @@ double mpm::get_pitch(double *audio_buffer) {
     period_estimates_ptr = 0;
     amp_estimates_ptr = 0;
 
-    nsdf_func(audio_buffer);
+    if (fft_flag) {
+        normalized_square_difference_fft(audio_buffer);
+    } else {
+        normalized_square_difference_time_domain(audio_buffer);
+    }
     peak_picking();
 
     double highestAmplitude = -DBL_MAX;
