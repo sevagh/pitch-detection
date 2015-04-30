@@ -3,6 +3,7 @@
 //
 
 #include "mpm.h"
+#include "../autocorrelation/autocorrelation.h"
 #include <float.h>
 
 #define CUTOFF 0.93 //0.97 is default
@@ -11,55 +12,13 @@
 
 #define MAX(a, b) ((a < b) ?  (b) : (a))
 
-double turning_point_x, turning_point_y;
-double *nsdf;
-
-int *max_positions;
-double *period_estimates;
-double *amp_estimates;
-
-int max_positions_ptr, period_estimates_ptr, amp_estimates_ptr;
-
-mpm::mpm(double sampling_rate, int size, int fft_flag) {
+mpm::mpm(double sampling_rate, int size) {
     mpm::sampling_rate = sampling_rate;
     mpm::data_size = size;
-    mpm::fft_flag = fft_flag;
 
-    max_positions = new int[mpm::data_size];
-    period_estimates = new double[mpm::data_size];
-    amp_estimates = new double[mpm::data_size];
-}
-
-void mpm::normalized_square_difference_time_domain(double *audio_buffer) {
-    int tau;
-    double nsdf_loc[data_size];
-    for (tau = 0; tau < data_size; tau++) {
-        double acf = 0;
-        double divisorM = 0;
-        int i;
-        for (i = 0; i < data_size - tau; i++) {
-            acf += audio_buffer[i] * audio_buffer[i + tau];
-            divisorM += audio_buffer[i] * audio_buffer[i] + audio_buffer[i + tau] * audio_buffer[i + tau];
-        }
-        nsdf_loc[tau] = 2 * acf / divisorM;
-    }
-    nsdf = nsdf_loc;
-}
-
-void mpm::normalized_square_difference_fft(double *audio_buffer) {
-    int tau;
-    double nsdf_loc[data_size];
-    for (tau = 0; tau < data_size; tau++) {
-        double acf = 0;
-        double divisorM = 0;
-        int i;
-        for (i = 0; i < data_size - tau; i++) {
-            acf += audio_buffer[i] * audio_buffer[i + tau];
-            divisorM += audio_buffer[i] * audio_buffer[i] + audio_buffer[i + tau] * audio_buffer[i + tau];
-        }
-        nsdf_loc[tau] = 2 * acf / divisorM;
-    }
-    nsdf = nsdf_loc;
+    mpm::max_positions = new int[mpm::data_size];
+    mpm::period_estimates = new double[mpm::data_size];
+    mpm::amp_estimates = new double[mpm::data_size];
 }
 
 void mpm::parabolic_interpolation(int tau) {
@@ -76,6 +35,22 @@ void mpm::parabolic_interpolation(int tau) {
         turning_point_x = bValue + delta / (2 * bottom);
         turning_point_y = nsdfb - delta * delta / (8 * bottom);
     }
+}
+
+void mpm::nsdf_time_domain(double *audio_buffer) {
+    int tau;
+    double nsdf_loc[data_size];
+    for (tau = 0; tau < data_size; tau++) {
+        double acf = 0;
+        double divisorM = 0;
+        int i;
+        for (i = 0; i < data_size - tau; i++) {
+            acf += audio_buffer[i] * audio_buffer[i + tau];
+            divisorM += audio_buffer[i] * audio_buffer[i] + audio_buffer[i + tau] * audio_buffer[i + tau];
+        }
+        nsdf_loc[tau] = 2 * acf / divisorM;
+    }
+    nsdf = nsdf_loc;
 }
 
 void mpm::peak_picking() {
@@ -125,11 +100,8 @@ double mpm::get_pitch(double *audio_buffer) {
     period_estimates_ptr = 0;
     amp_estimates_ptr = 0;
 
-    if (fft_flag) {
-        normalized_square_difference_fft(audio_buffer);
-    } else {
-        normalized_square_difference_time_domain(audio_buffer);
-    }
+    mpm::nsdf_time_domain(audio_buffer);
+
     peak_picking();
 
     double highestAmplitude = -DBL_MAX;
@@ -171,8 +143,7 @@ double mpm::get_pitch(double *audio_buffer) {
     return pitch;
 }
 
-void mpm::cleanup()
-{
+void mpm::cleanup() {
     delete[] max_positions;
     delete[] period_estimates;
     delete[] amp_estimates;

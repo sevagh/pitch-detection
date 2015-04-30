@@ -10,20 +10,28 @@ class mpm {
 private:
     double sampling_rate;
     int data_size;
-    int fft_flag;
 
-    void normalized_square_difference_time_domain(double *audio_buffer);
-    void normalized_square_difference_fft(double *audio_buffer);
+    double turning_point_x, turning_point_y;
+    double *nsdf;
+
+    int *max_positions;
+    double *period_estimates;
+    double *amp_estimates;
+
+    int max_positions_ptr, period_estimates_ptr, amp_estimates_ptr;
+
     void parabolic_interpolation(int tau);
     void peak_picking();
+    void nsdf_time_domain(double *data);
 
     mpm() { }
 
 public:
-    mpm(double sampling_rate, int size, int fft_flag);
+    mpm(double sampling_rate, int size);
 
     double get_pitch(double *data);
     void cleanup();
+
 };
 
 #endif //MPM_MPM_H

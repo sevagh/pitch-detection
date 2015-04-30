@@ -8,6 +8,19 @@
 
 class autocorrelation {
 
+private:
+    double sampling_rate;
+    int data_size;
+
+    autocorrelation() { }
+
+    double get_periodicity(double *data);
+
+public:
+    autocorrelation(double sampling_rate, int size);
+
+    double get_pitch(double *data);
+
 };
 
 
