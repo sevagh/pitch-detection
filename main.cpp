@@ -8,7 +8,10 @@
 using namespace std;
 
 int main() {
-    sinegenerator sinegenerator1 = sinegenerator(48000, 5337);
+    double pitch = 0.0f;
+    double frequency = 8351;
+
+    sinegenerator sinegenerator1 = sinegenerator(48000, frequency);
 
     mpm mpm1 = mpm(48000, sinegenerator1.size_single_channel);
     goertzel goertzel1 = goertzel(48000, sinegenerator1.size_single_channel);
@@ -18,7 +21,7 @@ int main() {
     sinegenerator1.generate_tone();
 
     //MPM time domain result
-    double pitch = mpm1.get_pitch(sinegenerator1.tone_single_channel);
+    pitch = mpm1.get_pitch(sinegenerator1.tone_single_channel);
     printf("MPM (time-domain) pitch: %f\n", pitch);
 
     //autocorrelation result

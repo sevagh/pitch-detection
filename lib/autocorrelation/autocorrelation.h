@@ -14,7 +14,7 @@ private:
 
     autocorrelation() { }
 
-    double get_acf_periodicity(double *data);
+    double get_acf_periodicity(double *data, int size);
     double *get_normalized_acf(double *data);
 
 public:
