@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 project(MPM)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 ")
 
 set(SOURCE_FILES main.cpp)
 add_executable(MPM ${SOURCE_FILES} lib/sinewave/sinegenerator.cpp lib/sinewave/sinegenerator.h
@@ -11,3 +11,5 @@ add_executable(MPM ${SOURCE_FILES} lib/sinewave/sinegenerator.cpp lib/sinewave/s
                                     lib/autocorrelation/autocorrelation.cpp
                                     lib/autocorrelation/autocorrelation.h
                                     lib/helper/helper.h lib/helper/helper.cpp)
+
+target_link_libraries (MPM fftw3)
