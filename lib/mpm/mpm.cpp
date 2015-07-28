@@ -3,7 +3,6 @@
 //
 
 #include "mpm.h"
-#include "../autocorrelation/autocorrelation.h"
 #include <float.h>
 
 #define CUTOFF 0.93 //0.97 is default
