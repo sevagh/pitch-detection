@@ -1,10 +1,8 @@
 # Pitch Detection
-##### Author: Sevag Hanssian <sevag.hanssian@gmail.com>
 
+Collection of C++ pitch detection algorithms.
 
-## Description
-
-C++ implementation of some pitch detection algorithms:
+### Algorithms
 
 * McLeod Pitch Method (time domain)
 * Goertzel
@@ -14,4 +12,4 @@ C++ implementation of some pitch detection algorithms:
 
 ## Install
 
-This is a CLion project.
+CLion project.
