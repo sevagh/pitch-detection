@@ -49,7 +49,7 @@ double goertzel_energy(double frequency, double *arr, int N, double sampling_rat
 
 double goertzel::get_pitch(double *data)
 {
-	return looper(get_snr, data, data_size, sampling_rate, goertzel_energy);
+	return looper(data, data_size, sampling_rate, goertzel_energy);
 }
 
 void goertzel::cleanup()

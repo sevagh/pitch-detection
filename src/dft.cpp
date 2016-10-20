@@ -38,7 +38,7 @@ double dft_energy(double frequency, double *arr, int N, double sampling_rate)
 
 double dft::get_pitch(double *data)
 {
-	return looper(get_snr, data, data_size, sampling_rate, dft_energy);
+	return looper(data, data_size, sampling_rate, dft_energy);
 }
 
 void dft::cleanup()

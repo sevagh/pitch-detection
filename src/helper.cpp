@@ -45,29 +45,31 @@ double get_snr(double frequency, double *arr,
 }
 
 
-double looper(double (*fp)(double, double*, int, double,
-			   double (*fp)(double, double*, int, double)),
-	      double *data, int data_size, double sampling_rate, double (*fp2)(double, double*, int, double))
+double looper(double *data, int data_size, double sampling_rate,
+	      double (*fp)(double, double*, int, double))
 {
 	double freq_best = 0.0f;
 	double snr_best = -1000.0f;
 
-	double freq_increment = 1000;
+	double freq_incr = 1000;
 	double freq_min = FREQ_MIN;
 	double freq_max = FREQ_MAX;
 	double freq = FREQ_MIN;
 
-	while (freq_increment >= 0.1) {
-		for (double freq = freq_min; freq <= freq_max; freq += freq_increment) {
-			double snr_current = fp(freq, data, data_size, sampling_rate, fp2);
+	while (freq_incr >= 0.1) {
+		for (double freq = freq_min; freq <= freq_max;
+		     freq += freq_incr) {
+			double snr_current = get_snr(freq,
+						     data, data_size,
+						     sampling_rate, fp);
 			if (snr_current > snr_best) {
 				snr_best = snr_current;
 				freq_best = freq;
 			}
 		}
-		freq_min = freq_best - freq_increment;
-		freq_max = freq_best + freq_increment;
-		freq_increment = freq_increment/10;
+		freq_min = freq_best - freq_incr;
+		freq_max = freq_best + freq_incr;
+		freq_incr = freq_incr/10;
 	}
 
 	return freq_max;
