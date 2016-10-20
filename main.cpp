@@ -4,40 +4,43 @@
 #include "lib/goertzel/goertzel.h"
 #include "lib/dft/dft.h"
 #include "lib/autocorrelation/autocorrelation.h"
+#include "lib/pitch_detector/pitch_detector.h"
 
 using namespace std;
 
-int main() {
+int main(int argc, char **argv) {
     double pitch = 0.0f;
     double frequency = 8351;
 
     sinegenerator sinegenerator1 = sinegenerator(48000, frequency);
-
-    mpm mpm1 = mpm(48000, sinegenerator1.size_single_channel);
-    goertzel goertzel1 = goertzel(48000, sinegenerator1.size_single_channel);
-    dft dft1 = dft(48000, sinegenerator1.size_single_channel);
-    autocorrelation autocorrelation1 = autocorrelation(48000, sinegenerator1.size_single_channel);
-
     sinegenerator1.generate_tone();
 
-    //MPM time domain result
-    pitch = mpm1.get_pitch(sinegenerator1.tone_single_channel);
-    printf("MPM (time-domain) pitch: %f\n", pitch);
+    if (argc < 2) {
+	    printf("usage: %d\t<algo-name>\n", argv[0]);
+	    printf("\talgos: mpm, goertzel, dft, autocorrelation\n");
+	    exit(-1);
+    }
 
-    //autocorrelation result
-    pitch = autocorrelation1.get_pitch(sinegenerator1.tone_single_channel);
-    printf("Autocorrelation pitch: %f\n", pitch);
+    PitchDetector *pitch_detector;
 
-    //Goertzel result
-    pitch = goertzel1.get_pitch(sinegenerator1.tone_single_channel);
-    printf("Goertzel pitch: %f\n", pitch);
+    if (std::string(argv[1]) == "mpm") {
+	    pitch_detector = new mpm(48000, sinegenerator1.size_single_channel);
+    } else if (std::string(argv[1]) == "goertzel") {
+	    pitch_detector = new goertzel(48000, sinegenerator1.size_single_channel);
+    } else if (std::string(argv[1]) == "dft") {
+	    pitch_detector = new dft(48000, sinegenerator1.size_single_channel);
+    } else if (std::string(argv[1]) == "autocorrelation") {
+	    pitch_detector = new autocorrelation(48000, sinegenerator1.size_single_channel);
+    } else {
+	    printf("%s is not a valid algo\n", argv[1]);
+	    exit(0);
+    }
 
-    //DFT result
-    pitch = dft1.get_pitch(sinegenerator1.tone_single_channel);
-    printf("DFT pitch: %f\n", pitch);
+    pitch = pitch_detector->get_pitch(sinegenerator1.tone_single_channel);
+    printf("%s pitch: %f\n", argv[1], pitch);
 
     sinegenerator1.cleanup();
-    mpm1.cleanup();
+    pitch_detector->cleanup();
 
     exit(0);
 }

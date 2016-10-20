@@ -79,3 +79,6 @@ double goertzel::get_pitch(double *data) {
 
     return freq_max;
 }
+
+void goertzel::cleanup() {
+}

@@ -19,8 +19,9 @@ CMake project. Comes with [cqfd](https://github.com/savoirfairelinux/cqfd) files
     ...
     [100%] Linking CXX executable pitch_detection
     [100%] Built target pitch_detection 
-    $ ./pitch_detection
+    $ ./pitch_detection mpm
     MPM (time-domain) pitch: 8322.471641
+    $ ./pitch_detection autocorrelation
     Autocorrelation pitch: 8355.990220
     ...
 

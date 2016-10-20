@@ -5,7 +5,9 @@
 #ifndef MPM_GOERTZEL_H
 #define MPM_GOERTZEL_H
 
-class goertzel {
+#include "../pitch_detector/pitch_detector.h"
+
+class goertzel: public PitchDetector {
 
 private:
     double sampling_rate;
@@ -21,6 +23,7 @@ public:
 
     double get_pitch(double *data);
 
+    void cleanup();
 };
 
 #endif //MPM_GOERTZEL_H

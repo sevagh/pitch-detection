@@ -94,3 +94,6 @@ double autocorrelation::get_pitch(double *data) {
 
     return (sampling_rate/peak_bin_index_periodicity);
 }
+
+void autocorrelation::cleanup() {
+}

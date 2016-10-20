@@ -5,7 +5,9 @@
 #ifndef MPM_DFT_H
 #define MPM_DFT_H
 
-class dft {
+#include "../pitch_detector/pitch_detector.h"
+
+class dft: public PitchDetector {
 
 private:
     double sampling_rate;
@@ -21,6 +23,7 @@ public:
 
     double get_pitch(double *data);
 
+    void cleanup();
 };
 
 #endif //MPM_DFTL_H

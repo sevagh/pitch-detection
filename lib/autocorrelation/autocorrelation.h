@@ -5,8 +5,9 @@
 #ifndef MPM_AUTOCORRELATION_H
 #define MPM_AUTOCORRELATION_H
 
+#include "../pitch_detector/pitch_detector.h"
 
-class autocorrelation {
+class autocorrelation: public PitchDetector {
 
 private:
     double sampling_rate;
@@ -22,6 +23,7 @@ public:
 
     double get_pitch(double *data);
 
+    void cleanup();
 };
 
 

@@ -5,7 +5,9 @@
 #ifndef MPM_MPM_H
 #define MPM_MPM_H
 
-class mpm {
+#include "../pitch_detector/pitch_detector.h"
+
+class mpm: public PitchDetector {
 
 private:
     double sampling_rate;
@@ -30,8 +32,8 @@ public:
     mpm(double sampling_rate, int size);
 
     double get_pitch(double *data);
-    void cleanup();
 
+    void cleanup();
 };
 
 #endif //MPM_MPM_H
