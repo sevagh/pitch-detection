@@ -5,7 +5,7 @@
 #ifndef MPM_DFT_H
 #define MPM_DFT_H
 
-#include "../pitch_detector/pitch_detector.h"
+#include "pitch_detector.h"
 
 class dft: public PitchDetector {
 

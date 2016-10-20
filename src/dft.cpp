@@ -4,7 +4,7 @@
 
 #include "dft.h"
 #include <math.h>
-#include "../helper/helper.h"
+#include "helper.h"
 
 dft::dft(double sampling_rate, int size)
 {

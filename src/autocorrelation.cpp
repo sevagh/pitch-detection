@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include "autocorrelation.h"
-#include "../helper/helper.h"
+#include "helper.h"
 #include <fftw3.h>
 #include <stdlib.h>
 

@@ -5,7 +5,7 @@
 #ifndef MPM_MPM_H
 #define MPM_MPM_H
 
-#include "../pitch_detector/pitch_detector.h"
+#include "pitch_detector.h"
 
 class mpm: public PitchDetector {
 

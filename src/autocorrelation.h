@@ -5,7 +5,7 @@
 #ifndef MPM_AUTOCORRELATION_H
 #define MPM_AUTOCORRELATION_H
 
-#include "../pitch_detector/pitch_detector.h"
+#include "pitch_detector.h"
 
 class autocorrelation: public PitchDetector {
 

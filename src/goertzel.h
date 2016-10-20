@@ -5,7 +5,7 @@
 #ifndef MPM_GOERTZEL_H
 #define MPM_GOERTZEL_H
 
-#include "../pitch_detector/pitch_detector.h"
+#include "pitch_detector.h"
 
 class goertzel: public PitchDetector {
 

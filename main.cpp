@@ -1,10 +1,10 @@
 #include <iostream>
-#include "lib/sinewave/sinegenerator.h"
-#include "lib/mpm/mpm.h"
-#include "lib/goertzel/goertzel.h"
-#include "lib/dft/dft.h"
-#include "lib/autocorrelation/autocorrelation.h"
-#include "lib/pitch_detector/pitch_detector.h"
+#include "src/sinegenerator.h"
+#include "src/mpm.h"
+#include "src/goertzel.h"
+#include "src/dft.h"
+#include "src/autocorrelation.h"
+#include "src/pitch_detector.h"
 
 using namespace std;
 
@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     sinegenerator1.generate_tone();
 
     if (argc < 2) {
-	    printf("usage: %d\t<algo-name>\n", argv[0]);
+	    printf("usage: %s\t<algo-name>\n", argv[0]);
 	    printf("\talgos: mpm, goertzel, dft, autocorrelation\n");
 	    exit(-1);
     }

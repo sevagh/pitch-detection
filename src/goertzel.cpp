@@ -3,7 +3,7 @@
 //
 
 #include "goertzel.h"
-#include "../helper/helper.h"
+#include "helper.h"
 #include <math.h>
 
 //frequency limits to loop around
