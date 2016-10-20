@@ -4,74 +4,43 @@
 
 #include "dft.h"
 #include <math.h>
+#include "../helper/helper.h"
 
-//frequency limits to loop around
-//dumb dft
-#define loop(x) for(double x = 80; x < 10000; x += 0.01)
-
-dft::dft(double sampling_rate, int size) {
-    dft::sampling_rate = sampling_rate;
-    dft::data_size = size;
-}
-
-double dft::dft_energy(int frequency, double *arr, int N)
+dft::dft(double sampling_rate, int size)
 {
-    float real = 0.0f;
-    float im = 0.0f;
-    float E = 0.0f;
-
-    float floatN = (float) N;
-    float floatf = (float) frequency;
-
-    float DFT_k = (floatf*floatN*(float) (1.0/sampling_rate));
-
-    int index;
-    for (index = 0; index < N; index++) {
-        float ind = (float) index;
-        float real_c = cos(2.0f*M_PI*ind*DFT_k/floatN);
-        float im_c = sin(2.0f*M_PI*ind*DFT_k/floatN);
-        real += (float) arr[index]*real_c;
-        im -= (float) arr[index]*im_c;
-    }
-
-    E += real*real + im*im;
-
-    return E/(floatN*0.5);
+	dft::sampling_rate = sampling_rate;
+	dft::data_size = size;
 }
 
-float dft::get_snr(int frequency, double *arr, int N) {
-    float snr;
+double dft_energy(double frequency, double *arr, int N, double sampling_rate)
+{
+	float real = 0.0f;
+	float im = 0.0f;
+	float E = 0.0f;
 
-    int index;
+	float floatN = (float) N;
 
-    double total;
-    double E;
+	float DFT_k = (frequency*floatN*(float) (1.0/sampling_rate));
 
-    total = 0;
-    for (index = 0; index < N; index++)
-        total += arr[index] * arr[index];
+	int index;
+	for (index = 0; index < N; index++) {
+		float ind = (float) index;
+		float real_c = cos(2.0f*M_PI*ind*DFT_k/floatN);
+		float im_c = sin(2.0f*M_PI*ind*DFT_k/floatN);
+		real += (float) arr[index]*real_c;
+		im -= (float) arr[index]*im_c;
+	}
 
-    E = dft_energy(frequency, arr, N);
+	E += real*real + im*im;
 
-    snr = 10.0f * log10((float) E / (float) (fabs(total - E)));
-
-    return snr;
+	return E/(floatN*0.5);
 }
 
-double dft::get_pitch(double *data) {
-    double freq_max = 0.0f;
-    double snr_max = -1000.0f;
-
-    loop(freq) {
-        double snr_current = get_snr(freq, data, data_size);
-        if (snr_current > snr_max) {
-            snr_max = snr_current;
-            freq_max = freq;
-        }
-    }
-
-    return freq_max;
+double dft::get_pitch(double *data)
+{
+	return looper(get_snr, data, data_size, sampling_rate, dft_energy);
 }
 
-void dft::cleanup() {
+void dft::cleanup()
+{
 }

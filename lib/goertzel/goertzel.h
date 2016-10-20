@@ -15,9 +15,6 @@ private:
 
     goertzel() { }
 
-    double goertzel_energy(int frequency, double *arr, int N);
-    float get_snr(int frequency, double *arr, int N);
-
 public:
     goertzel(double sampling_rate, int size);
 
