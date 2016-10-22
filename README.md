@@ -10,9 +10,14 @@ Collection of C++ pitch detection algorithms.
 * Autocorrelation (FFT)
 
 
-## Install
+### Build & run
 
-CMake project. Comes with [cqfd](https://github.com/savoirfairelinux/cqfd) files for easy building:
+CMake project.
+
+    apt-get install make cmake gcc g++ libfftw3-dev libavcodec-dev libavformat-dev libavutil-dev
+    cmake . && make && ./pitch_detection
+
+Comes with [cqfd](https://github.com/savoirfairelinux/cqfd) config files for easy building:
 
     $ cqfd init
     $ cqfd
@@ -24,7 +29,3 @@ CMake project. Comes with [cqfd](https://github.com/savoirfairelinux/cqfd) files
     $ ./pitch_detection autocorrelation
     Autocorrelation pitch: 8355.990220
     ...
-
-Without cqfd/Docker:
-
-    apt-get install libfftw3-dev && cmake . && make && ./pitch_detection

@@ -3,4 +3,4 @@ org='sevag.io'
 name='pitch_detection'
 
 [build]
-command='cmake ./ && make' 
+command='./clean.sh && cmake ./ && make' 

@@ -11,4 +11,4 @@ file(GLOB SOURCE_FILES
 
 add_executable(pitch_detection ${SOURCE_FILES})
 
-target_link_libraries (pitch_detection fftw3)
+target_link_libraries (pitch_detection fftw3 avcodec avformat avutil)
