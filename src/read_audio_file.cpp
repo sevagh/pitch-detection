@@ -90,21 +90,32 @@ void read_mp3_file(char *path)
 					decodingPacket.size -= result;
 					decodingPacket.data += result;
 					// We now have a fully decoded audio frame
+					int length = (int) frame->linesize[0];
+					int schannel_length = (double) length/ (double) codecContext->channels;
 
-					double raw_audio[frame->nb_samples / codecContext->channels];
-					for (int i = 0;
-					     i < frame->nb_samples / codecContext->channels;
-					     i += 1) {
-						raw_audio[i] = (double) frame->data[0][codecContext->channels*i];
+					double raw_audio[schannel_length];
+					for (int i = 0; i < schannel_length; i += 1) {
+						raw_audio[i] = (double) frame->
+							data[0][codecContext->channels*i];
 					}
+
+					int incr = 1000;
 
 					mpm mpm1 =
 						mpm(codecContext->sample_rate,
-						    frame->nb_samples / codecContext->channels);
+						    incr);
 
-					double pitch = mpm1.get_pitch(raw_audio);
-					if (pitch != -1) {
-						printf("%f\n", pitch);
+					int64_t tstamp = (double)
+						frame->best_effort_timestamp * (double) audioStream->time_base.num / (double) audioStream->time_base.den * 1000.0;
+
+					for (int j = 0; j < schannel_length; j += incr) {
+						if (j >= schannel_length) { break; }
+						double pitch =
+							mpm1.get_pitch
+							(&raw_audio[j]);
+						if (pitch != -1) {
+							printf("tstamp: %ld\t%f\n", tstamp, pitch);
+						}
 					}
 				} else {
 					decodingPacket.size = 0;
