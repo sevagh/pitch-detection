@@ -34,6 +34,7 @@ public:
     double get_pitch(double *data);
 
     void cleanup();
+    void resize(double new_sampling_rate, int newsize);
 };
 
 #endif //MPM_MPM_H

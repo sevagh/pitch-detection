@@ -18,8 +18,6 @@ int main(int argc, char **argv)
 						     frequency);
 	sinegenerator1.generate_tone();
 
-	read_mp3_file("./tests/guitar_eadgbe.mp3");
-
 	if (argc < 2) {
 		printf("usage: %s\t<algo-name>\n", argv[0]);
 		printf("\talgos: mpm, goertzel, dft, autocorrelation\n");
@@ -52,6 +50,8 @@ int main(int argc, char **argv)
 	pitch = pitch_detector
 		->get_pitch(sinegenerator1.tone_single_channel);
 	printf("%s pitch: %f\n", argv[1], pitch);
+
+	read_mp3_file((char *) "./tests/guitar_eadgbe.mp3", pitch_detector);
 
 	sinegenerator1.cleanup();
 	pitch_detector->cleanup();

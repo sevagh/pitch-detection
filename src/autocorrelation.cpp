@@ -14,6 +14,12 @@ autocorrelation::autocorrelation(double sampling_rate, int size)
 	autocorrelation::data_size = size;
 }
 
+void autocorrelation::resize(double new_sampling_rate, int newsize)
+{
+	autocorrelation::sampling_rate = new_sampling_rate;
+	autocorrelation::data_size = newsize;
+}
+
 double autocorrelation::get_acf_periodicity(double *data, int size)
 {
 	int starting_index = 0;

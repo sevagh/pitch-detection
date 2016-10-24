@@ -12,6 +12,12 @@ dft::dft(double sampling_rate, int size)
 	dft::data_size = size;
 }
 
+void dft::resize(double new_sampling_rate, int newsize)
+{
+	dft::sampling_rate = new_sampling_rate;
+	dft::data_size = newsize;
+}
+
 double dft_energy(double frequency, double *arr, int N, double sampling_rate)
 {
 	float real = 0.0f;

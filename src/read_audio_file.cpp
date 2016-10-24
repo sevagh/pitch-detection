@@ -1,5 +1,5 @@
 #include <iostream>
-#include "mpm.h"
+#include "pitch_detector.h"
 
 extern "C"
 {
@@ -8,126 +8,76 @@ extern "C"
 #include <libavutil/avutil.h>
 };
 
-/*hack to make av_err2str work in c++
- * taken from:
-https://ffmpeg.org/pipermail/libav-user/2013-January/003458.html
-*/
-#undef av_err2str
-#define av_err2str(errnum) \
-av_make_error_string((char*\
-)__builtin_alloca(AV_ERROR_MAX_STRING_SIZE),\
-AV_ERROR_MAX_STRING_SIZE, errnum)
-
-void read_mp3_file(char *path)
+void read_mp3_file(char *path, PitchDetector *pitchr)
 {
 	// Initialize FFmpeg
 	av_register_all();
 
-	AVFrame* frame = avcodec_alloc_frame();
-	if (!frame) {
-		std::cout << "Error allocating the frame" << std::endl;
-		return;
-	}
-
-	AVFormatContext* formatContext = NULL;
-	int x = avformat_open_input(&formatContext,
-				    path, NULL, NULL);
-	if (x != 0) {
-		av_free(frame);
-		std::cout << "Error opening the file" << std::endl;
-		printf("Error: %s\n", av_err2str(x));
-		return;
-	}
-
-	if (avformat_find_stream_info(formatContext, NULL) < 0) {
-		av_free(frame);
-		avformat_close_input(&formatContext);
-		std::cout << "Error finding the stream info" << std::endl;
-		return;
-	}
-
-	// Find the audio stream
+	AVFrame* frame = av_frame_alloc();
+	AVFormatContext* fmt_ctx = NULL;
+	avformat_open_input(&fmt_ctx, path, NULL, NULL);
+	avformat_find_stream_info(fmt_ctx, NULL);
 	AVCodec* cdc = nullptr;
-	int streamIndex = av_find_best_stream(formatContext,
+	int stream_idx = av_find_best_stream(fmt_ctx,
 					      AVMEDIA_TYPE_AUDIO,
 					      -1, -1, &cdc, 0);
-	if (streamIndex < 0) {
-		av_free(frame);
-		avformat_close_input(&formatContext);
-		std::cout << "Could not find any audio stream in the file"
-			  << std::endl;
-		return;
-	}
+	AVStream* astream = fmt_ctx->streams[stream_idx];
+	AVCodecContext* codec_ctx = astream->codec;
+	codec_ctx->codec = cdc;
+	avcodec_open2(codec_ctx, codec_ctx->codec, NULL);
 
-	AVStream* audioStream = formatContext->streams[streamIndex];
-	AVCodecContext* codecContext = audioStream->codec;
-	codecContext->codec = cdc;
+	AVPacket rpkt;
+	av_init_packet(&rpkt);
 
-	if (avcodec_open2(codecContext, codecContext->codec, NULL) != 0) {
-		av_free(frame);
-		avformat_close_input(&formatContext);
-		std::cout << "Couldn't open the context with the decoder"
-			  << std::endl;
-		return;
-	}
-
-	AVPacket readingPacket;
-	av_init_packet(&readingPacket);
+	int incr = 1000;
+	pitchr->resize(codec_ctx->sample_rate, incr);
 
 	// Read the packets in a loop
-	while (av_read_frame(formatContext, &readingPacket) == 0) {
-		if (readingPacket.stream_index == audioStream->index) {
-			AVPacket decodingPacket = readingPacket;
+	while (av_read_frame(fmt_ctx, &rpkt) == 0) {
+		if (rpkt.stream_index == astream->index) {
+			AVPacket dpkt = rpkt;
 
 			// Audio packets can have multiple audio frames in a single packet
-			while (decodingPacket.size > 0) {
+			while (dpkt.size > 0) {
 				int gotFrame = 0;
 				int result = avcodec_decode_audio4
-					     (codecContext, frame,
-					      &gotFrame, &decodingPacket);
+					     (codec_ctx, frame,
+					      &gotFrame, &dpkt);
 
 				if (result >= 0 && gotFrame) {
-					decodingPacket.size -= result;
-					decodingPacket.data += result;
+					dpkt.size -= result;
+					dpkt.data += result;
 					// We now have a fully decoded audio frame
-					int length = (int) frame->linesize[0];
-					int schannel_length = (double) length/ (double) codecContext->channels;
+					int l = (double) frame->linesize[0]/ (double) codec_ctx->channels;
 
-					double raw_audio[schannel_length];
-					for (int i = 0; i < schannel_length; i += 1) {
-						raw_audio[i] = (double) frame->
-							data[0][codecContext->channels*i];
+					double raw[l];
+					for (int i = 0; i < l; i += 1) {
+						raw[i] = (double) frame->
+							data[0][codec_ctx->channels*i];
 					}
 
-					int incr = 1000;
-
-					mpm mpm1 =
-						mpm(codecContext->sample_rate,
-						    incr);
-
 					int64_t tstamp = (double)
-						frame->best_effort_timestamp * (double) audioStream->time_base.num / (double) audioStream->time_base.den * 1000.0;
+						frame->best_effort_timestamp * (double) astream->time_base.num / (double) astream->time_base.den * 1000.0;
 
-					for (int j = 0; j < schannel_length; j += incr) {
-						if (j >= schannel_length) { break; }
+					for (int j = 0; j < l; j += incr) {
+						if (j >= l) { break; }
 						double pitch =
-							mpm1.get_pitch
-							(&raw_audio[j]);
+							pitchr->get_pitch(&raw[j]);
 						if (pitch != -1) {
 							printf("tstamp: %ld\t%f\n", tstamp, pitch);
 						}
 					}
 				} else {
-					decodingPacket.size = 0;
-					decodingPacket.data = nullptr;
+					dpkt.size = 0;
+					dpkt.data = nullptr;
 				}
 			}
 		}
-		av_free_packet(&readingPacket);
+		av_free_packet(&rpkt);
 	}
 
 	av_free(frame);
 
-	avcodec_close(codecContext);
-	avformat_close_input(&formatContext);
+	avcodec_close(codec_ctx);
+	avformat_close_input(&fmt_ctx);
 }

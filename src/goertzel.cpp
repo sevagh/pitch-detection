@@ -15,6 +15,12 @@ goertzel::goertzel(double sampling_rate, int size)
 	goertzel::data_size = size;
 }
 
+void goertzel::resize(double new_sampling_rate, int newsize)
+{
+	goertzel::sampling_rate = new_sampling_rate;
+	goertzel::data_size = newsize;
+}
+
 double goertzel_energy(double frequency, double *arr, int N, double sampling_rate)
 {
 	double doubleN = (double) N;
