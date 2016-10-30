@@ -7,21 +7,22 @@
 
 #include "pitch_detector.h"
 
-class goertzel: public PitchDetector {
+class goertzel: public PitchDetector
+{
 
 private:
-    double sampling_rate;
-    int data_size;
+	double sampling_rate;
+	int data_size;
 
-    goertzel() { }
+	goertzel() { }
 
 public:
-    goertzel(double sampling_rate, int size);
+	goertzel(double sampling_rate, int size);
 
-    double get_pitch(double *data);
+	double get_pitch(double *data);
 
-    void cleanup();
-    void resize(double new_sampling_rate, int newsize);
+	void cleanup();
+	void resize(double new_sampling_rate, int newsize);
 };
 
 #endif //MPM_GOERTZEL_H

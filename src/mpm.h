@@ -7,34 +7,35 @@
 
 #include "pitch_detector.h"
 
-class mpm: public PitchDetector {
+class mpm: public PitchDetector
+{
 
 private:
-    double sampling_rate;
-    int data_size;
+	double sampling_rate;
+	int data_size;
 
-    double turning_point_x, turning_point_y;
-    double *nsdf;
+	double turning_point_x, turning_point_y;
+	double *nsdf;
 
-    int *max_positions;
-    double *period_estimates;
-    double *amp_estimates;
+	int *max_positions;
+	double *period_estimates;
+	double *amp_estimates;
 
-    int max_positions_ptr, period_estimates_ptr, amp_estimates_ptr;
+	int max_positions_ptr, period_estimates_ptr, amp_estimates_ptr;
 
-    void parabolic_interpolation(int tau);
-    void peak_picking();
-    void nsdf_time_domain(double *data);
+	void parabolic_interpolation(int tau);
+	void peak_picking();
+	void nsdf_time_domain(double *data);
 
-    mpm() { }
+	mpm() { }
 
 public:
-    mpm(double sampling_rate, int size);
+	mpm(double sampling_rate, int size);
 
-    double get_pitch(double *data);
+	double get_pitch(double *data);
 
-    void cleanup();
-    void resize(double new_sampling_rate, int newsize);
+	void cleanup();
+	void resize(double new_sampling_rate, int newsize);
 };
 
 #endif //MPM_MPM_H

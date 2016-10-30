@@ -5,26 +5,27 @@
 #ifndef MPM_SINEGENERATOR_H
 #define MPM_SINEGENERATOR_H
 
-class sinegenerator {
+class sinegenerator
+{
 
 private:
-    double sampling_rate;
-    double inv_sampling_rate;
-    double frequency;
+	double sampling_rate;
+	double inv_sampling_rate;
+	double frequency;
 
-    sinegenerator() { }
+	sinegenerator() { }
 
 public:
-    int size_single_channel;
-    int size_dual_channel;
+	int size_single_channel;
+	int size_dual_channel;
 
-    double *tone_dual_channel;
-    double *tone_single_channel;
+	double *tone_dual_channel;
+	double *tone_single_channel;
 
-    sinegenerator(double sampling_rate, double frequency);
+	sinegenerator(double sampling_rate, double frequency);
 
-    void generate_tone();
-    void cleanup();
+	void generate_tone();
+	void cleanup();
 
 };
 

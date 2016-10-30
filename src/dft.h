@@ -7,21 +7,22 @@
 
 #include "pitch_detector.h"
 
-class dft: public PitchDetector {
+class dft: public PitchDetector
+{
 
 private:
-    double sampling_rate;
-    int data_size;
+	double sampling_rate;
+	int data_size;
 
-    dft() { }
+	dft() { }
 
 public:
-    dft(double sampling_rate, int size);
+	dft(double sampling_rate, int size);
 
-    double get_pitch(double *data);
+	double get_pitch(double *data);
 
-    void cleanup();
-    void resize(double new_sampling_rate, int newsize);
+	void cleanup();
+	void resize(double new_sampling_rate, int newsize);
 };
 
 #endif //MPM_DFTL_H

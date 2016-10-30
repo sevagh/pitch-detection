@@ -19,8 +19,8 @@ void read_mp3_file(char *path, PitchDetector *pitchr)
 	avformat_find_stream_info(fmt_ctx, NULL);
 	AVCodec* cdc = nullptr;
 	int stream_idx = av_find_best_stream(fmt_ctx,
-					      AVMEDIA_TYPE_AUDIO,
-					      -1, -1, &cdc, 0);
+					     AVMEDIA_TYPE_AUDIO,
+					     -1, -1, &cdc, 0);
 	AVStream* astream = fmt_ctx->streams[stream_idx];
 	AVCodecContext* codec_ctx = astream->codec;
 	codec_ctx->codec = cdc;
@@ -53,14 +53,16 @@ void read_mp3_file(char *path, PitchDetector *pitchr)
 					double raw[l];
 					for (int i = 0; i < l; i += 1) {
 						raw[i] = (double) frame->
-							data[0][codec_ctx->channels*i];
+							 data[0][codec_ctx->channels*i];
 					}
 
 					int64_t tstamp = (double)
-						frame->best_effort_timestamp * (double) astream->time_base.num / (double) astream->time_base.den * 1000.0;
+							 frame->best_effort_timestamp * (double) astream->time_base.num / (double) astream->time_base.den * 1000.0;
 
 					for (int j = 0; j < l; j += incr) {
-						if (j >= l) { break; }
+						if (j >= l) {
+							break;
+						}
 						double pitch =
 							pitchr->get_pitch(&raw[j]);
 						if (pitch != -1) {

@@ -15,7 +15,7 @@ int main(int argc, char **argv)
 	double frequency = 8351;
 
 	sinegenerator sinegenerator1 = sinegenerator(48000,
-						     frequency);
+				       frequency);
 	sinegenerator1.generate_tone();
 
 	if (argc < 2) {
