@@ -1,6 +1,0 @@
-[project]
-org='sevag.io'
-name='pitch_detection'
-
-[build]
-command='./clean.sh && cmake ./ && make' 

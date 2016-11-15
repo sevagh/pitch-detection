@@ -75,7 +75,7 @@ void read_mp3_file(char *path, PitchDetector *pitchr)
 				}
 			}
 		}
-		av_free_packet(&rpkt);
+		av_packet_unref(&rpkt);
 	}
 
 	av_free(frame);
