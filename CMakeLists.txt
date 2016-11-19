@@ -5,10 +5,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 file(GLOB SOURCE_FILES 
     "main.cpp"
-    "src/*.h"
+    "include/*.h"
     "src/*.cpp"
 )
 
 add_executable(pitch_detection ${SOURCE_FILES})
 
 target_link_libraries (pitch_detection fftw3 avcodec avformat avutil)
+
+include_directories("./include")

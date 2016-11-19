@@ -1,10 +1,3 @@
-//
-// Created by sevag on 4/27/15.
-//
-
-#ifndef MPM_MPM_H
-#define MPM_MPM_H
-
 #include "pitch_detector.h"
 
 class mpm: public PitchDetector
@@ -27,16 +20,11 @@ private:
 	void peak_picking();
 	void nsdf_time_domain(double *data);
 
-	mpm() { }
-
 public:
-	mpm(double sampling_rate, int size);
+	mpm();
+
+	void init(double sampling_rate, int size);
+	void cleanup();
 
 	double get_pitch(double *data);
-
-	void cleanup();
-	void resize(double new_sampling_rate, int newsize);
 };
-
-#endif //MPM_MPM_H
-

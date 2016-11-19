@@ -1,9 +1,5 @@
-//
-// Created by sevag on 4/27/15.
-//
-
-#include "mpm.h"
 #include <float.h>
+#include "mpm.h"
 
 #define CUTOFF 0.93 //0.97 is default
 #define SMALL_CUTOFF 0.5
@@ -11,20 +7,14 @@
 
 #define MAX(a, b) ((a < b) ?  (b) : (a))
 
-mpm::mpm(double sampling_rate, int size)
+mpm::mpm()
+{
+}
+
+void mpm::init(double sampling_rate, int size)
 {
 	mpm::sampling_rate = sampling_rate;
 	mpm::data_size = size;
-
-	mpm::max_positions = new int[mpm::data_size];
-	mpm::period_estimates = new double[mpm::data_size];
-	mpm::amp_estimates = new double[mpm::data_size];
-}
-
-void mpm::resize(double new_sampling_rate, int newsize)
-{
-	mpm::sampling_rate = new_sampling_rate;
-	mpm::data_size = newsize;
 
 	mpm::max_positions = new int[mpm::data_size];
 	mpm::period_estimates = new double[mpm::data_size];

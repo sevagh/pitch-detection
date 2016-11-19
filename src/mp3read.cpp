@@ -10,7 +10,6 @@ extern "C"
 
 void read_mp3_file(char *path, PitchDetector *pitchr)
 {
-	// Initialize FFmpeg
 	av_register_all();
 
 	AVFrame* frame = av_frame_alloc();
@@ -30,14 +29,12 @@ void read_mp3_file(char *path, PitchDetector *pitchr)
 	av_init_packet(&rpkt);
 
 	int incr = 1000;
-	pitchr->resize(codec_ctx->sample_rate, incr);
+	pitchr->init(codec_ctx->sample_rate, incr);
 
-	// Read the packets in a loop
 	while (av_read_frame(fmt_ctx, &rpkt) == 0) {
 		if (rpkt.stream_index == astream->index) {
 			AVPacket dpkt = rpkt;
 
-			// Audio packets can have multiple audio frames in a single packet
 			while (dpkt.size > 0) {
 				int gotFrame = 0;
 				int result = avcodec_decode_audio4
@@ -47,7 +44,6 @@ void read_mp3_file(char *path, PitchDetector *pitchr)
 				if (result >= 0 && gotFrame) {
 					dpkt.size -= result;
 					dpkt.data += result;
-					// We now have a fully decoded audio frame
 					int l = (double) frame->linesize[0]/ (double) codec_ctx->channels;
 
 					double raw[l];
@@ -78,6 +74,7 @@ void read_mp3_file(char *path, PitchDetector *pitchr)
 		av_packet_unref(&rpkt);
 	}
 
+	pitchr->cleanup();
 	av_free(frame);
 
 	avcodec_close(codec_ctx);

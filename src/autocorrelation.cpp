@@ -1,23 +1,17 @@
-//
-// Created by sevag on 4/28/15.
-//
-
 #include <stdio.h>
-#include "autocorrelation.h"
-#include "helper.h"
 #include <fftw3.h>
 #include <stdlib.h>
+#include "autocorrelation.h"
+#include "helper.h"
 
-autocorrelation::autocorrelation(double sampling_rate, int size)
+autocorrelation::autocorrelation()
+{
+}
+
+void autocorrelation::init(double sampling_rate, int size)
 {
 	autocorrelation::sampling_rate = sampling_rate;
 	autocorrelation::data_size = size;
-}
-
-void autocorrelation::resize(double new_sampling_rate, int newsize)
-{
-	autocorrelation::sampling_rate = new_sampling_rate;
-	autocorrelation::data_size = newsize;
 }
 
 double autocorrelation::get_acf_periodicity(double *data, int size)

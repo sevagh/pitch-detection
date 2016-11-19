@@ -1,7 +1,3 @@
-//
-// Created by sevag on 4/27/15.
-//
-
 #include <stdlib.h>
 #include "sinegenerator.h"
 #include "math.h"

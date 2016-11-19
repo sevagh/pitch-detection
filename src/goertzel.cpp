@@ -1,24 +1,15 @@
-//
-// Created by sevag on 4/28/15.
-//
-
+#include <math.h>
 #include "goertzel.h"
 #include "helper.h"
-#include <math.h>
 
-//frequency limits to loop around
-//dumb goertzel
+goertzel::goertzel()
+{
+}
 
-goertzel::goertzel(double sampling_rate, int size)
+void goertzel::init(double sampling_rate, int size)
 {
 	goertzel::sampling_rate = sampling_rate;
 	goertzel::data_size = size;
-}
-
-void goertzel::resize(double new_sampling_rate, int newsize)
-{
-	goertzel::sampling_rate = new_sampling_rate;
-	goertzel::data_size = newsize;
 }
 
 double goertzel_energy(double frequency, double *arr, int N, double sampling_rate)

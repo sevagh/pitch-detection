@@ -1,10 +1,3 @@
-//
-// Created by sevag on 4/27/15.
-//
-
-#ifndef MPM_SINEGENERATOR_H
-#define MPM_SINEGENERATOR_H
-
 class sinegenerator
 {
 
@@ -28,5 +21,3 @@ public:
 	void cleanup();
 
 };
-
-#endif //MPM_SINEGENERATOR_H
