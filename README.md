@@ -5,10 +5,12 @@ Collection of C++ pitch detection algorithms.
 ### Algorithms
 
 * McLeod Pitch Method (time domain)
+* YIN
 * Goertzel
 * DFT/FFT
 * Autocorrelation (FFT)
 
+YIN and McLeod inspired by [TarsosDSP](https://github.com/JorenSix/TarsosDSP).
 
 ### Build
 

@@ -6,6 +6,7 @@
 #include "dft.h"
 #include "autocorrelation.h"
 #include "mp3read.h"
+#include "yin.h"
 
 using namespace std;
 
@@ -13,7 +14,7 @@ int main(int argc, char **argv)
 {
 	if (argc < 2) {
 		printf("usage: %s\t<algo-name>\n", argv[0]);
-		printf("\talgos: mpm, goertzel, dft, autocorrelation\n");
+		printf("\talgos: mpm, goertzel, dft, autocorrelation yin\n");
 		exit(-1);
 	}
 
@@ -27,6 +28,8 @@ int main(int argc, char **argv)
 		pitch_detector = new dft();
 	} else if (std::string(argv[1]) == "autocorrelation") {
 		pitch_detector = new autocorrelation();
+	} else if (std::string(argv[1]) == "yin") {
+		pitch_detector = new yin();
 	} else {
 		printf("%s is not a valid algo\n", argv[1]);
 		exit(0);
