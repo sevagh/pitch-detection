@@ -15,7 +15,9 @@ The algorithms are:
 
 \*YIN and McLeod inspired by [TarsosDSP](https://github.com/JorenSix/TarsosDSP).
 
-MPM performs best on the guitar clip - see [Pitcha](https://github.com/sevagh/Pitcha) and [transcriber](https://github.com/sevagh/transcriber), two of my projects which use the MPM. YIN is strong at the sine wave test, without MPM's low pitch cutoff limitation. There are errors with the implementations of Goertzel, DFT, and autocorrelation - they shouldn't be performing this badly.
+MPM performs best on the guitar clip - see [Pitcha](https://github.com/sevagh/Pitcha) and [transcriber](https://github.com/sevagh/transcriber), two of my projects which use the MPM. **I strongly recommend using the MPM for any musical instrument pitch detection project**. A problem with the MPM is the low pitch cutoff.
+
+The rest are included for posterity. Goertzel and DFT are dogshit at musical instruments. Also, my autocorrelation implementation is buggy. 
 
 ### Build
 
