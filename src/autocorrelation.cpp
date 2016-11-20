@@ -4,9 +4,7 @@
 #include "autocorrelation.h"
 #include "helper.h"
 
-autocorrelation::autocorrelation()
-{
-}
+autocorrelation::autocorrelation() {}
 
 void autocorrelation::init(double sampling_rate, int size)
 {
@@ -103,6 +101,4 @@ double autocorrelation::get_pitch(double *data)
 	return (sampling_rate/peak_bin_index_periodicity);
 }
 
-void autocorrelation::cleanup()
-{
-}
+void autocorrelation::cleanup() {}

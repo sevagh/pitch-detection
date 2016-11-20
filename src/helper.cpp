@@ -2,10 +2,6 @@
 #include "math.h"
 #include <iostream>
 
-#define FREQ_MIN 80
-#define FREQ_MAX 10000
-#define GOOD_SNR 20
-
 void hanning_window(double *signal, int size)
 {
 	for (int i = 0; i < size; i++) {
@@ -72,7 +68,7 @@ double looper(double *data, int data_size, double sampling_rate,
 		freq_incr = freq_incr/10;
 	}
 
-	if (snr_best != GOOD_SNR) {
+	if (snr_best < MIN_SNR) {
 		return -1.0f;
 	}
 	return freq_max;

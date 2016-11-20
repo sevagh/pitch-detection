@@ -4,9 +4,7 @@
 #define DEFAULT_THRESHOLD 0.20
 #define DEFAULT_OVERLAP 1536
 
-yin::yin()
-{
-}
+yin::yin() {}
 
 void yin::init(double sampling_rate, int size)
 {
@@ -122,4 +120,3 @@ double yin::get_pitch(double *data)
 	
 	return pitch;
 }
-

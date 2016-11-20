@@ -1,15 +1,7 @@
 #include <float.h>
 #include "mpm.h"
 
-#define CUTOFF 0.93 //0.97 is default
-#define SMALL_CUTOFF 0.5
-#define LOWER_PITCH_CUTOFF 80 //hz
-
-#define MAX(a, b) ((a < b) ?  (b) : (a))
-
-mpm::mpm()
-{
-}
+mpm::mpm() {}
 
 void mpm::init(double sampling_rate, int size)
 {

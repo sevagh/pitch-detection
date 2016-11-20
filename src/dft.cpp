@@ -2,9 +2,7 @@
 #include "helper.h"
 #include "dft.h"
 
-dft::dft()
-{
-}
+dft::dft() {}
 
 void dft::init(double sampling_rate, int size)
 {
@@ -41,6 +39,4 @@ double dft::get_pitch(double *data)
 	return looper(data, data_size, sampling_rate, dft_energy);
 }
 
-void dft::cleanup()
-{
-}
+void dft::cleanup() {}
