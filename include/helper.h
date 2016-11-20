@@ -1,6 +1,8 @@
 #define FREQ_MIN 80
 #define FREQ_MAX 10000
-#define MIN_SNR 15
+#define CONSEC_FAIL_LIM 2 
+#define CONSEC_FAIL_MARGIN 0.01
+#define FREQ_STARTING_INCR 10
 
 double* zero_pad(double *original_signal, int size);
 

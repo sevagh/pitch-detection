@@ -45,31 +45,34 @@ double looper(double *data, int data_size, double sampling_rate,
 	      double (*fp)(double, double*, int, double))
 {
 	double freq_best = 0.0f;
-	double snr_best = -1000.0f;
-
-	double freq_incr = 1000;
+	double snr_max_loc = -999.0f;
+	double snr_max_glob = -1000.0f;
+	double freq_incr = FREQ_STARTING_INCR;
 	double freq_min = FREQ_MIN;
 	double freq_max = FREQ_MAX;
-	double freq = FREQ_MIN;
+	int consec_fail = 0;
 
-	while (freq_incr >= 0.1) {
+	while ((snr_max_loc >= snr_max_glob) && (consec_fail < CONSEC_FAIL_LIM)) {
 		for (double freq = freq_min; freq <= freq_max;
 		     freq += freq_incr) {
 			double snr_current = get_snr(freq,
 						     data, data_size,
 						     sampling_rate, fp);
-			if (snr_current > snr_best) {
-				snr_best = snr_current;
+			if (snr_current > snr_max_loc) {
+				snr_max_loc = snr_current;
 				freq_best = freq;
 			}
 		}
-		freq_min = freq_best - freq_incr;
-		freq_max = freq_best + freq_incr;
-		freq_incr = freq_incr/10;
+		if (abs(snr_max_loc-snr_max_glob) <= CONSEC_FAIL_MARGIN) {
+			consec_fail++;
+		}
+		if (snr_max_loc > snr_max_glob) {
+			snr_max_glob = snr_max_loc;
+			freq_incr /= 10.0f;
+			freq_min = std::max(0.0d, freq_best-freq_incr);
+			freq_max = freq_best+freq_incr;
+		}
 	}
 
-	if (snr_best < MIN_SNR) {
-		return -1.0f;
-	}
-	return freq_max;
+	return freq_best;
 }

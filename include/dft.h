@@ -8,10 +8,10 @@ private:
 	int data_size;
 
 public:
-	dft();
+	dft() {};
 
 	void init(double sampling_rate, int size);
-	void cleanup();
+	void cleanup() {};
 
 	double get_pitch(double *data);
 };

@@ -11,10 +11,10 @@ private:
 	double *get_normalized_acf(double *data);
 
 public:
-	autocorrelation();
+	autocorrelation() {};
 
 	void init(double sampling_rate, int size);
-	void cleanup();
+	void cleanup() {};
 
 	double get_pitch(double *data);
 

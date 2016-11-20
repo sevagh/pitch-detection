@@ -15,7 +15,7 @@ private:
 	double parabolic_interpolation(int tau_estimate);
 
 public:
-	yin();
+	yin() {};
 
 	void init(double sampling_rate, int size);
 	void cleanup();

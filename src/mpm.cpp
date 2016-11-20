@@ -1,8 +1,6 @@
 #include <float.h>
 #include "mpm.h"
 
-mpm::mpm() {}
-
 void mpm::init(double sampling_rate, int size)
 {
 	mpm::sampling_rate = sampling_rate;

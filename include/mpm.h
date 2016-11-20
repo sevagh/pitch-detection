@@ -27,7 +27,7 @@ private:
 	void nsdf_time_domain(double *data);
 
 public:
-	mpm();
+	mpm() {};
 
 	void init(double sampling_rate, int size);
 	void cleanup();

@@ -2,8 +2,6 @@
 #include "goertzel.h"
 #include "helper.h"
 
-goertzel::goertzel() {}
-
 void goertzel::init(double sampling_rate, int size)
 {
 	goertzel::sampling_rate = sampling_rate;
@@ -46,5 +44,3 @@ double goertzel::get_pitch(double *data)
 {
 	return looper(data, data_size, sampling_rate, goertzel_energy);
 }
-
-void goertzel::cleanup() {}
