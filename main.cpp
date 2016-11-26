@@ -5,9 +5,15 @@
 #include "mpm.h"
 #include "goertzel.h"
 #include "dft.h"
-#include "autocorrelation.h"
-#include "mp3read.h"
 #include "yin.h"
+
+#ifdef FFTW_ENABLED
+#include "autocorrelation.h"
+#endif
+
+#ifdef FFMPEG_ENABLED
+#include "mp3read.h"
+#endif
 
 using namespace std;
 
@@ -32,7 +38,12 @@ int main(int argc, char **argv)
 	} else if (algo_str == "dft") {
 		pitch_detector = new dft();
 	} else if (algo_str == "autocorrelation") {
+#ifdef FFTW_ENABLED
 		pitch_detector = new autocorrelation();
+#else
+		std::cout << "Can't use autocorrelation without FFTW\n";
+		exit(-1);
+#endif
 	} else if (algo_str == "yin") {
 		pitch_detector = new yin();
 	} else {
@@ -41,7 +52,12 @@ int main(int argc, char **argv)
 	}
 
 	if (testbench_str == "mp3") {
+#ifdef FFMPEG_ENABLED
 		read_mp3_file((char *) "./tests/guitar_eadgbe.mp3", pitch_detector);
+#else
+		std::cout << "Compiled without ffmpeg/libav, cannot use this feature\n";
+		exit(-1);
+#endif
 	} else if (testbench_str == "sinewave") {
 		std::ifstream input( "./tests/pitches.txt" );
 		double sine_freq;
