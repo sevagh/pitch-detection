@@ -8,7 +8,7 @@ void goertzel::init(double sampling_rate, int size)
 	goertzel::data_size = size;
 }
 
-double goertzel_energy(double frequency, double *arr, int N, double sampling_rate)
+static double goertzel_energy(double frequency, double *arr, int N, double sampling_rate)
 {
 	double doubleN = (double) N;
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include "mp3read.h"
 #include "pitch_detector.h"
 
 extern "C"

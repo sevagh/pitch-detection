@@ -8,7 +8,7 @@ void dft::init(double sampling_rate, int size)
 	dft::data_size = size;
 }
 
-double dft_energy(double frequency, double *arr, int N, double sampling_rate)
+static double dft_energy(double frequency, double *arr, int N, double sampling_rate)
 {
 	float real = 0.0f;
 	float im = 0.0f;

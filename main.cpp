@@ -1,24 +1,26 @@
 #include <iostream>
-#include <fstream>
 #include "pitch_detector.h"
-#include "sinegenerator.h"
-#include "mpm.h"
-#include "goertzel.h"
-#include "dft.h"
-#include "yin.h"
+#include "testbench.h"
 
+#define VERSION "0.0.0"
+
+static int print_version(std::string version)
+{
+	std::string version_string;
+	version_string.append(version);
 #ifdef FFTW_ENABLED
-#include "autocorrelation.h"
+	version_string.append("-fftw");
 #endif
-
 #ifdef FFMPEG_ENABLED
-#include "mp3read.h"
+	version_string.append("-ffmpeg");
 #endif
-
-using namespace std;
+	version_string.append("\n");
+	std::cout << "VERSION: " << version_string;
+}
 
 int main(int argc, char **argv)
 {
+	print_version(VERSION);
 	if (argc < 3) {
 		printf("usage: %s <testbench> <algo-name>\n", argv[0]);
 		printf("\t\ttestbenches: mp3, sinewave\n");
@@ -26,54 +28,11 @@ int main(int argc, char **argv)
 		exit(-1);
 	}
 
-	PitchDetector *pitch_detector;
+	std::string testbench_str = std::string(argv[1]);
+	std::string algo_str = std::string(argv[2]);
 
-	string testbench_str = std::string(argv[1]);
-	string algo_str = std::string(argv[2]);
+	PitchDetector *pitch_detector = get_pitch_detector(algo_str);
 
-	if (algo_str == "mpm") {
-		pitch_detector = new mpm();
-	} else if (algo_str == "goertzel") {
-		pitch_detector = new goertzel();
-	} else if (algo_str == "dft") {
-		pitch_detector = new dft();
-	} else if (algo_str == "autocorrelation") {
-#ifdef FFTW_ENABLED
-		pitch_detector = new autocorrelation();
-#else
-		std::cout << "Can't use autocorrelation without FFTW\n";
-		exit(-1);
-#endif
-	} else if (algo_str == "yin") {
-		pitch_detector = new yin();
-	} else {
-		std::cout << algo_str << " is not a valid algo\n";
-		exit(-1);
-	}
-
-	if (testbench_str == "mp3") {
-#ifdef FFMPEG_ENABLED
-		read_mp3_file((char *) "./tests/guitar_eadgbe.mp3", pitch_detector);
-#else
-		std::cout << "Compiled without ffmpeg/libav, cannot use this feature\n";
-		exit(-1);
-#endif
-	} else if (testbench_str == "sinewave") {
-		std::ifstream input( "./tests/pitches.txt" );
-		double sine_freq;
-		while (input >> sine_freq) {
-			sinegenerator sinegen = sinegenerator(48000, sine_freq);
-			sinegen.generate_tone();
-			pitch_detector->init(48000, sinegen.size_single_channel);
-			double pitch = pitch_detector->get_pitch(sinegen.tone_single_channel);
-			printf("Sinewave freq: %f\tpitch: %f\n", sine_freq, pitch);
-			pitch_detector->cleanup();
-			sinegen.cleanup();
-		}
-	} else {
-		std::cout << testbench_str << " is not a valid testbench\n";
-		exit(-1);
-	}
-
+	testbench(testbench_str, pitch_detector);
 	exit(0);
 }

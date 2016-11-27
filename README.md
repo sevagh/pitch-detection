@@ -2,7 +2,7 @@
 
 Collection of C++ pitch detection algorithms, along with some testing capabilities:
 
-* Test against an mp3 clip of a guitar EADGBE
+* Test against an mp3 clip of a guitar EADGBE (**ffmpeg/libav required to compile with this feature**)
 * Test against generated sine waves
 
 The algorithms are:
@@ -11,7 +11,7 @@ The algorithms are:
 * YIN *
 * Goertzel
 * DFT/FFT
-* Autocorrelation (FFT)
+* Autocorrelation (FFT) (**fftw3 required to compile with this algorithm**)
 
 \*YIN and McLeod inspired by [TarsosDSP](https://github.com/JorenSix/TarsosDSP).
 
@@ -25,3 +25,11 @@ CMake project.
 
     apt-get install make cmake gcc g++ libfftw3-dev libavcodec-dev libavformat-dev libavutil-dev
     cmake . && make && ./pitch_detection
+
+### Housekeeping
+
+The script `housekeeping.sh` has some functions:
+
+* clean: clean cmake/build files
+* quality: check quality with `cppcheck` and `cppclean`
+* build: run various flavored builds (with/without FFMPEG/FFTW in Docker) to test if the compilation is working

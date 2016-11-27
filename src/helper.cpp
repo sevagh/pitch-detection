@@ -19,7 +19,7 @@ double *zero_pad(double *original_signal, int size)
 	return new_signal;
 }
 
-double get_snr(double frequency, double *arr,
+static double get_snr(double frequency, double *arr,
 	       int N, double sampling_rate, double (*fp) (double, double*, int, double))
 {
 	double snr;
