@@ -1,7 +1,7 @@
 project(pitch_detection)
 cmake_minimum_required(VERSION 3.1)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -ansi -pedantic -Werror -Wall -O3 -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -pedantic -Werror -Wall -O3 -std=c++11")
 set(FFMPEG_DIR "./ffmpeg-src")
 set(FFTW_DIR "./fftw-src")
 set(LIBS "")
@@ -21,7 +21,6 @@ file(GLOB SOURCE_FILES
 )
 
 if (FFMPEG_FOUND)
-  include_directories(${FFMPEG_DIR})
   file(GLOB FFMPEG_ADDITIONAL
      "${FFMPEG_DIR}/*.h"
      "${FFMPEG_DIR}/*.cpp"
@@ -33,7 +32,6 @@ if (FFMPEG_FOUND)
 endif (FFMPEG_FOUND)
 
 if (FFTW_FOUND)
-  include_directories(${FFTW_DIR})
   file(GLOB FFTW_ADDITIONAL
      "${FFTW_DIR}/*.h"
      "${FFTW_DIR}/*.cpp"

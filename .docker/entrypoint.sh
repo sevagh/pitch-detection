@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # This file:
 #
-#  - Entrypoint for salt Docker test image 
+#  - Entrypoint for pitch-detection Docker test image 
 #
 # Usage:
 #
@@ -23,4 +23,4 @@ cp -r /pitch-detection /pitch-detection-wrk
 if [ $# -ne 0 ]; then
     apt install -y "$@"
 fi
-cd /pitch-detection-wrk && cmake . ; make ; ./clean.sh
+cd /pitch-detection-wrk && cmake . ; make ; ./housekeeping.sh clean
