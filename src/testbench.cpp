@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include <fstream>
 #include "sinegenerator.h"
 #include "pitch_detector.h"
@@ -15,7 +16,7 @@ void testbench(std::string testbench_type, PitchDetector *pitch_detector)
 		read_mp3_file((char *) "./tests/guitar_eadgbe.mp3", pitch_detector);
 #else
 		std::cout << "Compiled without ffmpeg/libav, cannot use this feature\n";
-		exit(-1);
+		std::exit(-1);
 #endif
 	} else if (testbench_type == "sinewave") {
 		std::ifstream input("./tests/pitches.txt");
@@ -28,10 +29,10 @@ void testbench(std::string testbench_type, PitchDetector *pitch_detector)
 			printf("Sinewave freq: %f\tpitch: %f\n", sine_freq, pitch);
 			pitch_detector->cleanup();
 			sinegen.cleanup();
-		exit(0);
 		}
+		std::exit(0);
 	} else {
 		std::cout << testbench_type << " is not a valid testbench\n";
-		exit(-1);
+		std::exit(-1);
 	}
 }

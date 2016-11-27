@@ -31,7 +31,7 @@ void mpm::parabolic_interpolation(int tau)
 void mpm::nsdf_time_domain(double *audio_buffer)
 {
 	int tau;
-	double nsdf_loc[data_size];
+	double *nsdf_loc = new double[data_size];
 	for (tau = 0; tau < data_size; tau++) {
 		double acf = 0;
 		double divisorM = 0;
@@ -76,7 +76,7 @@ void mpm::peak_picking()
 				max_positions[max_positions_ptr++] = curMaxPos;
 				curMaxPos = 0;
 			}
-			while (pos < data_size - 1 && nsdf[pos] <= 0.0f) {
+			while (pos < data_size - 1 && nsdf[pos] <= 0.0) {
 				pos++;
 			}
 		}

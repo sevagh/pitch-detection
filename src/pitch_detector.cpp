@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include "pitch_detector.h"
 #include "mpm.h"
 #include "goertzel.h"
@@ -25,13 +26,13 @@ PitchDetector *get_pitch_detector(std::string pitch_detector_type)
 		pitch_detector = new autocorrelation();
 #else
 		std::cout << "Can't use autocorrelation without FFTW\n";
-		exit(-1);
+		std::exit(-1);
 #endif
 	} else if (pitch_detector_type == "yin") {
 		pitch_detector = new yin();
 	} else {
 		std::cout << pitch_detector_type << " is not a valid algo\n";
-		exit(-1);
+		std::exit(-1);
 	}
 	return pitch_detector;
 }

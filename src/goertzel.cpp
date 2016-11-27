@@ -12,7 +12,7 @@ static double goertzel_energy(double frequency, double *arr, int N, double sampl
 {
 	double doubleN = (double) N;
 
-	double goertzel_k = (doubleN * frequency * (double) (1.0f / sampling_rate));
+	double goertzel_k = (doubleN * frequency * (double) (1.0 / sampling_rate));
 	double goertzel_w = (2.0 * (double) cos(2.0 * M_PI * goertzel_k / doubleN));
 	double goertzel_re = ((double) cos(2.0 * M_PI * goertzel_k / doubleN));
 	double goertzel_im = ((double) sin(2.0 * M_PI * goertzel_k / doubleN));
@@ -37,7 +37,7 @@ static double goertzel_energy(double frequency, double *arr, int N, double sampl
 	im = goertzel_im * Q1;
 	E = re * re + im * im;
 
-	return E / (doubleN * 0.5f);
+	return E / (doubleN * 0.5);
 }
 
 double goertzel::get_pitch(double *data)

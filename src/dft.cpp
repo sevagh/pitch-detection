@@ -10,26 +10,26 @@ void dft::init(double sampling_rate, int size)
 
 static double dft_energy(double frequency, double *arr, int N, double sampling_rate)
 {
-	float real = 0.0f;
-	float im = 0.0f;
-	float E = 0.0f;
+	double real = 0.0;
+	double im = 0.0;
+	double E = 0.0;
 
-	float floatN = (float) N;
+	double doubleN = (double) N;
 
-	float DFT_k = (frequency*floatN*(float) (1.0/sampling_rate));
+	double DFT_k = (frequency*doubleN*(double) (1.0/sampling_rate));
 
 	int index;
 	for (index = 0; index < N; index++) {
-		float ind = (float) index;
-		float real_c = cos(2.0f*M_PI*ind*DFT_k/floatN);
-		float im_c = sin(2.0f*M_PI*ind*DFT_k/floatN);
-		real += (float) arr[index]*real_c;
-		im -= (float) arr[index]*im_c;
+		double ind = (double) index;
+		double real_c = cos(2.0*M_PI*ind*DFT_k/doubleN);
+		double im_c = sin(2.0*M_PI*ind*DFT_k/doubleN);
+		real += (double) arr[index]*real_c;
+		im -= (double) arr[index]*im_c;
 	}
 
 	E += real*real + im*im;
 
-	return E/(floatN*0.5);
+	return E/(doubleN*0.5);
 }
 
 double dft::get_pitch(double *data)

@@ -1,10 +1,11 @@
 #include <iostream>
+#include <cstdlib>
 #include "pitch_detector.h"
 #include "testbench.h"
 
 #define VERSION "0.0.0"
 
-static int print_version(std::string version)
+static void print_version(std::string version)
 {
 	std::string version_string;
 	version_string.append(version);
@@ -22,10 +23,10 @@ int main(int argc, char **argv)
 {
 	print_version(VERSION);
 	if (argc < 3) {
-		printf("usage: %s <testbench> <algo-name>\n", argv[0]);
-		printf("\t\ttestbenches: mp3, sinewave\n");
-		printf("\t\talgos: mpm, goertzel, dft, autocorrelation yin\n");
-		exit(-1);
+		std::cout << "usage: " << argv[0] << " <testbench> <algo-name>\n";
+		std::cout << "\t\ttestbenches: mp3, sinewave\n";
+		std::cout << "\t\talgos: mpm, goertzel, dft, autocorrelation yin\n";
+		std::exit(-1);
 	}
 
 	std::string testbench_str = std::string(argv[1]);
@@ -34,5 +35,5 @@ int main(int argc, char **argv)
 	PitchDetector *pitch_detector = get_pitch_detector(algo_str);
 
 	testbench(testbench_str, pitch_detector);
-	exit(0);
+	std::exit(0);
 }

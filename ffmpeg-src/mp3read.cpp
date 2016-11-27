@@ -7,7 +7,7 @@ extern "C"
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/avutil.h>
-};
+}
 
 void read_mp3_file(char *path, PitchDetector *pitchr)
 {
@@ -47,7 +47,7 @@ void read_mp3_file(char *path, PitchDetector *pitchr)
 					dpkt.data += result;
 					int l = (double) frame->linesize[0]/ (double) codec_ctx->channels;
 
-					double raw[l];
+					double *raw = new double[l];
 					for (int i = 0; i < l; i += 1) {
 						raw[i] = (double) frame->
 							 data[0][codec_ctx->channels*i];
@@ -66,6 +66,7 @@ void read_mp3_file(char *path, PitchDetector *pitchr)
 							printf("tstamp: %ld\t%f\n", tstamp, pitch);
 						}
 					}
+					delete [] raw;
 				} else {
 					dpkt.size = 0;
 					dpkt.data = nullptr;

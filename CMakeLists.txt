@@ -1,7 +1,7 @@
 project(pitch_detection)
 cmake_minimum_required(VERSION 3.1)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -ansi -pedantic -Werror -Wall -O3 -std=c++11")
 set(FFMPEG_DIR "./ffmpeg-src")
 set(FFTW_DIR "./fftw-src")
 set(LIBS "")

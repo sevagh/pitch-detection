@@ -1,4 +1,3 @@
-#include <float.h>
 #include "yin.h"
 
 #define DEFAULT_THRESHOLD 0.20
@@ -15,7 +14,7 @@ void yin::init(double sampling_rate, int size)
 
 double yin::parabolic_interpolation(int tau_estimate)
 {
-	float betterTau;
+	double better_tau;
 	int x0;
 	int x2;
 
@@ -31,30 +30,30 @@ double yin::parabolic_interpolation(int tau_estimate)
 	}
 	if (x0 == tau_estimate) {
 		if (yin_buffer[tau_estimate] <= yin_buffer[x2]) {
-			betterTau = tau_estimate;
+			better_tau = tau_estimate;
 		} else {
-			betterTau = x2;
+			better_tau = x2;
 		}
 	} else if (x2 == tau_estimate) {
 		if (yin_buffer[tau_estimate] <= yin_buffer[x0]) {
-			betterTau = tau_estimate;
+			better_tau = tau_estimate;
 		} else {
-			betterTau = x0;
+			better_tau = x0;
 		}
 	} else {
-		float s0, s1, s2;
+		double s0, s1, s2;
 		s0 = yin_buffer[x0];
 		s1 = yin_buffer[tau_estimate];
 		s2 = yin_buffer[x2];
-		betterTau = tau_estimate + (s2 - s0) / (2 * (2 * s1 - s2 - s0));
+		better_tau = tau_estimate + (s2 - s0) / (2 * (2 * s1 - s2 - s0));
 	}
-	return betterTau;
+	return better_tau;
 }
 
 void yin::difference(double *data)
 {
 	int index, tau;
-	float delta;
+	double delta;
 	for (tau = 0; tau < yin_buffer_size; tau++) {
 		yin_buffer[tau] = 0;
 	}
@@ -70,10 +69,10 @@ void yin::cumulative_mean_normalized_difference()
 {
 	int tau;
 	yin_buffer[0] = 1;
-	float runningSum = 0;
+	double running_sum = 0;
 	for (tau = 1; tau < yin_buffer_size; tau++) {
-		runningSum += yin_buffer[tau];
-		yin_buffer[tau] *= tau / runningSum;
+		running_sum += yin_buffer[tau];
+		yin_buffer[tau] *= tau / running_sum;
 	}
 }
 
@@ -105,12 +104,12 @@ double yin::get_pitch(double *data)
 	yin::cumulative_mean_normalized_difference();
 	tau_estimate = yin::absolute_threshold();
 	if (tau_estimate != -1) {
-		float betterTau = parabolic_interpolation(tau_estimate);
-		pitch = sampling_rate / betterTau;
-	} else{
+		double better_tau = parabolic_interpolation(tau_estimate);
+		pitch = sampling_rate / better_tau;
+	} else {
 		pitch = -1;
 	}
-	
+
 	return pitch;
 }
 
@@ -118,5 +117,3 @@ void yin::cleanup()
 {
 	delete[] yin_buffer;
 }
-
-

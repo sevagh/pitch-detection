@@ -23,18 +23,18 @@ void sinegenerator::generate_tone()
 	int SINE_SIZE = SIZE / 2;
 	int LUT_SIZE = SIZE / 4;
 
-	float floatf = (float) frequency;
-	float delta_phi = floatf * inv_sampling_rate * LUT_SIZE;
-	float phase = 0.0f;
+	double doublef = (double) frequency;
+	double delta_phi = doublef * inv_sampling_rate * LUT_SIZE;
+	double phase = 0.0;
 
 	int phase_i;
 	int i, j;
 
-	int sine[SINE_SIZE];
-	int LUT[LUT_SIZE];
+	int *sine = new int[SINE_SIZE];
+	int *LUT = new int[LUT_SIZE];
 
 	for (i = 0; i < LUT_SIZE; i++) {
-		LUT[i] = (int) roundf(0x7FFF * sinf(2.0f * M_PI * i / LUT_SIZE));
+		LUT[i] = (int) roundf(0x7FFF * sinf(2.0 * M_PI * i / LUT_SIZE));
 	}
 
 	for (j = 0; j < SINE_SIZE; j++) {
@@ -50,6 +50,9 @@ void sinegenerator::generate_tone()
 		tone_dual_channel[j + 1] = tone_dual_channel[j];
 		tone_single_channel[j / 2] = sine[j / 2];
 	}
+
+	delete [] sine;
+	delete [] LUT;
 }
 
 void sinegenerator::cleanup()

@@ -79,14 +79,14 @@ double autocorrelation::get_pitch(double *data)
 {
 	double *acf = get_normalized_acf(data);
 
-	double max = -100.0f;
+	double max = -100.0;
 	for (int i = 0; i < data_size*2; i++) {
 		if (acf[i] > max) {
 			max = acf[i];
 		}
 	}
 
-	acf[0] = 0.0f;
+	acf[0] = 0.0;
 
 	//normalized acf
 	for (int i = 0; i < data_size*2; i++) {
