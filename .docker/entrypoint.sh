@@ -16,11 +16,16 @@ set -o errtrace
 set -o nounset
 set -o pipefail
 
+srcdir="/pitch-detection/"
+workdir="/pitch-detection-wrk"
 
 # main
-
-cp -r /pitch-detection /pitch-detection-wrk
+cp -r "$srcdir" "$workdir"
 if [ $# -ne 0 ]; then
-    apt install -y "$@"
+    apt install -y "$@" >/dev/null 2>&1
 fi
-cd /pitch-detection-wrk && cmake . ; make ; ./housekeeping.sh clean
+cd "$workdir"
+cmake . >/dev/null 2>&1
+make >/dev/null 2>&1
+./pitch_detection version
+./housekeeping.sh clean

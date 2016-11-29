@@ -21,12 +21,17 @@ static void print_version(std::string version)
 
 int main(int argc, char **argv)
 {
-	print_version(VERSION);
 	if (argc < 3) {
-		std::cout << "usage: " << argv[0] << " <testbench> <algo-name>\n";
-		std::cout << "\t\ttestbenches: mp3, sinewave\n";
-		std::cout << "\t\talgos: mpm, goertzel, dft, autocorrelation yin\n";
-		std::exit(-1);
+		if ((argc == 2) and (std::string(argv[1]).compare(std::string("version")) == 0)) {
+			print_version(VERSION);
+			std::exit(0);
+		}
+		else {
+			std::cout << "usage: " << argv[0] << " <testbench> <algo-name>\n";
+			std::cout << "\t\ttestbenches: mp3, sinewave\n";
+			std::cout << "\t\talgos: mpm, goertzel, dft, autocorrelation yin\n";
+			std::exit(-1);
+		}
 	}
 
 	std::string testbench_str = std::string(argv[1]);
