@@ -10,27 +10,19 @@ class mpm: public PitchDetector
 {
 
 private:
-	double sampling_rate;
-	int data_size;
+    int sample_rate, data_size, max_positions_ptr, period_estimates_ptr, amp_estimates_ptr;
+	int *max_positions;
 
 	double turning_point_x, turning_point_y;
-	double *nsdf;
-
-	int *max_positions;
-	double *period_estimates;
-	double *amp_estimates;
-
-	int max_positions_ptr, period_estimates_ptr, amp_estimates_ptr;
+	double *nsdf, *period_estimates, *amp_estimates;
 
 	void parabolic_interpolation(int tau);
 	void peak_picking();
 	void nsdf_time_domain(double *data);
 
 public:
-	mpm() {};
+	mpm(int size, int sample_rate);
+    ~mpm();
 
-	void init(double sampling_rate, int size);
-	void cleanup();
-
-	double get_pitch(double *data);
+    double get_pitch(double *data);
 };

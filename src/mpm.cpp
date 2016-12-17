@@ -1,9 +1,9 @@
 #include <float.h>
 #include "mpm.h"
 
-void mpm::init(double sampling_rate, int size)
+mpm::mpm(int size, int sample_rate)
 {
-	mpm::sampling_rate = sampling_rate;
+	mpm::sample_rate = sample_rate;
 	mpm::data_size = size;
 
 	mpm::max_positions = new int[mpm::data_size];
@@ -127,7 +127,7 @@ double mpm::get_pitch(double *audio_buffer)
 		}
 
 		double period = period_estimates[periodIndex];
-		double pitchEstimate = (sampling_rate / period);
+		double pitchEstimate = (sample_rate / period);
 		if (pitchEstimate > LOWER_PITCH_CUTOFF) {
 			pitch = pitchEstimate;
 		} else {
@@ -137,7 +137,7 @@ double mpm::get_pitch(double *audio_buffer)
 	return pitch;
 }
 
-void mpm::cleanup()
+mpm::~mpm()
 {
 	delete[] max_positions;
 	delete[] period_estimates;

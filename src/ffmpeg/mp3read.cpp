@@ -9,7 +9,7 @@ extern "C"
 #include <libavutil/avutil.h>
 }
 
-void read_mp3_file(char *path, PitchDetector *pitchr)
+void read_mp3_file(char *path, std::string algo_str)
 {
 	av_register_all();
 
@@ -30,7 +30,7 @@ void read_mp3_file(char *path, PitchDetector *pitchr)
 	av_init_packet(&rpkt);
 
 	int incr = 1000;
-	pitchr->init(codec_ctx->sample_rate, incr);
+    PitchDetector *pitchr = get_pitch_detector(algo_str, incr, codec_ctx->sample_rate);
 
 	while (av_read_frame(fmt_ctx, &rpkt) == 0) {
 		if (rpkt.stream_index == astream->index) {
@@ -76,7 +76,6 @@ void read_mp3_file(char *path, PitchDetector *pitchr)
 		av_packet_unref(&rpkt);
 	}
 
-	pitchr->cleanup();
 	av_free(frame);
 
 	avcodec_close(codec_ctx);

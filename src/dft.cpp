@@ -2,13 +2,13 @@
 #include "helper.h"
 #include "dft.h"
 
-void dft::init(double sampling_rate, int size)
+dft::dft(int size, int sample_rate)
 {
-	dft::sampling_rate = sampling_rate;
-	dft::data_size = size;
+	dft::sample_rate = sample_rate;
+	dft::size = size;
 }
 
-static double dft_energy(double frequency, double *arr, int N, double sampling_rate)
+static double dft_energy(double frequency, double *arr, int N, double sample_rate)
 {
 	double real = 0.0;
 	double im = 0.0;
@@ -16,7 +16,7 @@ static double dft_energy(double frequency, double *arr, int N, double sampling_r
 
 	double doubleN = (double) N;
 
-	double DFT_k = (frequency*doubleN*(double) (1.0/sampling_rate));
+	double DFT_k = (frequency*doubleN*(double) (1.0/sample_rate));
 
 	int index;
 	for (index = 0; index < N; index++) {
@@ -34,5 +34,5 @@ static double dft_energy(double frequency, double *arr, int N, double sampling_r
 
 double dft::get_pitch(double *data)
 {
-	return looper(data, data_size, sampling_rate, dft_energy);
+	return looper(data, size, sample_rate, dft_energy);
 }

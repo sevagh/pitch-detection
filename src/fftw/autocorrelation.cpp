@@ -4,10 +4,10 @@
 #include "autocorrelation.h"
 #include "helper.h"
 
-void autocorrelation::init(double sampling_rate, int size)
+autocorrelation::autocorrelation(int size, int sample_rate)
 {
-	autocorrelation::sampling_rate = sampling_rate;
-	autocorrelation::data_size = size;
+	autocorrelation::sample_rate = sample_rate;
+	autocorrelation::size = size;
 }
 
 double autocorrelation::get_acf_periodicity(double *data, int size)
@@ -32,8 +32,8 @@ double autocorrelation::get_acf_periodicity(double *data, int size)
 
 double *autocorrelation::get_normalized_acf(double *data)
 {
-	double *padded_data = zero_pad(data, data_size);
-	double N = 2*data_size;
+	double *padded_data = zero_pad(data, size);
+	double N = 2*size;
 
 	double *acf_real;
 	fftw_complex *in, *out;
@@ -80,7 +80,7 @@ double autocorrelation::get_pitch(double *data)
 	double *acf = get_normalized_acf(data);
 
 	double max = -100.0;
-	for (int i = 0; i < data_size*2; i++) {
+	for (int i = 0; i < size*2; i++) {
 		if (acf[i] > max) {
 			max = acf[i];
 		}
@@ -89,12 +89,12 @@ double autocorrelation::get_pitch(double *data)
 	acf[0] = 0.0;
 
 	//normalized acf
-	for (int i = 0; i < data_size*2; i++) {
+	for (int i = 0; i < size*2; i++) {
 		acf[i] = acf[i]/max;
 	}
 
 	double peak_bin_index_periodicity =
-		get_acf_periodicity(acf, data_size*2);
+		get_acf_periodicity(acf, size*2);
 
-	return (sampling_rate/peak_bin_index_periodicity);
+	return (sample_rate/peak_bin_index_periodicity);
 }

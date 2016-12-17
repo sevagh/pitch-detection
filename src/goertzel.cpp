@@ -2,17 +2,17 @@
 #include "goertzel.h"
 #include "helper.h"
 
-void goertzel::init(double sampling_rate, int size)
+goertzel::goertzel(int size, int sample_rate)
 {
-	goertzel::sampling_rate = sampling_rate;
-	goertzel::data_size = size;
+	goertzel::sample_rate = sample_rate;
+	goertzel::size = size;
 }
 
-static double goertzel_energy(double frequency, double *arr, int N, double sampling_rate)
+static double goertzel_energy(double frequency, double *arr, int N, double sample_rate)
 {
 	double doubleN = (double) N;
 
-	double goertzel_k = (doubleN * frequency * (double) (1.0 / sampling_rate));
+	double goertzel_k = (doubleN * frequency * (double) (1.0 / sample_rate));
 	double goertzel_w = (2.0 * (double) cos(2.0 * M_PI * goertzel_k / doubleN));
 	double goertzel_re = ((double) cos(2.0 * M_PI * goertzel_k / doubleN));
 	double goertzel_im = ((double) sin(2.0 * M_PI * goertzel_k / doubleN));
@@ -42,5 +42,5 @@ static double goertzel_energy(double frequency, double *arr, int N, double sampl
 
 double goertzel::get_pitch(double *data)
 {
-	return looper(data, data_size, sampling_rate, goertzel_energy);
+	return looper(data, size, sample_rate, goertzel_energy);
 }

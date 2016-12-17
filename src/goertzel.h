@@ -4,14 +4,12 @@ class goertzel: public PitchDetector
 {
 
 private:
-	double sampling_rate;
-	int data_size;
+	int sample_rate;
+	int size;
 
 public:
-	goertzel() {};
-
-	void init(double sampling_rate, int size);
-	void cleanup() {};
+	goertzel(int size, int sample_rate);
+    ~goertzel() {};
 
 	double get_pitch(double *data);
 };

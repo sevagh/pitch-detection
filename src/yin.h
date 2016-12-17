@@ -4,8 +4,8 @@ class yin: public PitchDetector
 {
 
 private:
-	double sampling_rate;
-	int data_size;
+	int sample_rate;
+	int size;
 	int yin_buffer_size;
 	double *yin_buffer;
 
@@ -15,10 +15,8 @@ private:
 	double parabolic_interpolation(int tau_estimate);
 
 public:
-	yin() {};
-
-	void init(double sampling_rate, int size);
-	void cleanup();
+	yin(int size, int sample_rate);
+    ~yin();
 
 	double get_pitch(double *data);
 };

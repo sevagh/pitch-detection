@@ -3,10 +3,10 @@
 #define DEFAULT_THRESHOLD 0.20
 #define DEFAULT_OVERLAP 1536
 
-void yin::init(double sampling_rate, int size)
+yin::yin(int size, int sample_rate)
 {
-	yin::sampling_rate = sampling_rate;
-	yin::data_size = size;
+	yin::sample_rate = sample_rate;
+	yin::size = size;
 
 	yin::yin_buffer_size = (int) size/2;
 	yin::yin_buffer = new double[yin::yin_buffer_size];
@@ -105,7 +105,7 @@ double yin::get_pitch(double *data)
 	tau_estimate = yin::absolute_threshold();
 	if (tau_estimate != -1) {
 		double better_tau = parabolic_interpolation(tau_estimate);
-		pitch = sampling_rate / better_tau;
+		pitch = sample_rate / better_tau;
 	} else {
 		pitch = -1;
 	}
@@ -113,7 +113,7 @@ double yin::get_pitch(double *data)
 	return pitch;
 }
 
-void yin::cleanup()
+yin::~yin()
 {
 	delete[] yin_buffer;
 }

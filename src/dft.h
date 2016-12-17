@@ -4,14 +4,11 @@ class dft: public PitchDetector
 {
 
 private:
-	double sampling_rate;
-	int data_size;
+	int sample_rate;
+	int size;
 
 public:
-	dft() {};
-
-	void init(double sampling_rate, int size);
-	void cleanup() {};
-
+	dft(int size, int sample_rate);
+    ~dft() {};
 	double get_pitch(double *data);
 };

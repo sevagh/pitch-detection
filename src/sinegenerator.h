@@ -6,9 +6,10 @@ private:
 	double inv_sampling_rate;
 	double frequency;
 
-	sinegenerator() { }
 
 public:
+	sinegenerator();
+    ~sinegenerator();
 	int size_single_channel;
 	int size_dual_channel;
 
@@ -18,6 +19,4 @@ public:
 	sinegenerator(double sampling_rate, double frequency);
 
 	void generate_tone();
-	void cleanup();
-
 };

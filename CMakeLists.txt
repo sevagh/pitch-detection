@@ -2,11 +2,13 @@ project(pitch_detection)
 cmake_minimum_required(VERSION 3.1)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -pedantic -Werror -Wall -O3 -std=c++11")
-set(FFMPEG_DIR "./ffmpeg-src")
-set(FFTW_DIR "./fftw-src")
+set(SRC_DIR "./src")
+set(INCLUDE_DIR "./src")
+set(FFMPEG_DIR "./src/ffmpeg")
+set(FFTW_DIR "./src/fftw")
 set(LIBS "")
 
-include_directories("./include")
+include_directories("${INCLUDE_DIR}")
 
 # find third party modules
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
@@ -16,8 +18,8 @@ find_package(FFTW)
 
 file(GLOB SOURCE_FILES 
     "main.cpp"
-    "include/*.h"
-    "src/*.cpp"
+    "${INCLUDE_DIR}/*.h"
+    "${SRC_DIR}/*.cpp"
 )
 
 if (FFMPEG_FOUND)

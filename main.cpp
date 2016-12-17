@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstdlib>
-#include "pitch_detector.h"
 #include "testbench.h"
 
 #define VERSION "0.0.0"
@@ -27,18 +26,16 @@ int main(int argc, char **argv)
 			std::exit(0);
 		}
 		else {
-			std::cout << "usage: " << argv[0] << " <testbench> <algo-name>\n";
-			std::cout << "\t\ttestbenches: mp3, sinewave\n";
+			std::cout << "usage: " << argv[0] << " <algo-name> <testbench>\n";
 			std::cout << "\t\talgos: mpm, goertzel, dft, autocorrelation yin\n";
+			std::cout << "\t\ttestbenches: mp3, sinewave\n";
 			std::exit(-1);
 		}
 	}
 
-	std::string testbench_str = std::string(argv[1]);
-	std::string algo_str = std::string(argv[2]);
+	std::string algo_str = std::string(argv[1]);
+	std::string testbench_str = std::string(argv[2]);
 
-	PitchDetector *pitch_detector = get_pitch_detector(algo_str);
-
-	testbench(testbench_str, pitch_detector);
+	testbench(testbench_str, algo_str);
 	std::exit(0);
 }

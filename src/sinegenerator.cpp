@@ -55,7 +55,7 @@ void sinegenerator::generate_tone()
 	delete [] LUT;
 }
 
-void sinegenerator::cleanup()
+sinegenerator::~sinegenerator()
 {
 	delete[] tone_single_channel;
 	delete[] tone_dual_channel;

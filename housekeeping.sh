@@ -35,9 +35,7 @@ function docker_build_run() {
 
 function quality_checker() {
     cppcheck ./src --force
-    cppcheck ./fftw-src --force
-    cppcheck ./ffmpeg-src --force
-    cppclean --include-path=./include --include-path=./ffmpeg-src --include-path=./fftw-src ./
+    cppclean --include-path=./src ./
 }
 
 function clean() {
