@@ -10,6 +10,6 @@ public:
     virtual double get_pitch(double *data) = 0;
 };
 
-PitchDetector *get_pitch_detector(std::string pitch_detector_type, int size, int sample_rate);
+PitchDetector *get_pitch_detector(std::string algo, int size, int sample_rate);
 
 #endif /* PITCH_DETECTOR_H */

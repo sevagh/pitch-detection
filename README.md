@@ -30,6 +30,5 @@ CMake project.
 
 The script `housekeeping.sh` has some functions:
 
-* clean: clean cmake/build files
 * quality: check quality with `cppcheck` and `cppclean`
 * build: run various flavored builds (with/without FFMPEG/FFTW in Docker) to test if the compilation is working

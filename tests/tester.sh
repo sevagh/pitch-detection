@@ -17,8 +17,8 @@ set -o nounset
 set -o pipefail
 
 docker_img_name="github.com/sevagh/pitch-detection"
-docker_dir="./.docker"
-dockerfile="./.docker/Dockerfile"
+docker_dir="./docker"
+dockerfile="./docker/Dockerfile"
 
 # functions
 function docker_build_run() {
@@ -36,10 +36,6 @@ function docker_build_run() {
 function quality_checker() {
     cppcheck ./src --force
     cppclean --include-path=./src ./
-}
-
-function clean() {
-    rm -rf CMakeCache.txt CMakeFiles cmake_install.cmake Makefile pitch_detection massif.*
 }
 
 function docker_build_runner() {
@@ -66,8 +62,6 @@ if [ $# -ne 0 ]; then
         docker_build_runner
     elif [ z"$1" = z"quality" ]; then
         quality_checker
-    elif [ z"$1" = z"clean" ]; then
-	clean
     else
 	usage
     fi

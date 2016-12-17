@@ -1,5 +1,5 @@
 #include <iostream>
-#include "mp3read.h"
+#include "file.h"
 #include "pitch_detector.h"
 
 extern "C"
@@ -9,13 +9,13 @@ extern "C"
 #include <libavutil/avutil.h>
 }
 
-void read_mp3_file(char *path, std::string algo_str)
+void read_audio_file(std::string path, std::string algo)
 {
 	av_register_all();
 
 	AVFrame* frame = av_frame_alloc();
 	AVFormatContext* fmt_ctx = NULL;
-	avformat_open_input(&fmt_ctx, path, NULL, NULL);
+	avformat_open_input(&fmt_ctx, path.c_str(), NULL, NULL);
 	avformat_find_stream_info(fmt_ctx, NULL);
 	AVCodec* cdc = nullptr;
 	int stream_idx = av_find_best_stream(fmt_ctx,
@@ -30,7 +30,7 @@ void read_mp3_file(char *path, std::string algo_str)
 	av_init_packet(&rpkt);
 
 	int incr = 1000;
-    PitchDetector *pitchr = get_pitch_detector(algo_str, incr, codec_ctx->sample_rate);
+	PitchDetector *pitchr = get_pitch_detector(algo, incr, codec_ctx->sample_rate);
 
 	while (av_read_frame(fmt_ctx, &rpkt) == 0) {
 		if (rpkt.stream_index == astream->index) {

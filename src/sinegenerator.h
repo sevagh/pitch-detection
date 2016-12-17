@@ -1,22 +1,16 @@
+#include <string>
+
 class sinegenerator
 {
 
 private:
-	double sampling_rate;
-	double inv_sampling_rate;
-	double frequency;
-
+    int size_single_channel, size_dual_channel;
+	double sample_rate, inv_sample_rate, frequency;
+	double *tone_dual_channel, *tone_single_channel;
 
 public:
-	sinegenerator();
+	sinegenerator(double sample_rate, double frequency);
     ~sinegenerator();
-	int size_single_channel;
-	int size_dual_channel;
 
-	double *tone_dual_channel;
-	double *tone_single_channel;
-
-	sinegenerator(double sampling_rate, double frequency);
-
-	void generate_tone();
+    void validate_pitch(std::string algo);
 };
