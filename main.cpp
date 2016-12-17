@@ -14,7 +14,7 @@
 
 DEFINE_double(freq, -1, "Sinewave frequency");
 DEFINE_string(algo, "mpm", "Algorithm to test");
-static bool validate_path(const char* flagname, std::string path)
+static bool validate_path(const char* flagname, const std::string& path)
 {
 	std::ifstream file(path);
 	return file.good();
