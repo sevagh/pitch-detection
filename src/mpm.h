@@ -1,4 +1,6 @@
 #include "pitch_detector.h"
+#include <vector>
+#include <tuple>
 
 #define CUTOFF 0.93 //0.97 is default
 #define SMALL_CUTOFF 0.5
@@ -10,15 +12,9 @@ class mpm: public PitchDetector
 {
 
 private:
-    int sample_rate, data_size, max_positions_ptr, period_estimates_ptr, amp_estimates_ptr;
-	int *max_positions;
+    int sample_rate, size;
 
-	double turning_point_x, turning_point_y;
-	double *nsdf, *period_estimates, *amp_estimates;
-
-	void parabolic_interpolation(int tau);
-	void peak_picking();
-	void nsdf_time_domain(double *data);
+	std::vector<double> nsdf_time_domain(double *data);
 
 public:
 	mpm(int size, int sample_rate);
