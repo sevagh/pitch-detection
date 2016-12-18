@@ -32,8 +32,7 @@ int main(int argc, char **argv)
 		std::cerr << "Please define valid --freq OR --path" << std::endl;
 		return -1;
 	} else if (freq_valid) {
-		sinegenerator sinegen = sinegenerator(48000, FLAGS_freq);
-		sinegen.validate_pitch(FLAGS_algo);
+		validate_pitch(FLAGS_algo, FLAGS_freq, 48000);
 	} else if (path_valid) {
 #ifdef FFMPEG_ENABLED
 		read_audio_file(FLAGS_path, FLAGS_algo);

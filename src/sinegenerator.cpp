@@ -1,22 +1,17 @@
 #include <stdlib.h>
+#include <vector>
 #include "sinegenerator.h"
 #include "math.h"
 #include "pitch_detector.h"
 
 #define SIZE 4096
 
-sinegenerator::sinegenerator(double sample_rate, double frequency)
+void validate_pitch(std::string algo, double frequency, int sample_rate)
 {
-	sinegenerator::sample_rate = sample_rate;
-	sinegenerator::inv_sample_rate = 1.0 / sinegenerator::sample_rate;
+	double inv_sample_rate = 1.0 / sample_rate;
 
-	sinegenerator::frequency = frequency;
-
-	sinegenerator::tone_dual_channel = new double[SIZE];
-	sinegenerator::size_dual_channel = SIZE;
-
-	sinegenerator::tone_single_channel = new double[SIZE / 2];
-	sinegenerator::size_single_channel = SIZE / 2;
+	double *tone_dual_channel = new double[SIZE/2];
+	double *tone_single_channel = new double[SIZE/4];
 
 	int SINE_SIZE = SIZE / 2;
 	int LUT_SIZE = SIZE / 4;
@@ -49,19 +44,10 @@ sinegenerator::sinegenerator(double sample_rate, double frequency)
 		tone_single_channel[j / 2] = sine[j / 2];
 	}
 
+	//double pitch = get_pitch(algo, tone_single_channel, sample_rate);
+	double pitch = 0.0;
+	printf("Sinewave freq: %f\tpitch: %f\n", frequency, pitch);
+
 	delete[] sine;
 	delete[] LUT;
-}
-
-void sinegenerator::validate_pitch(std::string algo)
-{
-	PitchDetector *pitch_detector = get_pitch_detector(algo, size_single_channel, sample_rate);
-	double pitch = pitch_detector->get_pitch(tone_single_channel);
-	printf("Sinewave freq: %f\tpitch: %f\n", frequency, pitch);
-}
-
-sinegenerator::~sinegenerator()
-{
-	delete[] tone_single_channel;
-	delete[] tone_dual_channel;
 }
