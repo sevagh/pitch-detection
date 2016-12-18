@@ -8,7 +8,6 @@ private:
 	int size;
 
 	double get_acf_periodicity(double *data, int size);
-	double *get_normalized_acf(double *data);
 
 public:
 	autocorrelation(int size, int sample_rate);
@@ -16,3 +15,5 @@ public:
 
 	double get_pitch(double *data);
 };
+
+double* autocorrelate(double *data, int size);

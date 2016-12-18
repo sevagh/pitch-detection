@@ -30,42 +30,39 @@ double autocorrelation::get_acf_periodicity(double *data, int size)
 	return (double) (total_peak_bin_index) / (double) occurences;
 }
 
-double *autocorrelation::get_normalized_acf(double *data)
+double* autocorrelate(double *data, int size)
 {
-	double *padded_data = zero_pad(data, size);
-	double N = 2*size;
-
 	double *acf_real;
 	fftw_complex *in, *out;
 	fftw_plan p_fft, p_ifft;
 
-	in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
-	out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * N);
-	acf_real = (double*) malloc(sizeof(double) * N);
+	in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * size);
+	out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * size);
+	acf_real = (double*) malloc(sizeof(double) * size);
 
 	//signal is real
-	for (int i = 0; i < N; i++) {
-		in[i][0] = padded_data[i];
+	for (int i = 0; i < size; i++) {
+		in[i][0] = data[i];
 		in[i][1] = 0;
 	}
 
-	p_fft = fftw_plan_dft_1d(N, in, out, FFTW_FORWARD,
+	p_fft = fftw_plan_dft_1d(size, in, out, FFTW_FORWARD,
 				 FFTW_ESTIMATE);
 	fftw_execute(p_fft);
 	fftw_destroy_plan(p_fft);
 
 	//out_psd = (abs(out))^2
-	for (int i = 0; i < N; i++) {
+	for (int i = 0; i < size; i++) {
 		in[i][0] = out[i][0] * out[i][0];
 		in[i][1] = 0;
 	}
 
-	p_ifft = fftw_plan_dft_1d(N, in, out, FFTW_BACKWARD,
+	p_ifft = fftw_plan_dft_1d(size, in, out, FFTW_BACKWARD,
 				  FFTW_ESTIMATE);
 	fftw_execute(p_ifft);
 	fftw_destroy_plan(p_ifft);
 
-	for (int i = 0; i < N; i++) {
+	for (int i = 0; i < size; i++) {
 		acf_real[i] = out[i][0];
 	}
 
@@ -77,7 +74,8 @@ double *autocorrelation::get_normalized_acf(double *data)
 
 double autocorrelation::get_pitch(double *data)
 {
-	double *acf = get_normalized_acf(data);
+	double *padded_data = zero_pad(data, size);
+	double *acf = autocorrelate(padded_data, 2*size);
 
 	double max = -100.0;
 	for (int i = 0; i < size*2; i++) {
