@@ -1,14 +1,9 @@
 #include <math.h>
-#include "helper.h"
+#include <vector>
+#include "loop.h"
 #include "dft.h"
 
-dft::dft(int size, int sample_rate)
-{
-	dft::sample_rate = sample_rate;
-	dft::size = size;
-}
-
-static double dft_energy(double frequency, double *arr, int N, double sample_rate)
+static double dft_energy(double frequency, std::vector<double> arr, int N, double sample_rate)
 {
 	double real = 0.0;
 	double im = 0.0;
@@ -32,7 +27,7 @@ static double dft_energy(double frequency, double *arr, int N, double sample_rat
 	return E/(doubleN*0.5);
 }
 
-double dft::get_pitch(double *data)
+double get_pitch_dft(std::vector<double> data, int sample_rate)
 {
-	return looper(data, size, sample_rate, dft_energy);
+	return loop(data, data.size(), sample_rate, dft_energy);
 }

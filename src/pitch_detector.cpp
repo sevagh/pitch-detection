@@ -3,9 +3,9 @@
 #include <vector>
 #include "pitch_detector.h"
 #include "mpm.h"
-/*
 #include "goertzel.h"
 #include "dft.h"
+/*
 #include "yin.h"
 
 
@@ -18,11 +18,12 @@ double get_pitch(std::string algo, std::vector<double> data, int sample_rate)
 {
 	if (algo == "mpm") {
 		return get_pitch_mpm(data, sample_rate);
+	} else if (algo == "goertzel") {
+		return get_pitch_goertzel(data, sample_rate);
 	}
+
 	/*
-	 else if (algo == "goertzel") {
-			return new goertzel(size, sample_rate);
-		} else if (algo == "dft") {
+	else if (algo == "dft") {
 			return new dft(size, sample_rate);
 		} else if (algo == "autocorrelation") {
 	#ifdef FFTW_ENABLED

@@ -1,14 +1,9 @@
 #include <math.h>
+#include <vector>
 #include "goertzel.h"
-#include "helper.h"
+#include "loop.h"
 
-goertzel::goertzel(int size, int sample_rate)
-{
-	goertzel::sample_rate = sample_rate;
-	goertzel::size = size;
-}
-
-static double goertzel_energy(double frequency, double *arr, int N, double sample_rate)
+static double goertzel_energy(double frequency, std::vector<double> arr, int N, double sample_rate)
 {
 	double doubleN = (double) N;
 
@@ -40,7 +35,7 @@ static double goertzel_energy(double frequency, double *arr, int N, double sampl
 	return E / (doubleN * 0.5);
 }
 
-double goertzel::get_pitch(double *data)
+double get_pitch_goertzel(std::vector<double> data, int sample_rate)
 {
-	return looper(data, size, sample_rate, goertzel_energy);
+	return loop(data, data.size(), sample_rate, goertzel_energy);
 }

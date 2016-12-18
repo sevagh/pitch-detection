@@ -3,12 +3,11 @@ cmake_minimum_required(VERSION 3.1)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -pedantic -Werror -Wall -O3 -std=c++17")
 set(SRC_DIR "./src")
-set(INCLUDE_DIR "./src")
 set(FFMPEG_DIR "./src/ffmpeg")
 set(FFTW_DIR "./src/fftw")
 set(LIBS "gflags")
 
-include_directories("${INCLUDE_DIR}")
+include_directories("${SRC_DIR}")
 
 # find third party modules
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
@@ -19,8 +18,8 @@ find_package(FFTW)
 
 file(GLOB SOURCE_FILES 
     "main.cpp"
-    "${INCLUDE_DIR}/*.h"
     "${SRC_DIR}/*.cpp"
+    "${SRC_DIR}/*.h"
 )
 
 if (FFMPEG_FOUND)

@@ -1,15 +1,3 @@
-#include "pitch_detector.h"
+#include <vector>
 
-class goertzel: public PitchDetector
-{
-
-private:
-	int sample_rate;
-	int size;
-
-public:
-	goertzel(int size, int sample_rate);
-    ~goertzel() {};
-
-	double get_pitch(double *data);
-};
+double get_pitch_goertzel(std::vector<double> data, int sample_rate);

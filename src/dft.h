@@ -1,14 +1,3 @@
-#include "pitch_detector.h"
+#include <vector>
 
-class dft: public PitchDetector
-{
-
-private:
-	int sample_rate;
-	int size;
-
-public:
-	dft(int size, int sample_rate);
-    ~dft() {};
-	double get_pitch(double *data);
-};
+double get_pitch_dft(std::vector<double> data, int sample_rate);
