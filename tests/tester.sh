@@ -27,7 +27,7 @@ function docker_build_run() {
     echo "$@"
     echo 'Running container'
     docker run --privileged \
-        -v "$PWD":/pitch-detection \
+        -v "$PWD/../":/pitch-detection \
         --rm -it \
         "$docker_img_name" \
 	"$@"
@@ -39,8 +39,6 @@ function quality_checker() {
 }
 
 function docker_build_runner() {
-    echo "Pre-emptive clean"
-    clean
     echo "Testing build without ffmpeg or fftw"
     docker_build_run
     echo "Testing build with fftw"

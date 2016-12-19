@@ -1,6 +1,6 @@
 #include <iostream>
 #include "file.h"
-#include "pitch_detector.h"
+#include "pitch.h"
 
 extern "C"
 {

@@ -4,7 +4,7 @@
 #include <cmath>
 #include <limits>
 #include <gflags/gflags.h>
-#include "sinegenerator.h"
+#include "sine.h"
 
 #ifdef FFMPEG_ENABLED
 #include "file.h"

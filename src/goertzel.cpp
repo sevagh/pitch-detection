@@ -1,7 +1,7 @@
 #include <math.h>
 #include <vector>
 #include "goertzel.h"
-#include "loop.h"
+#include "helper.h"
 
 static double goertzel_energy(double frequency, std::vector<double> arr, int N, double sample_rate)
 {
