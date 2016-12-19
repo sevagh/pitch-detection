@@ -2,8 +2,8 @@
 #include <fftw3.h>
 #include <stdlib.h>
 #include <vector>
-#include "autocorrelation.h"
-#include "helper.h"
+#include "autocorrelation.hpp"
+#include "helper.hpp"
 
 static double get_acf_periodicity(std::vector<double> data, int size)
 {
@@ -28,7 +28,7 @@ std::vector<double> autocorrelate(std::vector<double> data)
 	std::vector<double> acf_real;
 	fftw_complex *in, *out;
 	fftw_plan p_fft, p_ifft;
-    ssize_t size = data.size();
+	ssize_t size = data.size();
 
 	in = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * size);
 	out = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * size);
@@ -65,7 +65,7 @@ std::vector<double> autocorrelate(std::vector<double> data)
 
 double get_pitch_autocorrelation(std::vector<double> data, int sample_rate)
 {
-    ssize_t size = data.size();
+	ssize_t size = data.size();
 	zero_pad(data);
 	std::vector<double> acf = autocorrelate(data);
 

@@ -3,7 +3,6 @@
 #include <vector>
 #include <tuple>
 #include <numeric>
-#include "mpm.h"
 
 std::tuple<double, double> parabolic_interpolation(double nsdfa, double nsdfb, double nsdfc, int tau)
 {

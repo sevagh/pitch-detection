@@ -3,8 +3,8 @@
 #include <vector>
 #include <tuple>
 #include <numeric>
-#include "mpm.h"
-#include "mpm_yin_common.h"
+#include "mpm.hpp"
+#include "mpm_yin_common.hpp"
 
 #define CUTOFF 0.93 //0.97 is default
 #define SMALL_CUTOFF 0.5

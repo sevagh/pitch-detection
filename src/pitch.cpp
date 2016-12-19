@@ -1,14 +1,14 @@
 #include <iostream>
 #include <cstdlib>
 #include <vector>
-#include "pitch.h"
-#include "mpm.h"
-#include "goertzel.h"
-#include "dft.h"
-#include "yin.h"
+#include "pitch.hpp"
+#include "mpm.hpp"
+#include "goertzel.hpp"
+#include "dft.hpp"
+#include "yin.hpp"
 
 #ifdef FFTW_ENABLED
-#include "autocorrelation.h"
+#include "autocorrelation.hpp"
 #endif
 
 

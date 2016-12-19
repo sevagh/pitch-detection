@@ -1,6 +1,6 @@
 #include <iostream>
-#include "file.h"
-#include "pitch.h"
+#include "file.hpp"
+#include "pitch.hpp"
 
 extern "C"
 {

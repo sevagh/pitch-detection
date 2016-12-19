@@ -1,7 +1,7 @@
-#include <math.h>
+#include <cmath>
 #include <vector>
-#include "helper.h"
-#include "dft.h"
+#include "loop.hpp"
+#include "dft.hpp"
 
 static double dft_energy(double frequency, std::vector<double> arr, int N, double sample_rate)
 {

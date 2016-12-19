@@ -4,10 +4,10 @@
 #include <cmath>
 #include <limits>
 #include <gflags/gflags.h>
-#include "sine.h"
+#include "sine.hpp"
 
 #ifdef FFMPEG_ENABLED
-#include "file.h"
+#include "file.hpp"
 #endif
 
 #define DEFAULT_PATH "/dev/null"
