@@ -11,7 +11,7 @@ The algorithms are:
 * YIN *
 * Goertzel
 * DFT/FFT
-* Autocorrelation (FFT) (**fftw3 required to compile with this algorithm**)
+* Autocorrelation
 
 \*YIN and McLeod inspired by [TarsosDSP](https://github.com/JorenSix/TarsosDSP).
 

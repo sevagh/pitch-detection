@@ -3,13 +3,23 @@ cmake_minimum_required(VERSION 3.1)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -pedantic -Werror -Wall -O3 -std=c++17")
 set(SOURCE_DIR "./src")
+set(SOURCE_FILES "")
 set(AUTOCORR_DIR "./src/autocorrelation")
 set(SPECTRUM_DIR "./src/spectrum")
-set(SOURCE_FILES_AUTOCORR "./main.cpp;./src/autocorrelation/yin.cpp;./src/autocorrelation/yin.hpp;./src/autocorrelation/mpm.cpp;./src/autocorrelation/mpm.hpp;./src/autocorrelation/mpm_yin_common.cpp;./src/autocorrelation/mpm_yin_common.hpp")
-set(SOURCE_FILES_SPECTRUM "./src/spectrum/loop.cpp;./src/spectrum/loop.hpp;./src/spectrum/goertzel.cpp;./src/spectrum/goertzel.hpp;./src/spectrum/dft.cpp;./src/spectrum/dft.hpp")
-set(SOURCE_FILES "${SOURCE_FILES_AUTOCORR};${SOURCE_FILES_SPECTRUM};./src/sine.cpp;./src/sine.hpp;./src/pitch.cpp;./src/pitch.hpp;./src/helper.cpp;./src/helper.hpp;")
-set(FFMPEG_FILES "./src/file.cpp;./src/file.hpp")
-set(FFTW_FILES "./src/autocorrelation/autocorrelation.cpp;./src/autocorrelation/autocorrelation.hpp")
+
+include_directories ("./parabolic_interpolation")
+set(SOURCE_FILES "${SOURCE_FILES};./parabolic_interpolation/parabolic_interpolation.hpp")
+
+include_directories ("./sinewave")
+set(SOURCE_FILES "${SOURCE_FILES};./sinewave/sinewave.hpp")
+
+include_directories ("./autocovariance")
+set(SOURCE_FILES "${SOURCE_FILES};./autocovariance/autocovariance.hpp")
+
+set(SOURCE_FILES_AUTOCORR "./main.cpp;./src/autocorrelation/yin.hpp;./src/autocorrelation/mpm.hpp;")
+set(SOURCE_FILES_SPECTRUM "./src/spectrum/loop.hpp;./src/spectrum/goertzel.hpp;./src/spectrum/dft.hpp")
+set(SOURCE_FILES "${SOURCE_FILES};${SOURCE_FILES_AUTOCORR};${SOURCE_FILES_SPECTRUM};./src/pitch.hpp;")
+set(FFMPEG_FILES "./src/file.hpp")
 set(LIBS "gflags")
 
 include_directories("${SOURCE_DIR}")
@@ -35,9 +45,7 @@ if (FFMPEG_FOUND)
 endif (FFMPEG_FOUND)
 
 if (FFTW_FOUND)
-  set(SOURCE_FILES "${SOURCE_FILES};${FFTW_FILES}")
   LIST(APPEND LIBS "fftw3")
-  include_directories(${FFTW_DIR})
   add_definitions(-DFFTW_ENABLED)
 endif (FFTW_FOUND)
 
