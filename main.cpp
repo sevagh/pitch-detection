@@ -1,13 +1,15 @@
+#include <sinewave.hpp>
 #include <iostream>
+#include <utility>
 #include <fstream>
 #include <cstdlib>
 #include <cmath>
 #include <limits>
 #include <gflags/gflags.h>
-#include "sinegenerator.h"
+#include "pitch.hpp"
 
 #ifdef FFMPEG_ENABLED
-#include "file.h"
+#include "file.hpp"
 #endif
 
 #define DEFAULT_PATH "/dev/null"
@@ -32,8 +34,9 @@ int main(int argc, char **argv)
 		std::cerr << "Please define valid --freq OR --path" << std::endl;
 		return -1;
 	} else if (freq_valid) {
-		sinegenerator sinegen = sinegenerator(48000, FLAGS_freq);
-		sinegen.validate_pitch(FLAGS_algo);
+		auto x = generate_sinewave(4096, FLAGS_freq, 48000);
+		double pitch = get_pitch(FLAGS_algo, x, 48000);
+		std::cout << "Freq: " << FLAGS_freq << "\tpitch: " << pitch << std::endl;
 	} else if (path_valid) {
 #ifdef FFMPEG_ENABLED
 		read_audio_file(FLAGS_path, FLAGS_algo);

@@ -1,6 +1,9 @@
+#ifndef FILE_H
+#define FILE_H
+
 #include <iostream>
-#include "file.h"
-#include "pitch_detector.h"
+#include "file.hpp"
+#include "pitch.hpp"
 
 extern "C"
 {
@@ -30,7 +33,6 @@ void read_audio_file(std::string path, std::string algo)
 	av_init_packet(&rpkt);
 
 	int incr = 1000;
-	PitchDetector *pitchr = get_pitch_detector(algo, incr, codec_ctx->sample_rate);
 
 	while (av_read_frame(fmt_ctx, &rpkt) == 0) {
 		if (rpkt.stream_index == astream->index) {
@@ -56,12 +58,10 @@ void read_audio_file(std::string path, std::string algo)
 					int64_t tstamp = (double)
 							 frame->best_effort_timestamp * (double) astream->time_base.num / (double) astream->time_base.den * 1000.0;
 
-					for (int j = 0; j < l; j += incr) {
-						if (j >= l) {
-							break;
-						}
+					for (int j = 0; j < l - incr; j += incr) {
+						std::vector<double> chunk(&raw[j], &raw[j+incr]);
 						double pitch =
-							pitchr->get_pitch(&raw[j]);
+							get_pitch(algo, chunk, codec_ctx->sample_rate);
 						if (pitch != -1) {
 							printf("tstamp: %ld\t%f\n", tstamp, pitch);
 						}
@@ -81,3 +81,5 @@ void read_audio_file(std::string path, std::string algo)
 	avcodec_close(codec_ctx);
 	avformat_close_input(&fmt_ctx);
 }
+
+#endif /* FILE_H */
