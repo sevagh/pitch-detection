@@ -8,12 +8,12 @@
 #include <float.h>
 #include <iostream>
 #include <numeric>
-#include <autocovariance.hpp>
 #include <parabolic_interpolation.hpp>
 
 #define CUTOFF 0.93 //0.97 is default
 #define SMALL_CUTOFF 0.5
 #define LOWER_PITCH_CUTOFF 80 //hz
+
 
 static std::vector<double> normalized_square_difference(std::vector<double> audio_buffer)
 {
@@ -29,8 +29,9 @@ static std::vector<double> normalized_square_difference(std::vector<double> audi
 		}
 		nsdf.push_back(2 * acf / divisorM);
 	}
-	return nsdf;
+    return nsdf;
 }
+
 
 static std::vector<int> peak_picking(std::vector<double> nsdf)
 {

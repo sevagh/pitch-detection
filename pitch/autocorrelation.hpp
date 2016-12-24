@@ -1,11 +1,11 @@
 #ifndef AUTOCORRELATION_H
 #define AUTOCORRELATION_H
 
-#include <stdio.h>
-#include <fftw3.h>
-#include <stdlib.h>
 #include <vector>
-#include "autocovariance.hpp"
+#include <algorithm>
+#include <numeric>
+#include <cmath>
+#include <autocovariance.hpp>
 
 static double get_acf_periodicity(std::vector<double> data, int size)
 {

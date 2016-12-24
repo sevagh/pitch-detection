@@ -2,8 +2,7 @@
 #define FILE_H
 
 #include <iostream>
-#include "file.hpp"
-#include "pitch.hpp"
+#include <types.hpp>
 
 extern "C"
 {
@@ -12,7 +11,7 @@ extern "C"
 #include <libavutil/avutil.h>
 }
 
-void read_audio_file(std::string path, std::string algo)
+void read_audio_file(std::string path, pitch_fn get_pitch)
 {
 	av_register_all();
 
@@ -61,7 +60,7 @@ void read_audio_file(std::string path, std::string algo)
 					for (int j = 0; j < l - incr; j += incr) {
 						std::vector<double> chunk(&raw[j], &raw[j+incr]);
 						double pitch =
-							get_pitch(algo, chunk, codec_ctx->sample_rate);
+							get_pitch(chunk, codec_ctx->sample_rate);
 						if (pitch != -1) {
 							printf("tstamp: %ld\t%f\n", tstamp, pitch);
 						}

@@ -1,11 +1,16 @@
 #ifndef AUTOCOVARIANCE_H
 #define AUTOCOVARIANCE_H
 
-#include <fftw3.h>
 #include <vector>
 #include <algorithm>
 #include <numeric>
 #include <cmath>
+
+#ifdef FFTW_ENABLED
+#include <fftw3.h>
+#endif
+
+#undef FFTW_ENABLED
 
 inline std::vector<double> autocovariance(std::vector<double> array)
 {

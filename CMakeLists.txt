@@ -3,14 +3,16 @@ cmake_minimum_required (VERSION 3.1)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -pedantic -Werror -Wall -O3 -std=c++17")
 
-set (SOURCE_DIR "./src")
-set (SOURCE_FILES "./main.cpp;./src/yin.hpp;./src/mpm.hpp;./src/autocorrelation.hpp;./src/pitch.hpp;./parabolic_interpolation/parabolic_interpolation.hpp;./sinewave/sinewave.hpp;./autocovariance/autocovariance.hpp")
-set (FFMPEG_FILES "./src/file.hpp")
+set (SOURCE_DIR "./main")
+set (SOURCE_FILES "./main/main.cpp;./pitch/yin.hpp;./pitch/mpm.hpp;./pitch/autocorrelation.hpp;./parabolic_interpolation/parabolic_interpolation.hpp;./sinewave/sinewave.hpp;./types/types.hpp")
+set (FFMPEG_FILES "./main/file.hpp")
 
 include_directories ("${SOURCE_DIR}")
 include_directories ("./parabolic_interpolation")
 include_directories ("./sinewave")
 include_directories ("./autocovariance")
+include_directories ("./types")
+include_directories ("./pitch")
 
 set (LIBS "gflags")
 
