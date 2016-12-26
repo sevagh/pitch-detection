@@ -15,6 +15,10 @@ The algorithms are:
 
 MPM performs best on guitar sounds - see [Pitcha](https://github.com/sevagh/Pitcha) and [media-util](https://github.com/sevagh/media-util), two of my projects which use the MPM. **I strongly recommend using the MPM for any musical instrument pitch detection project**. A problem with the MPM is the low pitch cutoff.
 
+### Dependency - libxcorr
+
+I refactored out the autocorrelation implementation to leverage [my fork of libxcorr](https://github.com/sevagh/libxcorr).
+
 ### Deprecating Goertzel/DFT
 
 In previous commits you can view Goertzel and DFT for posterity, but these are not pitch detection algorithms per se so I removed them.

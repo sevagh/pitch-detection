@@ -5,7 +5,11 @@
 #include <algorithm>
 #include <numeric>
 #include <cmath>
-#include <autocovariance.hpp>
+#include <complex>
+
+extern "C" {
+#include <xcorr.h>
+}
 
 static double get_acf_periodicity(std::vector<double> data, int size)
 {
@@ -28,9 +32,21 @@ static double get_acf_periodicity(std::vector<double> data, int size)
 double get_pitch_autocorrelation(std::vector<double> data, int sample_rate)
 {
 	int size = signed(data.size());
-	std::vector<double> acf = autocovariance(data);
+	int size2 = 2*size-1;
 
-	double peak_bin_index_periodicity = get_acf_periodicity(acf, size);
+	std::vector<std::complex<double>> acf_complex(size2);
+	std::vector<double> acf_real{};
+	std::vector<std::complex<double>> complex_data{};
+	
+	for (double datum : data)
+		complex_data.push_back({datum, 0});	
+
+	xcorr(&complex_data[0], &complex_data[0], &acf_complex[0], size);
+
+	for (auto elem : acf_complex)
+		acf_real.push_back(elem.real());
+
+	double peak_bin_index_periodicity = get_acf_periodicity(acf_real, size);
 
 	return (sample_rate/peak_bin_index_periodicity);
 }
