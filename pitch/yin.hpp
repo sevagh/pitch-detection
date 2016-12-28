@@ -5,7 +5,7 @@
 #include <iostream>
 #include <tuple>
 #include <cstdlib>
-#include <parabolic_interpolation.hpp>
+#include "parabolic_interpolation.hpp"
 
 #define DEFAULT_THRESHOLD 0.20
 #define DEFAULT_OVERLAP 1536

@@ -6,13 +6,12 @@
 #include <numeric>
 #include <cmath>
 #include <complex>
-
-extern "C" {
 #include <xcorr.h>
-}
+#include "common.hpp"
 
-static double get_acf_periodicity(std::vector<double> data, int size)
+static double get_acf_periodicity(std::vector<double> data)
 {
+	int size = data.size();
 	int starting_index = 0;
 	int total_peak_bin_index = 0;
 	int occurences = 0;
@@ -20,8 +19,7 @@ static double get_acf_periodicity(std::vector<double> data, int size)
 	for (int i = 1; i < size-1; i++) {
 		if ((data[i] > data[i-1]) && (data[i]) > data[i+1]) {
 			occurences += 1;
-			total_peak_bin_index +=
-				(i - starting_index);
+			total_peak_bin_index += (i - starting_index);
 			starting_index = i;
 		}
 	}
@@ -36,17 +34,14 @@ double get_pitch_autocorrelation(std::vector<double> data, int sample_rate)
 
 	std::vector<std::complex<double>> acf_complex(size2);
 	std::vector<double> acf_real{};
-	std::vector<std::complex<double>> complex_data{};
-	
-	for (double datum : data)
-		complex_data.push_back({datum, 0});	
+	auto complex_data = get_complex_from_real(data);
 
 	xcorr(&complex_data[0], &complex_data[0], &acf_complex[0], size);
 
 	for (auto elem : acf_complex)
 		acf_real.push_back(elem.real());
 
-	double peak_bin_index_periodicity = get_acf_periodicity(acf_real, size);
+	double peak_bin_index_periodicity = get_acf_periodicity(acf_real);
 
 	return (sample_rate/peak_bin_index_periodicity);
 }

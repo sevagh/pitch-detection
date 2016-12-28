@@ -1,4 +1,3 @@
-#include <sinewave.hpp>
 #include <iostream>
 #include <utility>
 #include <fstream>
@@ -7,10 +6,11 @@
 #include <limits>
 #include <gflags/gflags.h>
 #include <vector>
-#include <mpm.hpp>
-#include <yin.hpp>
-#include <autocorrelation.hpp>
-#include <types.hpp>
+#include "sinewave.hpp"
+#include "mpm.hpp"
+#include "yin.hpp"
+#include "autocorrelation.hpp"
+#include "types.hpp"
 
 #ifdef FFMPEG_ENABLED
 #include "file.hpp"

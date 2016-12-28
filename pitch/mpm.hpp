@@ -8,30 +8,30 @@
 #include <float.h>
 #include <iostream>
 #include <numeric>
-#include <parabolic_interpolation.hpp>
+#include <xcorr.h>
+#include "common.hpp"
+#include "parabolic_interpolation.hpp"
 
 #define CUTOFF 0.93 //0.97 is default
 #define SMALL_CUTOFF 0.5
 #define LOWER_PITCH_CUTOFF 80 //hz
 
-
 static std::vector<double> normalized_square_difference(std::vector<double> audio_buffer)
 {
-	std::vector<double> nsdf{};
-	int size = signed(audio_buffer.size());
-	int tau;
-	for (tau = 0; tau < size; tau++) {
-		double acf = 0;
-		double divisorM = 0;
-		for (int i = 0; i < size - tau; i++) {
-			acf += audio_buffer[i] * audio_buffer[i + tau];
-			divisorM += audio_buffer[i] * audio_buffer[i] + audio_buffer[i + tau] * audio_buffer[i + tau];
-		}
-		nsdf.push_back(2 * acf / divisorM);
-	}
-    return nsdf;
-}
+	int size = audio_buffer.size();
+	int size2 = 2*size-1;
 
+	std::vector<std::complex<double>> acf(size2);
+	std::vector<double> acf_real{};
+	auto complex_data = get_complex_from_real(audio_buffer);
+
+	xcorr(&complex_data[0], &complex_data[0], &acf[0], size);
+
+	for (auto it = acf.begin() + size2/2; it != acf.end(); ++it)
+		acf_real.push_back((*it).real()/acf[size2/2].real());
+	
+	return acf_real;
+}
 
 static std::vector<int> peak_picking(std::vector<double> nsdf)
 {
@@ -80,7 +80,6 @@ inline double get_pitch_mpm(std::vector<double> audio_buffer, int sample_rate)
 
 	for (int i : max_positions) {
 		highestAmplitude = std::max(highestAmplitude, nsdf[i]);
-
 		if (nsdf[i] > SMALL_CUTOFF) {
 			auto x = parabolic_interpolation(nsdf, i);
 			estimates.push_back(x);
