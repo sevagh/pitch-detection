@@ -33,6 +33,7 @@ pitch_fn get_pitch_fn(std::string algo)
 }
 
 DEFINE_double(freq, -1, "Sinewave frequency");
+DEFINE_uint64(size, 4096, "Sinewave size");
 DEFINE_string(algo, "mpm", "Algorithm to test");
 DEFINE_string(path, DEFAULT_PATH, "Audio file path");
 
@@ -45,7 +46,7 @@ static bool validate_path(const char* flagname, const std::string& path)
 int main(int argc, char **argv)
 {
     if (!gflags::RegisterFlagValidator(&FLAGS_path, &validate_path)) {
-        std::cerr << "Failed to register port validator" << std::endl;
+        std::cerr << "Failed to register path validator" << std::endl;
         exit(1);
     }
 	gflags::SetUsageMessage("help\n");
@@ -56,7 +57,7 @@ int main(int argc, char **argv)
 		std::cerr << "Please define valid --freq OR --path" << std::endl;
 		return -1;
 	} else if (freq_valid) {
-		auto x = generate_sinewave(4096, FLAGS_freq, 48000);
+		auto x = generate_sinewave(FLAGS_size, FLAGS_freq, 48000);
 		double pitch = get_pitch_fn(FLAGS_algo)(x, 48000);
 		std::cout << "Freq: " << FLAGS_freq << "\tpitch: " << pitch << std::endl;
 	} else if (path_valid) {
