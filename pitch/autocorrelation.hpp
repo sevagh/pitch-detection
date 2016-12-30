@@ -6,8 +6,11 @@
 #include <numeric>
 #include <cmath>
 #include <complex>
-#include <xcorr.h>
 #include "common.hpp"
+
+extern "C" {
+#include <xcorr.h>
+}
 
 static double get_acf_periodicity(std::vector<double> data)
 {
