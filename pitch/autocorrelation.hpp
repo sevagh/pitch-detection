@@ -15,15 +15,13 @@ extern "C" {
 static double get_acf_periodicity(std::vector<double> data)
 {
 	int size = data.size();
-	int starting_index = 0;
 	int total_peak_bin_index = 0;
 	int occurences = 0;
 
 	for (int i = 1; i < size-1; i++) {
 		if ((data[i] > data[i-1]) && (data[i]) > data[i+1]) {
 			occurences += 1;
-			total_peak_bin_index += (i - starting_index);
-			starting_index = i;
+			total_peak_bin_index = i;
 		}
 	}
 
