@@ -25,7 +25,7 @@ if (NOT GFLAGS_FOUND)
 endif ()
 
 if (NOT XCORR_FOUND)
-  MESSAGE(FATAL_ERROR "gflags required")
+  MESSAGE(FATAL_ERROR "xcorr required")
 endif ()
 
 set (LIBS "gflags -lxcorr")
