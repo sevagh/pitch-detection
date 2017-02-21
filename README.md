@@ -7,7 +7,7 @@ Collection of C++ pitch detection algorithms based on autocorrelation, along wit
 
 The algorithms are:
 
-* McLeod Pitch Method (time domain) *
+* McLeod Pitch Method *
 * YIN *
 * Autocorrelation
 
@@ -17,7 +17,9 @@ MPM performs best on guitar sounds - see [Pitcha](https://github.com/sevagh/Pitc
 
 ### Dependency - libxcorr
 
-I refactored out the autocorrelation implementation to leverage [my fork of libxcorr](https://github.com/sevagh/libxcorr).
+I refactored the autocorrelation and MPM implementations to leverage [my fork of libxcorr](https://github.com/sevagh/libxcorr).
+
+This allows for some speed gains when using FFT cross-correlation in MPM. The algorithm that still doesn't use libxcorr is YIN, this is a work-in-progress.
 
 ### Deprecating Goertzel/DFT
 
