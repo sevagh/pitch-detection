@@ -6,7 +6,6 @@
 #include <numeric>
 #include <cmath>
 #include <complex>
-#include "common.hpp"
 
 extern "C" {
 #include <xcorr.h>
@@ -35,9 +34,8 @@ double get_pitch_autocorrelation(std::vector<double> data, int sample_rate)
 
 	std::vector<std::complex<double>> acf_complex(size2);
 	std::vector<double> acf_real{};
-	auto complex_data = get_complex_from_real(data);
 
-	xcorr(&complex_data[0], &complex_data[0], &acf_complex[0], size);
+	xcorr_fftw_r2c(&data[0], &data[0], &acf_complex[0], size);
 
 	for (auto elem : acf_complex)
 		acf_real.push_back(elem.real());

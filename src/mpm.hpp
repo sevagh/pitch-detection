@@ -8,7 +8,7 @@
 #include <float.h>
 #include <iostream>
 #include <numeric>
-#include "common.hpp"
+#include <complex>
 #include "parabolic_interpolation.hpp"
 
 #define CUTOFF 0.93 //0.97 is default
@@ -19,20 +19,20 @@ extern "C" {
 #include <xcorr.h>
 }
 
-static std::vector<double> normalized_square_difference(std::vector<double> audio_buffer)
+static std::vector<double> normalized_square_difference(std::vector<double>
+							audio_buffer)
 {
 	int size = audio_buffer.size();
 	int size2 = 2*size-1;
 
 	std::vector<std::complex<double>> acf(size2);
 	std::vector<double> acf_real{};
-	auto complex_data = get_complex_from_real(audio_buffer);
 
-	xcorr(&complex_data[0], &complex_data[0], &acf[0], size);
+	xcorr_fftw_r2c(&audio_buffer[0], &audio_buffer[0], &acf[0], size);
 
 	for (auto it = acf.begin() + size2/2; it != acf.end(); ++it)
 		acf_real.push_back((*it).real()/acf[size2/2].real());
-	
+
 	return acf_real;
 }
 
