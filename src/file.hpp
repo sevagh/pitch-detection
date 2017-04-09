@@ -20,13 +20,29 @@ void read_audio_file(std::string path, pitch_fn get_pitch)
 	avformat_open_input(&fmt_ctx, path.c_str(), NULL, NULL);
 	avformat_find_stream_info(fmt_ctx, NULL);
 	AVCodec* cdc = nullptr;
+	AVCodecContext* avctx = nullptr;
 	int stream_idx = av_find_best_stream(fmt_ctx,
 					     AVMEDIA_TYPE_AUDIO,
 					     -1, -1, &cdc, 0);
 	AVStream* astream = fmt_ctx->streams[stream_idx];
-	AVCodecContext* codec_ctx = astream->codec;
-	codec_ctx->codec = cdc;
-	avcodec_open2(codec_ctx, codec_ctx->codec, NULL);
+	if (!(cdc = avcodec_find_decoder(fmt_ctx->streams[0]->codecpar->
+					 codec_id))) {
+		fprintf(stderr, "Could not find input codec\n");
+		avformat_close_input(&fmt_ctx);
+		exit(-1);
+	}
+	avctx = avcodec_alloc_context3(cdc);
+	if (!avctx) {
+		fprintf(stderr, "Could not allocate a decoding context\n");
+		avformat_close_input(&fmt_ctx);
+		exit(-1);
+	}
+	if (avcodec_parameters_to_context(avctx,
+					  astream->codecpar) < 0) {
+		exit(-1);
+	}
+	avctx->codec = cdc;
+	avcodec_open2(avctx, avctx->codec, NULL);
 
 	AVPacket rpkt;
 	av_init_packet(&rpkt);
@@ -39,19 +55,18 @@ void read_audio_file(std::string path, pitch_fn get_pitch)
 
 			while (dpkt.size > 0) {
 				int gotFrame = 0;
-				int result = avcodec_decode_audio4
-					     (codec_ctx, frame,
-					      &gotFrame, &dpkt);
+				int result = avcodec_receive_frame
+					     (avctx, frame);
 
 				if (result >= 0 && gotFrame) {
 					dpkt.size -= result;
 					dpkt.data += result;
-					int l = (double) frame->linesize[0]/ (double) codec_ctx->channels;
+					int l = (double) frame->linesize[0]/ (double) avctx->channels;
 
 					double *raw = new double[l];
 					for (int i = 0; i < l; i += 1) {
 						raw[i] = (double) frame->
-							 data[0][codec_ctx->channels*i];
+							 data[0][avctx->channels*i];
 					}
 
 					int64_t tstamp = (double)
@@ -60,7 +75,7 @@ void read_audio_file(std::string path, pitch_fn get_pitch)
 					for (int j = 0; j < l - incr; j += incr) {
 						std::vector<double> chunk(&raw[j], &raw[j+incr]);
 						double pitch =
-							get_pitch(chunk, codec_ctx->sample_rate);
+							get_pitch(chunk, avctx->sample_rate);
 						if (pitch != -1) {
 							printf("tstamp: %ld\t%f\n", tstamp, pitch);
 						}
@@ -77,7 +92,7 @@ void read_audio_file(std::string path, pitch_fn get_pitch)
 
 	av_free(frame);
 
-	avcodec_close(codec_ctx);
+	avcodec_close(avctx);
 	avformat_close_input(&fmt_ctx);
 }
 
