@@ -8,6 +8,7 @@ set (SOURCE_FILES "./src/main.cpp;./src/yin.hpp;./src/mpm.hpp;./src/autocorrelat
 set (FFMPEG_FILES "./src/file.hpp")
 
 include_directories ("${SOURCE_DIR}")
+include_directories ("/usr/include/ffmpeg")
 
 # find third party modules
 set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules)
