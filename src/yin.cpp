@@ -1,14 +1,9 @@
-#ifndef YIN_H
-#define YIN_H
-
 #include <vector>
 #include <iostream>
 #include <tuple>
 #include <cstdlib>
-#include "parabolic_interpolation.hpp"
-
-#define DEFAULT_THRESHOLD 0.20
-#define DEFAULT_OVERLAP 1536
+#include <parabolic_interpolation.hpp>
+#include <yin.hpp>
 
 static int absolute_threshold(std::vector<double> yin_buffer)
 {
@@ -55,7 +50,7 @@ static void cumulative_mean_normalized_difference(std::vector<double>& yin_buffe
 	}
 }
 
-inline double get_pitch_yin(std::vector<double> audio_buffer, int sample_rate)
+double get_pitch_yin(std::vector<double> audio_buffer, int sample_rate)
 {
 	int tau_estimate;
 
@@ -65,5 +60,3 @@ inline double get_pitch_yin(std::vector<double> audio_buffer, int sample_rate)
 
 	return (tau_estimate != -1) ? sample_rate / std::get<0>(parabolic_interpolation(yin_buffer, tau_estimate)) : -1;
 }
-
-#endif /* YIN_H */

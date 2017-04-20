@@ -1,6 +1,3 @@
-#ifndef MPM_H
-#define MPM_H
-
 #include <float.h>
 #include <algorithm>
 #include <vector>
@@ -9,11 +6,8 @@
 #include <iostream>
 #include <numeric>
 #include <complex>
-#include "parabolic_interpolation.hpp"
-
-#define CUTOFF 0.93 //0.97 is default
-#define SMALL_CUTOFF 0.5
-#define LOWER_PITCH_CUTOFF 80 //hz
+#include <parabolic_interpolation.hpp>
+#include <mpm.hpp>
 
 extern "C" {
 #include <xcorr.h>
@@ -73,26 +67,26 @@ static std::vector<int> peak_picking(std::vector<double> nsdf)
 	return max_positions;
 }
 
-inline double get_pitch_mpm(std::vector<double> audio_buffer, int sample_rate)
+double get_pitch_mpm(std::vector<double> audio_buffer, int sample_rate)
 {
 	std::vector<double> nsdf = normalized_square_difference(audio_buffer);
 	std::vector<int> max_positions = peak_picking(nsdf);
 	std::vector<std::pair<double, double>> estimates;
 
-	double highestAmplitude = -DBL_MAX;
+	double highest_amplitude = -DBL_MAX;
 
 	for (int i : max_positions) {
-		highestAmplitude = std::max(highestAmplitude, nsdf[i]);
+		highest_amplitude = std::max(highest_amplitude, nsdf[i]);
 		if (nsdf[i] > SMALL_CUTOFF) {
 			auto x = parabolic_interpolation(nsdf, i);
 			estimates.push_back(x);
-			highestAmplitude = std::max(highestAmplitude, std::get<1>(x));
+			highest_amplitude = std::max(highest_amplitude, std::get<1>(x));
 		}
 	}
 
 	if (estimates.empty()) return -1;
 
-	double actualCutoff = CUTOFF * highestAmplitude;
+	double actual_cutoff = CUTOFF * highest_amplitude;
 	double period = 0;
 
 	for (auto i : estimates) {
@@ -102,8 +96,6 @@ inline double get_pitch_mpm(std::vector<double> audio_buffer, int sample_rate)
 		}
 	}
 
-	double pitchEstimate = (sample_rate / period);
-	return (pitchEstimate > LOWER_PITCH_CUTOFF) ? pitchEstimate : -1;
+	double pitch_estimate = (sample_rate / period);
+	return (pitch_estimate > LOWER_PITCH_CUTOFF) ? pitch_estimate : -1;
 }
-
-#endif /* MPM_H */

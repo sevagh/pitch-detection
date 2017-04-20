@@ -1,9 +1,7 @@
-#ifndef PARABOLIC_INTERPOLATION_H
-#define PARABOLIC_INTERPOLATION_H
-
 #include <vector>
+#include <parabolic_interpolation.hpp>
 
-inline std::pair<double, double> parabolic_interpolation(std::vector<double> array, double x)
+std::pair<double, double> parabolic_interpolation(std::vector<double> array, double x)
 {
 	int x_adjusted;
 
@@ -18,5 +16,3 @@ inline std::pair<double, double> parabolic_interpolation(std::vector<double> arr
 	}
 	return std::make_pair(x_adjusted, array[x_adjusted]);
 }
-
-#endif /* PARABOLIC_INTERPOLATION_H */
