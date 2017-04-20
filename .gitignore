@@ -6,3 +6,5 @@ cmake_install.cmake
 massif.*
 build
 callgrind.*
+*.orig
+*~
