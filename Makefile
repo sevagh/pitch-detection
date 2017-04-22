@@ -7,18 +7,16 @@ INCLUDEDIR	:= include
 BINDIR		:= bin
 CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC
 OBJS  		:= $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
-LIBXCORR	:= -I/usr/local/include -L/usr/local/lib/ -lxcorr 
-
 
 .PHONY: all
 
 all: directories $(OBJS) pitch_detection.so
 
 pitch_detection.so:
-	$(CXX) $(OBJS) -shared -o $(LIBDIR)/$@ $(LIBXCORR)
+	$(CXX) $(OBJS) -shared -o $(LIBDIR)/$@ -lxcorr
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CXX) -c $< $(CXX_FLAGS) -I$(INCLUDEDIR) -o $@ $(LIBXCORR)
+	$(CXX) -c $< $(CXX_FLAGS) -I$(INCLUDEDIR) -o $@
 
 directories:
 	@mkdir -p $(OBJDIR) $(LIBDIR) $(BINDIR)

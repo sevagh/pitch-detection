@@ -6,4 +6,5 @@ callgrind.*
 #*
 obj
 lib
+bin
 *.swp
