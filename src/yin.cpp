@@ -2,22 +2,23 @@
 #include <iostream>
 #include <tuple>
 #include <cstdlib>
-#include <parabolic_interpolation.hpp>
-#include <yin.hpp>
+#include "./parabolic_interpolation.hpp"
+#include "./constants.hpp"
+#include <pitch_detection.hpp>
 
 static int absolute_threshold(std::vector<double> yin_buffer)
 {
 	ssize_t size = yin_buffer.size();
 	int tau;
 	for (tau = 2; tau < size; tau++) {
-		if (yin_buffer[tau] < DEFAULT_THRESHOLD) {
+		if (yin_buffer[tau] < YIN_DEFAULT_THRESHOLD) {
 			while (tau + 1 < size && yin_buffer[tau + 1] < yin_buffer[tau]) {
 				tau++;
 			}
 			break;
 		}
 	}
-	return (tau == size || yin_buffer[tau] >= DEFAULT_THRESHOLD) ? -1 : tau;
+	return (tau == size || yin_buffer[tau] >= YIN_DEFAULT_THRESHOLD) ? -1 : tau;
 }
 
 static std::vector<double> difference(std::vector<double> data)

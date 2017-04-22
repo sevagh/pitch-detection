@@ -6,8 +6,9 @@
 #include <iostream>
 #include <numeric>
 #include <complex>
-#include <parabolic_interpolation.hpp>
-#include <mpm.hpp>
+#include "./parabolic_interpolation.hpp"
+#include "./constants.hpp"
+#include <pitch_detection.hpp>
 
 extern "C" {
 #include <xcorr.h>
@@ -34,7 +35,7 @@ static std::vector<int> peak_picking(std::vector<double> nsdf)
 {
 	std::vector<int> max_positions{};
 	int pos = 0;
-	int curMaxPos = 0;
+	int cur_max_pos = 0;
 	ssize_t size = nsdf.size();
 
 	while (pos < (size - 1) / 3 && nsdf[pos] > 0) pos++;
@@ -44,25 +45,25 @@ static std::vector<int> peak_picking(std::vector<double> nsdf)
 
 	while (pos < size - 1) {
 		if (nsdf[pos] > nsdf[pos - 1] && nsdf[pos] >= nsdf[pos + 1]) {
-			if (curMaxPos == 0) {
-				curMaxPos = pos;
-			} else if (nsdf[pos] > nsdf[curMaxPos]) {
-				curMaxPos = pos;
+			if (cur_max_pos == 0) {
+				cur_max_pos = pos;
+			} else if (nsdf[pos] > nsdf[cur_max_pos]) {
+				cur_max_pos = pos;
 			}
 		}
 		pos++;
 		if (pos < size - 1 && nsdf[pos] <= 0) {
-			if (curMaxPos > 0) {
-				max_positions.push_back(curMaxPos);
-				curMaxPos = 0;
+			if (cur_max_pos > 0) {
+				max_positions.push_back(cur_max_pos);
+				cur_max_pos = 0;
 			}
 			while (pos < size - 1 && nsdf[pos] <= 0.0) {
 				pos++;
 			}
 		}
 	}
-	if (curMaxPos > 0) {
-		max_positions.push_back(curMaxPos);
+	if (cur_max_pos > 0) {
+		max_positions.push_back(cur_max_pos);
 	}
 	return max_positions;
 }
@@ -77,7 +78,7 @@ double get_pitch_mpm(std::vector<double> audio_buffer, int sample_rate)
 
 	for (int i : max_positions) {
 		highest_amplitude = std::max(highest_amplitude, nsdf[i]);
-		if (nsdf[i] > SMALL_CUTOFF) {
+		if (nsdf[i] > MPM_SMALL_CUTOFF) {
 			auto x = parabolic_interpolation(nsdf, i);
 			estimates.push_back(x);
 			highest_amplitude = std::max(highest_amplitude, std::get<1>(x));
@@ -86,16 +87,16 @@ double get_pitch_mpm(std::vector<double> audio_buffer, int sample_rate)
 
 	if (estimates.empty()) return -1;
 
-	double actual_cutoff = CUTOFF * highest_amplitude;
+	double actual_cutoff = MPM_CUTOFF * highest_amplitude;
 	double period = 0;
 
 	for (auto i : estimates) {
-		if (std::get<1>(i) >= actualCutoff) {
+		if (std::get<1>(i) >= actual_cutoff) {
 			period = std::get<0>(i);
 			break;
 		}
 	}
 
 	double pitch_estimate = (sample_rate / period);
-	return (pitch_estimate > LOWER_PITCH_CUTOFF) ? pitch_estimate : -1;
+	return (pitch_estimate > MPM_LOWER_PITCH_CUTOFF) ? pitch_estimate : -1;
 }

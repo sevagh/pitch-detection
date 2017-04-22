@@ -3,7 +3,7 @@
 #include <numeric>
 #include <cmath>
 #include <complex>
-#include <autocorrelation.hpp>
+#include <pitch_detection.hpp>
 
 extern "C" {
 #include <xcorr.h>
