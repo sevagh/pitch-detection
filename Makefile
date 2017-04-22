@@ -1,22 +1,32 @@
 SRCDIR 		:= src
+SAMPLESDIR	:= samples
 SRCS		:= $(wildcard $(SRCDIR)/*.cpp)
-BUILDDIR 	:= obj
-TARGETDIR	:= lib
+OBJDIR	 	:= obj
+LIBDIR		:= lib
 INCLUDEDIR	:= include
-CXX_FLAGS 	:=-ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC
-OBJS 		:= ${SRCS:cpp=o} 
+BINDIR		:= bin
+CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC
+OBJS  		:= $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
+LIBXCORR	:= -I/usr/local/include -L/usr/local/lib/ -lxcorr 
+
 
 .PHONY: all
 
-all: directories $(OBJS)
+all: directories $(OBJS) pitch_detection.so
 
-%.o: %.cpp
-	$(CXX) -c $< $(CXX_FLAGS) -I$(INCLUDEDIR) -o $(BUILDDIR)/$(notdir $@)
+pitch_detection.so:
+	$(CXX) $(OBJS) -shared -o $(LIBDIR)/$@ $(LIBXCORR)
+
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	$(CXX) -c $< $(CXX_FLAGS) -I$(INCLUDEDIR) -o $@ $(LIBXCORR)
 
 directories:
-	@mkdir -p $(BUILDDIR) $(TARGETDIR)
+	@mkdir -p $(OBJDIR) $(LIBDIR) $(BINDIR)
 
 clean:
-	-rm -rf $(BUILDDIR) $(TARGETDIR)
+	-rm -rf $(OBJDIR) $(LIBDIR) $(BINDIR)
 
-#set (LIBS "-lxcorr")
+sinewave: $(SAMPLESDIR)/sinewave.cpp
+
+$(SAMPLESDIR)/*.cpp: $(LIBDIR)/pitch_detection.so
+	$(CXX) $@ $^ $(CXX_FLAGS) -o $(BINDIR)/$(basename $(notdir $@)) -I$(INCLUDEDIR) -lgflags
