@@ -1,8 +1,10 @@
-CMakeCache.txt
-CMakeFiles/
-pitch_detection
-Makefile
-cmake_install.cmake
 massif.*
 build
 callgrind.*
+*.orig
+*~
+#*
+obj
+lib
+bin
+*.swp
