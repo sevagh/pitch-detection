@@ -1,9 +1,6 @@
 # Pitch Detection
 
-Collection of C++ pitch detection algorithms based on autocorrelation, along with some testing capabilities:
-
-* Test against an audio clip (**ffmpeg/libav required to compile with this feature**)
-* Test against generated sine waves
+Collection of C++ pitch detection algorithms based on autocorrelation, along with a sample sinewave generator.
 
 The algorithms are:
 
@@ -13,7 +10,7 @@ The algorithms are:
 
 \*YIN and McLeod inspired by [TarsosDSP](https://github.com/JorenSix/TarsosDSP).
 
-MPM performs best on guitar sounds - see [Pitcha](https://github.com/sevagh/Pitcha) and [media-util](https://github.com/sevagh/media-util), two of my projects which use the MPM. **I strongly recommend using the MPM for any musical instrument pitch detection project**. A problem with the MPM is the low pitch cutoff.
+MPM performs best on guitar sounds - see [Pitcha](https://github.com/sevagh/Pitcha) and [mcleod-pitch-method](https://github.com/sevagh/mcleod-pitch-method), two of my projects which use the MPM. **I strongly recommend using the MPM for any musical instrument pitch detection project**. A problem with the MPM is the low pitch cutoff.
 
 ### Dependency - libxcorr
 
@@ -29,9 +26,16 @@ These algorithms compute one frequency at a time, so I was using them in an inef
 
 Autocorrelation-based algorithms are the real deal.
 
-### Build
+### Build/install
 
-CMake project.
+Switched from CMake to Make: `make && sudo make install`
 
-    apt-get install make cmake gcc g++ libfftw3-dev libavcodec-dev libavformat-dev libavutil-dev libgflags-dev
-    cmake . && make && ./pitch_detection
+To use in your code:
+
+```
+$ head -n1 mycode.cpp
+#include <pitch_detection.hpp>
+...
+
+g++ [...] -lpitch_detection
+```
