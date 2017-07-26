@@ -15,7 +15,7 @@ INSTALLLIB	:= /usr/local/lib
 all: pitch_detection.so
 
 pitch_detection.so: directories $(OBJS)
-	$(CXX) $(OBJS) -shared -o $(LIBDIR)/$@
+	$(CXX) $(OBJS) -shared -o $(LIBDIR)/$@ -lfftw3
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) -c $< $(CXX_FLAGS) -I$(INCLUDEDIR) -o $@
