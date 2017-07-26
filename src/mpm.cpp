@@ -9,10 +9,7 @@
 #include "./parabolic_interpolation.hpp"
 #include "./constants.hpp"
 #include <pitch_detection.hpp>
-
-extern "C" {
-#include <xcorr.h>
-}
+#include "./xcorr.hpp"
 
 static std::vector<double> normalized_square_difference(const std::vector<double>&
 							audio_buffer)
@@ -23,7 +20,7 @@ static std::vector<double> normalized_square_difference(const std::vector<double
 	std::vector<std::complex<double>> acf(size2);
 	std::vector<double> acf_real{};
 
-	xcorr_fftw_r2c(&audio_buffer[0], &audio_buffer[0], &acf[0], size);
+	xcorr_fftw_r2c(audio_buffer, audio_buffer, acf, size);
 
 	for (auto it = acf.begin() + size2/2; it != acf.end(); ++it)
 		acf_real.push_back((*it).real()/acf[size2/2].real());
