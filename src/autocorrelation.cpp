@@ -9,7 +9,7 @@ extern "C" {
 #include <xcorr.h>
 }
 
-static double get_acf_periodicity(std::vector<double> data)
+static double get_acf_periodicity(const std::vector<double>& data)
 {
 	int size = data.size();
 	int total_peak_bin_index = 0;
@@ -25,7 +25,7 @@ static double get_acf_periodicity(std::vector<double> data)
 	return (double) (total_peak_bin_index) / (double) occurences;
 }
 
-double get_pitch_autocorrelation(std::vector<double> data, int sample_rate)
+double get_pitch_autocorrelation(const std::vector<double>& data, int sample_rate)
 {
 	int size = signed(data.size());
 	int size2 = 2*size-1;

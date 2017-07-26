@@ -14,7 +14,7 @@ extern "C" {
 #include <xcorr.h>
 }
 
-static std::vector<double> normalized_square_difference(std::vector<double>
+static std::vector<double> normalized_square_difference(const std::vector<double>&
 							audio_buffer)
 {
 	int size = audio_buffer.size();
@@ -31,7 +31,7 @@ static std::vector<double> normalized_square_difference(std::vector<double>
 	return acf_real;
 }
 
-static std::vector<int> peak_picking(std::vector<double> nsdf)
+static std::vector<int> peak_picking(const std::vector<double>& nsdf)
 {
 	std::vector<int> max_positions{};
 	int pos = 0;
@@ -68,7 +68,7 @@ static std::vector<int> peak_picking(std::vector<double> nsdf)
 	return max_positions;
 }
 
-double get_pitch_mpm(std::vector<double> audio_buffer, int sample_rate)
+double get_pitch_mpm(const std::vector<double>& audio_buffer, int sample_rate)
 {
 	std::vector<double> nsdf = normalized_square_difference(audio_buffer);
 	std::vector<int> max_positions = peak_picking(nsdf);

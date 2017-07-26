@@ -3,7 +3,7 @@
 
 #include <vector>
 
-inline std::pair<double, double> parabolic_interpolation(std::vector<double> array, double x)
+inline std::pair<double, double> parabolic_interpolation(const std::vector<double>& array, double x)
 {
 	int x_adjusted;
 
