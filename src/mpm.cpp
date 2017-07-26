@@ -9,10 +9,7 @@
 #include "./parabolic_interpolation.hpp"
 #include "./constants.hpp"
 #include <pitch_detection.hpp>
-
-extern "C" {
-#include <xcorr.h>
-}
+#include "./xcorr.h"
 
 static std::vector<double> normalized_square_difference(const std::vector<double>&
 							audio_buffer)
