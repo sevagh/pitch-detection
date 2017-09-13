@@ -30,8 +30,8 @@ src_clean:
 	-find . -type f -name '*~' -exec rm -rf {} \;
 
 install:
-	-cp $(INCLUDEDIR)/pitch_detection.hpp $(INSTALLHDR)
-	-cp $(LIBDIR)/pitch_detection.so $(INSTALLLIB)
+	@cp $(INCLUDEDIR)/pitch_detection.hpp $(INSTALLHDR)
+	@cp $(LIBDIR)/pitch_detection.so $(INSTALLLIB)
 
 
 sinewave: pitch_detection.so $(SAMPLESDIR)/sinewave.cpp
