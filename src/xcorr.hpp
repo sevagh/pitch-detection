@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <cstring>
+#include <vector>
 
 extern "C" {
 #include <fftw3.h>
