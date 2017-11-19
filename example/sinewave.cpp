@@ -5,7 +5,6 @@
 #include <utility>
 #include <fstream>
 #include <cstdlib>
-#include <cmath>
 #include <limits>
 #include <gflags/gflags.h>
 #include <vector>

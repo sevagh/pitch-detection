@@ -1,5 +1,5 @@
 SRCDIR 		:= src
-SAMPLESDIR	:= samples
+EXAMPLEDIR	:= example
 SRCS		:= $(wildcard $(SRCDIR)/*.cpp)
 OBJDIR	 	:= obj
 LIBDIR		:= lib
@@ -34,7 +34,7 @@ install:
 	@cp $(LIBDIR)/pitch_detection.so $(INSTALLLIB)
 
 
-sinewave: pitch_detection.so $(SAMPLESDIR)/sinewave.cpp
+example: pitch_detection.so $(EXAMPLEDIR)/sinewave.cpp
 
-$(SAMPLESDIR)/*.cpp: $(LIBDIR)/pitch_detection.so
+$(EXAMPLEDIR)/*.cpp: $(LIBDIR)/pitch_detection.so
 	$(CXX) $@ $^ $(CXX_FLAGS) -o $(BINDIR)/$(basename $(notdir $@)) -I$(INCLUDEDIR) -lgflags
