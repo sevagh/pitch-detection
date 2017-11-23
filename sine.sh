@@ -64,7 +64,7 @@ void generate_sinewave(double *sinewave, int size, double frequency, int sample_
 int main() {
         int size = "${SIZE}";
         double sinewave[size];
-        generate_sinewave(sinewave, size, "${FREQ}", 48000);
+        generate_sinewave(sinewave, size, "${FREQ}", "${SAMPLERATE}");
         for (int i = 0; i < size; ++i)
                 printf(\"%f\\n\", sinewave[i]);
         return 0;
