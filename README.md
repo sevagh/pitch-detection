@@ -1,6 +1,6 @@
 # Pitch Detection
 
-Collection of C++ pitch detection algorithms based on autocorrelation, along with a sample sinewave generator.
+Collection of C++ pitch detection algorithms based on autocorrelation.
 
 The algorithms are:
 
@@ -12,13 +12,25 @@ The algorithms are:
 
 MPM performs best on guitar sounds - see [Pitcha](https://github.com/sevagh/Pitcha) and [mcleod-pitch-method](https://github.com/sevagh/mcleod-pitch-method), two of my projects which use the MPM. **I strongly recommend using the MPM for any musical instrument pitch detection project**. A problem with the MPM is the low pitch cutoff.
 
-### Deprecating Goertzel/DFT
+### Examples
 
-In previous commits you can view Goertzel and DFT for posterity, but these are not pitch detection algorithms per se so I removed them.
+`make example`
 
-These algorithms compute one frequency at a time, so I was using them in an inefficient way (looping through `0 <= possible_pitch <= 4200` and finding out which had the most energy).
+Sinewave: generate a sinewave and feed it to pitch detection
 
-Autocorrelation-based algorithms are the real deal.
+```
+sevagh:pitch-detection $ ./bin/sinewave --freq 1337 --algo mpm
+Freq: 1337      pitch: 1337.01
+```
+
+Stdin: get the pitch of an array piped through stdin
+
+Goes well with [github.com/sevagh/sine-generator](https://github.com/sevagh/sine-generator).
+
+```
+sevagh:pitch-detection $ ~/repos/sine-generator/sine.sh 4096 1337 | ./bin/stdin
+pitch: 1337.01
+```
 
 ### Build/install
 

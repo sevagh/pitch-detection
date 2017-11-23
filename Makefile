@@ -34,7 +34,11 @@ install:
 	@cp $(LIBDIR)/pitch_detection.so $(INSTALLLIB)
 
 
-example: pitch_detection.so $(EXAMPLEDIR)/sinewave.cpp
+example: sinewave stdin
+
+sinewave: pitch_detection.so $(EXAMPLEDIR)/sinewave.cpp
+
+stdin: pitch_detection.so $(EXAMPLEDIR)/stdin.cpp
 
 $(EXAMPLEDIR)/*.cpp: $(LIBDIR)/pitch_detection.so
 	$(CXX) $@ $^ $(CXX_FLAGS) -o $(BINDIR)/$(basename $(notdir $@)) -I$(INCLUDEDIR) -lgflags
