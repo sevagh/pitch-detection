@@ -35,8 +35,6 @@ if [ -z "${SIZE}" ] || [ -z "${FREQ}" ]; then
     usage
 fi
 
-printf "generating a sinewave of size %s, freq %s Hz, sample rate %s Hz to stdout...\n" "${SIZE}" "${FREQ}" "${SAMPLERATE}" >&2 
-
 echo "#include <stdio.h>
 #include <math.h>
 
@@ -73,7 +71,5 @@ int main() {
 }" | "${CC}" -x c -o "${EXECUTABLE_LOCATION}" -lm -
 
 "${EXECUTABLE_LOCATION}"
-
-printf "Cleaning up executable...\n" >&2
 
 rm "${EXECUTABLE_LOCATION}"
