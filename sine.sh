@@ -10,12 +10,16 @@ function usage() {
     exit 1
 }
 
-round() {
-    echo $(printf %.$2f $(echo "scale=$2;(((10^$2)*$1)+0.5)/(10^$2)" | bc))
+function round() {
+    echo $(printf %.$2f $(compute "scale=$2;(((10^$2)*$1)+0.5)/(10^$2)"))
 }
 
-trunc() {
+function trunc() {
     echo ${1%%.*}
+}
+
+function compute() {
+    bc -l <<< "${1}"
 }
 
 while getopts ":h" opt; do
@@ -43,20 +47,20 @@ fi
 
 declare -a LUT=() SINE=()
 
-lut_size=$(round `echo "${SIZE}"/2 | bc -l` 0)
-delta_phi=`echo "${FREQ}"*"${lut_size}"*1/"${SAMPLERATE}" | bc -l` 
+lut_size=$(trunc $(compute "${SIZE}"/2))
+delta_phi=$(compute "${FREQ}*${lut_size}*1/${SAMPLERATE}")
 phase=0.0
 
 for ((i=0; i<lut_size; ++i)); do
-    LUT+=($(round `echo "32767 * s(2 * ${PI} * ${i}/${lut_size})" | bc -l`  0))
+    LUT+=($(round $(compute "32767 * s(2 * ${PI} * ${i}/${lut_size})")  0))
 done
 
 for ((i=0; i<SIZE; ++i)); do
     val=${LUT[$(trunc ${phase} 0)]}
     SINE+=(${val})
-    phase=`echo "${phase}+${delta_phi}" | bc -l`
-    if [ "`echo "${phase}>=${lut_size}" | bc -l`" -eq "1" ]; then
-        phase=`echo "${phase}-${lut_size}" | bc -l`
+    phase=$(compute "${phase}+${delta_phi}")
+    if [ "$(compute "${phase}>=${lut_size}")" -eq "1" ]; then
+        phase=$(compute "${phase}-${lut_size}")
     fi
 done
 
