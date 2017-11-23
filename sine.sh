@@ -5,11 +5,17 @@ set -o nounset
 set -o pipefail
 set -o errexit
 
-CC="${CC:-gcc}"
-
 function usage() {
     printf "usage:\n\t%s <size> <freq in Hz> [<samplerate in Hz>]\n" "${0##*/}" >&2
     exit 1
+}
+
+round() {
+    echo $(printf %.$2f $(echo "scale=$2;(((10^$2)*$1)+0.5)/(10^$2)" | bc))
+}
+
+trunc() {
+    echo ${1%%.*}
 }
 
 while getopts ":h" opt; do
@@ -29,47 +35,29 @@ SIZE=${1:-}
 FREQ=${2:-}
 SAMPLERATE=${3:-48000}
 
-EXECUTABLE_LOCATION="/tmp/sinewave_exec_$(date -u +%s)"
+PI=3.14159265358979323846
 
 if [ -z "${SIZE}" ] || [ -z "${FREQ}" ]; then
     usage
 fi
 
-echo "#include <stdio.h>
-#include <math.h>
+declare -a LUT=() SINE=()
 
-#define M_PI 3.14159265358979323846
+lut_size=$(round `echo "${SIZE}"/2 | bc -l` 0)
+delta_phi=`echo "${FREQ}"*"${lut_size}"*1/"${SAMPLERATE}" | bc -l` 
+phase=0.0
 
-void generate_sinewave(double *sinewave, int size, double frequency, int sample_rate)
-{
-        int lut_size = size/4;
+for ((i=0; i<lut_size; ++i)); do
+    LUT+=($(round `echo "32767 * s(2 * ${PI} * ${i}/${lut_size})" | bc -l`  0))
+done
 
-        int lut[lut_size];
+for ((i=0; i<SIZE; ++i)); do
+    val=${LUT[$(trunc ${phase} 0)]}
+    SINE+=(${val})
+    phase=`echo "${phase}+${delta_phi}" | bc -l`
+    if [ "`echo "${phase}>=${lut_size}" | bc -l`" -eq "1" ]; then
+        phase=`echo "${phase}-${lut_size}" | bc -l`
+    fi
+done
 
-        double doublef = (double) frequency;
-        double delta_phi = doublef * lut_size * 1.0 / sample_rate;
-        double phase = 0.0;
-
-        for (int i = 0; i < lut_size; ++i)
-                lut[i] = (int) roundf(0x7FFF * sinf(2.0 * M_PI * i / lut_size));
-
-        for (int i = 0; i < size/2; ++i) {
-                int val = lut[(int) phase];
-                sinewave[i] = val;
-                phase += delta_phi;
-                if (phase >= lut_size) phase -= lut_size;
-        }
-}
-
-int main() {
-        int size = "${SIZE}";
-        double sinewave[size];
-        generate_sinewave(sinewave, size, "${FREQ}", "${SAMPLERATE}");
-        for (int i = 0; i < size; ++i)
-                printf(\"%f\\n\", sinewave[i]);
-        return 0;
-}" | "${CC}" -x c -o "${EXECUTABLE_LOCATION}" -lm -
-
-"${EXECUTABLE_LOCATION}"
-
-rm "${EXECUTABLE_LOCATION}"
+for i in ${SINE[@]}; do echo $i; done
