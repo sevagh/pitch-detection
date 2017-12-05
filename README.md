@@ -36,6 +36,8 @@ pitch: 1337.01
 
 Switched from CMake to Make: `make && sudo make install`
 
+Dependencies (on Fedora): `dnf install gflags-devel fftw3-devel`
+
 To use in your code:
 
 ```
