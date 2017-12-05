@@ -5,13 +5,11 @@ set -o nounset
 set -o pipefail
 set -o errexit
 
+coproc cbc { bc -l; }
+
 function usage() {
     printf "usage:\n\t%s <size> <freq in Hz> [<samplerate in Hz>]\n" "${0##*/}" >&2
     exit 1
-}
-
-function round() {
-    echo $(printf %.$2f $(compute "scale=$2;(((10^$2)*$1)+0.5)/(10^$2)"))
 }
 
 function trunc() {
@@ -19,7 +17,10 @@ function trunc() {
 }
 
 function compute() {
-    bc -l <<< "${1}"
+    echo "${1}" >&"${cbc[1]}"
+    local retval
+    read retval <&"${cbc[0]}"
+    echo "${retval}"
 }
 
 while getopts ":h" opt; do
@@ -52,7 +53,7 @@ delta_phi=$(compute "${FREQ}*${lut_size}*1/${SAMPLERATE}")
 phase=0.0
 
 for ((i=0; i<lut_size; ++i)); do
-    LUT+=($(round $(compute "32767 * s(2 * ${PI} * ${i}/${lut_size})")  0))
+    LUT+=($(trunc $(compute "32767 * s(2 * ${PI} * ${i}/${lut_size})")  0))
 done
 
 for ((i=0; i<SIZE; ++i)); do
