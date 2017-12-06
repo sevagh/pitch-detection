@@ -1,5 +1,5 @@
 # sine-generator
-generate sinewaves with Bash and C
+generate sinewaves with Bash and `bc`
 
 ### coproc
 
