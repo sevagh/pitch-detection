@@ -5,7 +5,7 @@ OBJDIR	 	:= obj
 LIBDIR		:= lib
 INCLUDEDIR	:= include
 BINDIR		:= bin
-CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC -fext-numeric-literals
+CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC -fext-numeric-literals -ffast-math -flto
 OBJS  		:= $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 INSTALLHDR	:= /usr/local/include
 INSTALLLIB	:= /usr/local/lib
