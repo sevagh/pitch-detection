@@ -1,44 +1,51 @@
-#include <float.h>
 #include <algorithm>
-#include <vector>
-#include <numeric>
-#include <float.h>
-#include <iostream>
-#include <numeric>
 #include <complex>
-#include "./parabolic_interpolation.hpp"
-#include "./constants.hpp"
-#include <pitch_detection.hpp>
-#include "./xcorr.hpp"
+#include <float.h>
+#include <numeric>
+#include <pitch_detection.h>
+#include <pitch_detection_priv.h>
+#include <vector>
+extern "C" {
+#include <xcorr.h>
+}
 
-static std::vector<double> normalized_square_difference(const std::vector<double>&
-							audio_buffer)
+static std::vector<double>
+normalized_square_difference(const std::vector<double> &data)
 {
-	int size = audio_buffer.size();
-	int size2 = 2*size-1;
+	int size = data.size();
+	int size2 = 2 * size - 1;
 
-	std::vector<std::complex<double>> acf(size2);
-	std::vector<double> acf_real{};
+	std::vector<std::complex<double>> acf_complex(size2);
+	std::vector<double> acf_real(size);
+	std::vector<double> acf_real_2(size);
 
-	xcorr_fftw_r2c(audio_buffer, audio_buffer, acf, size);
+	xcorr_fftw_r2c(&data[0], &data[0], &acf_complex[0], size);
 
-	for (auto it = acf.begin() + size2/2; it != acf.end(); ++it)
-		acf_real.push_back((*it).real()/acf[size2/2].real());
+	for (int i = 0; i < size; ++i)
+		acf_real[i] =
+		    (acf_complex[i + size2 / 2]).real() / acf_complex[size2 / 2].real();
+
+	for (auto it = acf_complex.begin() + size2/2; it != acf_complex.end(); ++it)
+		acf_real_2.push_back((*it).real()/acf_complex[size2/2].real());
 
 	return acf_real;
 }
 
-static std::vector<int> peak_picking(const std::vector<double>& nsdf)
+static std::vector<int>
+peak_picking(const std::vector<double> &nsdf)
 {
 	std::vector<int> max_positions{};
 	int pos = 0;
 	int cur_max_pos = 0;
 	ssize_t size = nsdf.size();
 
-	while (pos < (size - 1) / 3 && nsdf[pos] > 0) pos++;
-	while (pos < size - 1 && nsdf[pos] <= 0.0) pos++;
+	while (pos < (size - 1) / 3 && nsdf[pos] > 0)
+		pos++;
+	while (pos < size - 1 && nsdf[pos] <= 0.0)
+		pos++;
 
-	if (pos == 0) pos = 1;
+	if (pos == 0)
+		pos = 1;
 
 	while (pos < size - 1) {
 		if (nsdf[pos] > nsdf[pos - 1] && nsdf[pos] >= nsdf[pos + 1]) {
@@ -65,9 +72,10 @@ static std::vector<int> peak_picking(const std::vector<double>& nsdf)
 	return max_positions;
 }
 
-double get_pitch_mpm(const std::vector<double>& audio_buffer, int sample_rate)
+double
+get_pitch_mpm(const std::vector<double> &data, int sample_rate)
 {
-	std::vector<double> nsdf = normalized_square_difference(audio_buffer);
+	std::vector<double> nsdf = normalized_square_difference(data);
 	std::vector<int> max_positions = peak_picking(nsdf);
 	std::vector<std::pair<double, double>> estimates;
 
@@ -82,7 +90,8 @@ double get_pitch_mpm(const std::vector<double>& audio_buffer, int sample_rate)
 		}
 	}
 
-	if (estimates.empty()) return -1;
+	if (estimates.empty())
+		return -1;
 
 	double actual_cutoff = MPM_CUTOFF * highest_amplitude;
 	double period = 0;

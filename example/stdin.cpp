@@ -4,7 +4,7 @@
 #include <gflags/gflags.h>
 #include <iostream>
 #include <limits>
-#include <pitch_detection.hpp>
+#include <pitch_detection.h>
 #include <utility>
 #include <vector>
 
