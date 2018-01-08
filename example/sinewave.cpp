@@ -1,18 +1,18 @@
-#include "./time_template.hpp"
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <cerrno>
 #include <functional>
-#include <gflags/gflags.h>
 #include <iostream>
-#include <limits>
-#include <pitch_detection.hpp>
+#include <pitch_detection.h>
 #include <utility>
 #include <vector>
+#include <gflags/gflags.h>
 
-DEFINE_double(freq, -1, "Sinewave frequency");
+DEFINE_double(freq, -1, "Sinewave frequency hz");
 DEFINE_uint64(size, 4096, "Sinewave size");
+DEFINE_uint64(sample_rate, 48000, "Sample rate hz");
 DEFINE_string(algo, "mpm", "Algorithm to test");
 
 static std::vector<double>
@@ -30,24 +30,10 @@ main(int argc, char **argv)
 		return -1;
 	}
 
-	auto x = generate_sinewave(FLAGS_size, FLAGS_freq, 48000);
-	double pitch = 0.0f;
-	std::function<double(std::vector<double> &, int)> pitch_func;
+	auto x = generate_sinewave(FLAGS_size, FLAGS_freq, FLAGS_sample_rate);
 
-	if (FLAGS_algo == "mpm") {
-		pitch_func = get_pitch_mpm;
-	} else if (FLAGS_algo == "autocorrelation") {
-		pitch_func = get_pitch_autocorrelation;
-	} else if (FLAGS_algo == "yin") {
-		pitch_func = get_pitch_yin;
-	} else {
-		std::cout << FLAGS_algo << " is not a valid algo\n";
-		std::exit(-1);
-	}
+	double pitch = pitch_algorithms[pitch_types[FLAGS_algo]](x, FLAGS_sample_rate);
 
-	//std::cout << measure<>::execution(1000, pitch_func, x, 48000) << std::endl;
-
-	pitch = pitch_func(x, 48000);
 	std::cout << "Freq: " << FLAGS_freq << "\tpitch: " << pitch << std::endl;
 	return 0;
 }
