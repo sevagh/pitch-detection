@@ -5,9 +5,7 @@
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
 #include <vector>
-extern "C" {
 #include <xcorr.h>
-}
 
 static std::vector<double>
 normalized_square_difference(const std::vector<double> &data)
@@ -19,7 +17,7 @@ normalized_square_difference(const std::vector<double> &data)
 	std::vector<double> acf_real(size);
 	std::vector<double> acf_real_2(size);
 
-	xcorr_fftw_r2c(&data[0], &data[0], &acf_complex[0], size);
+	xcorr(data, data, acf_complex, size);
 
 	for (int i = 0; i < size; ++i)
 		acf_real[i] =

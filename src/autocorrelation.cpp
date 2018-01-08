@@ -6,10 +6,7 @@
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
 #include <vector>
-extern "C" {
-#include <complex.h>
 #include <xcorr.h>
-}
 
 static double
 get_acf_periodicity(const std::vector<double> &data)
@@ -34,7 +31,7 @@ get_pitch_autocorrelation(const std::vector<double> &data, int sample_rate)
 	int size = data.size();
 	int size2 = 2 * size - 1;
 	std::vector<std::complex<double>> acf_complex(size2);
-	xcorr_fftw_r2c(data.data(), data.data(), acf_complex.data(), size);
+	xcorr(data, data, acf_complex, size);
 	std::vector<double> acf_real(size2);
 
 	for (int i = 0; i < size2; ++i)
