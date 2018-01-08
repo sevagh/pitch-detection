@@ -1,11 +1,11 @@
 #include <algorithm>
 #include <cmath>
 #include <complex>
+#include <iostream>
 #include <numeric>
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
 #include <vector>
-#include <iostream>
 extern "C" {
 #include <complex.h>
 #include <xcorr.h>

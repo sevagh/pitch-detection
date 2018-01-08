@@ -25,8 +25,9 @@ normalized_square_difference(const std::vector<double> &data)
 		acf_real[i] =
 		    (acf_complex[i + size2 / 2]).real() / acf_complex[size2 / 2].real();
 
-	for (auto it = acf_complex.begin() + size2/2; it != acf_complex.end(); ++it)
-		acf_real_2.push_back((*it).real()/acf_complex[size2/2].real());
+	for (auto it = acf_complex.begin() + size2 / 2; it != acf_complex.end();
+	     ++it)
+		acf_real_2.push_back((*it).real() / acf_complex[size2 / 2].real());
 
 	return acf_real;
 }
