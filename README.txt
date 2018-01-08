@@ -12,10 +12,9 @@ MPM performs best on real musical instruments and voice; see https://github.com/
 
 ### EXAMPLES
 
-`make sinewave stdin`
+Use https://github.com/sevagh/sine-generator to generate sine waves and feed the result to stdin.cpp:
 
-* Sinewave: generate a sinewave and feed it to pitch detection
-* Stdin: get the pitch of an array piped through stdin
+`make stdin && wget -qO- "https://raw.githubusercontent.com/sevagh/sine-generator/master/sine.sh" | sh -s -- 4096 1337 | ./bin/stdin --sample_rate 48000`
 
 ### INSTALLING
 
