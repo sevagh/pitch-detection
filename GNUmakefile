@@ -13,10 +13,15 @@ INSTALLLIB	:= /usr/local/lib
 
 .PHONY: all
 
-all: pitch_detection.so
+all: build
+
+libxcorr:
+	@cd libxcorr && mkdir -p build && cd build && cmake .. && make && sudo make install
 
 lint:
 	@$(foreach file,$(SRCS) $(HDRS),clang-format -i $(file);)
+
+build: pitch_detection.so libxcorr
 
 pitch_detection.so: directories $(OBJS)
 	$(CXX) $(OBJS) -shared -o $(LIBDIR)/$@ -lxcorr $(CXX_FLAGS)
@@ -30,12 +35,9 @@ directories:
 clean:
 	-rm -rf $(OBJDIR) $(LIBDIR) $(BINDIR)
 
-src_clean:
-	-find . -type f -name '*~' -exec rm -rf {} \;
-
-install:
-	@cp $(INCLUDEDIR)/pitch_detection.h $(INSTALLHDR)
-	@cp $(LIBDIR)/pitch_detection.so $(INSTALLLIB)
+install: build
+	@sudo cp $(INCLUDEDIR)/pitch_detection.h $(INSTALLHDR)
+	@sudo cp $(LIBDIR)/pitch_detection.so $(INSTALLLIB)
 
 example: sinewave stdin
 
@@ -45,3 +47,5 @@ stdin: pitch_detection.so $(EXAMPLEDIR)/stdin.cpp
 
 $(EXAMPLEDIR)/*.cpp: $(LIBDIR)/pitch_detection.so
 	$(CXX) $@ $^ $(CXX_FLAGS) -o $(BINDIR)/$(basename $(notdir $@)) -I$(INCLUDEDIR) -lgflags
+
+.PHONY: libxcorr clean

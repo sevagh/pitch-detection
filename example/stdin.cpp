@@ -7,6 +7,7 @@
 #include <pitch_detection.h>
 #include <utility>
 #include <vector>
+#include "stdin.h"
 
 DEFINE_double(sample_rate, 48000, "Input sample rate");
 DEFINE_string(algo, "mpm", "Algorithm to test");

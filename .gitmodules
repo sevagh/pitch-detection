@@ -1,0 +1,3 @@
+[submodule "libxcorr"]
+	path = libxcorr
+	url = git@github.com:sevagh/libxcorr.git
