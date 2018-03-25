@@ -41,7 +41,7 @@ install: build
 
 example: stdin
 
-stdin: install
+stdin: directories
 	$(CXX) $(EXAMPLEDIR)/stdin.cpp $(CXX_FLAGS) -o $(BINDIR)/$(basename $(notdir $@)) -lgflags -lpitch_detection
 
 .PHONY: libxcorr clean
