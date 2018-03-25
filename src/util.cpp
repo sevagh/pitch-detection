@@ -22,8 +22,8 @@ zero_pad(std::vector<double> &original_signal)
 }
 
 static double
-get_snr(double frequency, std::vector<double> &data, double sampling_rate,
-    double (*fp)(double, std::vector<double> &, double))
+get_snr(double frequency, const std::vector<double> &data, double sampling_rate,
+    double (*fp)(double, const std::vector<double> &, double))
 {
 	double snr;
 
@@ -42,8 +42,8 @@ get_snr(double frequency, std::vector<double> &data, double sampling_rate,
 }
 
 double
-looper(std::vector<double> &data, int sampling_rate,
-    double (*fp)(double, std::vector<double> &, double))
+looper(const std::vector<double> &data, int sampling_rate,
+    double (*fp)(double, const std::vector<double> &, double))
 {
 	double freq_best = 0.0;
 	double snr_max_loc = -999.0;
