@@ -5,6 +5,8 @@ A collection of C++ pitch detection algorithms, all based on autocorrelation wit
 * McLeod Pitch Method
 * YIN
 * Autocorrelation
+* DFT
+* Goertzel
 
 YIN and McLeod implementations are inspired by https://github.com/JorenSix/TarsosDSP.
 

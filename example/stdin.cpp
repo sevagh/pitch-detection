@@ -23,7 +23,7 @@ main(int argc, char **argv)
 	while (std::cin >> n)
 		x.push_back(n);
 
-	std::cout << x.size() << std::endl;
+	std::cout << "Size: " << x.size() << std::endl;
 
 	double pitch =
 	    pitch_algorithms[pitch_types[FLAGS_algo]](x, FLAGS_sample_rate);
