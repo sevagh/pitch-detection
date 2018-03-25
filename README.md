@@ -20,20 +20,27 @@ Flags from example/stdin.cpp:
 
 ### Examples
 
+`make examples`
+
 Use https://github.com/sevagh/sine-generator to generate sine waves and feed the result to stdin.cpp:
 
 ```
-$ make stdin
 $ wget -qO- "https://raw.githubusercontent.com/sevagh/sine-generator/master/sine.sh" | sh -s -- 4096 1337 | ./bin/stdin --sample_rate 48000
 Pitch 1337.05
+```
+
+Use `examples/sinewave.cpp` for the same thing:
+
+```
+$ ./bin/sinewave --freq 1337 --algo goertzel
+Freq: 1337      pitch: 1338.89
 ```
 
 Alternatively some samples are available at [samples](./samples):
 
 ```
-$ make stdin
-$ ./bin/stdin <samples/1337_hz.txt
-Pitch: 1337.05
+$ ./bin/stdin --algo yin <samples/1337_hz.txt
+Pitch: 1337.49
 ```
 
 ### Examples

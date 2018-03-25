@@ -1,4 +1,4 @@
-#include "stdin.h"
+#include "example.h"
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
