@@ -1,3 +1,4 @@
+#include "example.h"
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
@@ -7,7 +8,6 @@
 #include <pitch_detection.h>
 #include <utility>
 #include <vector>
-#include "stdin.h"
 
 DEFINE_double(sample_rate, 48000, "Input sample rate");
 DEFINE_string(algo, "mpm", "Algorithm to test");
@@ -25,7 +25,8 @@ main(int argc, char **argv)
 
 	std::cout << x.size() << std::endl;
 
-	double pitch = pitch_algorithms[pitch_types[FLAGS_algo]](x, FLAGS_sample_rate);
+	double pitch =
+	    pitch_algorithms[pitch_types[FLAGS_algo]](x, FLAGS_sample_rate);
 
 	std::cout << "Pitch: " << pitch << std::endl;
 	return 0;

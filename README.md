@@ -1,4 +1,4 @@
-### PITCH DETECTION
+### Pitch detection algorithms
 
 A collection of C++ pitch detection algorithms, all based on autocorrelation with FFTW3.
 
@@ -10,13 +10,40 @@ YIN and McLeod implementations are inspired by https://github.com/JorenSix/Tarso
 
 MPM performs best on real musical instruments and voice; see https://github.com/sevagh/Pitcha and https://github.com/sevagh/transcribe, two of my projects which use the MPM.
 
-### EXAMPLES
+### Usage
+
+```
+Flags from example/stdin.cpp:
+    -algo (Algorithm to test) type: string default: "mpm"
+    -sample_rate (Input sample rate) type: double default: 48000
+```
+
+### Examples
+
+`make examples`
 
 Use https://github.com/sevagh/sine-generator to generate sine waves and feed the result to stdin.cpp:
 
-`make stdin && wget -qO- "https://raw.githubusercontent.com/sevagh/sine-generator/master/sine.sh" | sh -s -- 4096 1337 | ./bin/stdin --sample_rate 48000`
+```
+$ wget -qO- "https://raw.githubusercontent.com/sevagh/sine-generator/master/sine.sh" | sh -s -- 4096 1337 | ./bin/stdin --sample_rate 48000
+Pitch 1337.05
+```
 
-### INSTALLING
+Use `examples/sinewave.cpp` for the same thing:
+
+```
+$ ./bin/sinewave --freq 1337 --algo goertzel
+Freq: 1337      pitch: 1338.89
+```
+
+Alternatively some samples are available at [samples](./samples):
+
+```
+$ ./bin/stdin --algo yin <samples/1337_hz.txt
+Pitch: 1337.49
+```
+
+### Examples
 
 Dependent on https://github.com/sevagh/libxcorr and gflags.
 
