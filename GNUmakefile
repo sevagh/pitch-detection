@@ -13,15 +13,15 @@ INSTALLLIB	:= /usr/lib
 
 .PHONY: all
 
-all: build install
+all: build
 
 libxcorr:
-	@cd libxcorr && mkdir -p build && cd build && cmake .. && make && sudo make install
+	@cd libxcorr && make && sudo make install
 
 lint:
 	@$(foreach file,$(SRCS) $(HDRS),clang-format -i $(file);)
 
-build: libpitch_detection.so libxcorr
+build: libpitch_detection.so
 
 libpitch_detection.so: directories $(OBJS)
 	$(CXX) $(OBJS) -shared -o $(LIBDIR)/$@ -lxcorr $(CXX_FLAGS)
@@ -36,12 +36,12 @@ clean:
 	-rm -rf $(OBJDIR) $(LIBDIR) $(BINDIR)
 
 install: build
-	sudo cp $(INCLUDEDIR)/pitch_detection.h $(INSTALLHDR)
-	sudo cp $(LIBDIR)/libpitch_detection.so $(INSTALLLIB)
+	cp $(INCLUDEDIR)/pitch_detection.h $(INSTALLHDR)
+	cp $(LIBDIR)/libpitch_detection.so $(INSTALLLIB)
 
 example: stdin
 
-stdin:
+stdin: install
 	$(CXX) $(EXAMPLEDIR)/stdin.cpp $(CXX_FLAGS) -o $(BINDIR)/$(basename $(notdir $@)) -lgflags -lpitch_detection
 
 .PHONY: libxcorr clean
