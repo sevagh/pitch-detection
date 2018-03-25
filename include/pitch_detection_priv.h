@@ -30,7 +30,7 @@ void
 hanning_window(std::vector<double> &signal);
 
 double
-looper(std::vector<double> &data, int sampling_rate,
-    double (*fp)(double, std::vector<double> &, double));
+looper(const std::vector<double> &data, int sampling_rate,
+    double (*fp)(double, const std::vector<double> &, double));
 
 #endif /* PITCH_DETECTION__PRIV_H */

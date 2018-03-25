@@ -3,7 +3,8 @@
 #include <vector>
 
 static double
-goertzel_energy(double frequency, std::vector<double> &data, double sample_rate)
+goertzel_energy(
+    double frequency, const std::vector<double> &data, double sample_rate)
 {
 	double doubleN = (double)data.size();
 
@@ -34,7 +35,7 @@ goertzel_energy(double frequency, std::vector<double> &data, double sample_rate)
 }
 
 double
-get_pitch_goertzel(std::vector<double> &data, int sample_rate)
+get_pitch_goertzel(const std::vector<double> &data, int sample_rate)
 {
 	return looper(data, sample_rate, goertzel_energy);
 }
