@@ -17,7 +17,8 @@ std::pair<double, double>
 parabolic_interpolation(const std::vector<double> &array, double x);
 
 void
-zero_pad(std::vector<double> &original_signal, unsigned int size, unsigned int pos);
+zero_pad(
+    std::vector<double> &original_signal, unsigned int size, unsigned int pos);
 
 void
 hanning_window(std::vector<double> &signal);
@@ -25,11 +26,5 @@ hanning_window(std::vector<double> &signal);
 double
 looper(const std::vector<double> &data, int sampling_rate,
     double (*fp)(double, const std::vector<double> &, double));
-
-std::vector<double>
-acorr_r(const std::vector<double> &signal);
-
-std::vector<double>
-acorr_r(const std::vector<double> &signal, bool normalize);
 
 #endif /* PITCH_DETECTION__PRIV_H */
