@@ -1,6 +1,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 #include <fstream>
 #include <cerrno>
 #include <functional>
@@ -8,13 +9,7 @@
 #include <pitch_detection.h>
 #include <utility>
 #include <vector>
-#include <gflags/gflags.h>
 #include "example.h"
-
-DEFINE_double(freq, -1, "Sinewave frequency hz");
-DEFINE_uint64(size, 4096, "Sinewave size");
-DEFINE_uint64(sample_rate, 48000, "Sample rate hz");
-DEFINE_string(algo, "mpm", "Algorithm to test");
 
 static std::vector<double>
 generate_sinewave(size_t size, double frequency, int sample_rate);
@@ -22,20 +17,21 @@ generate_sinewave(size_t size, double frequency, int sample_rate);
 int
 main(int argc, char **argv)
 {
-	gflags::SetUsageMessage("help\n");
-	gflags::ParseCommandLineFlags(&argc, &argv, true);
-
-	bool freq_valid = (FLAGS_freq > 0.0);
-	if (!freq_valid) {
-		std::cerr << "Please define valid --freq" << std::endl;
+	if (argc != 5) {
+		std::cerr << "Usage: sinewave <freq> <algo> <size> <sample_rate>" << std::endl;
 		return -1;
 	}
 
-	auto x = generate_sinewave(2*FLAGS_size, FLAGS_freq, FLAGS_sample_rate);
+	double freq = std::stod(argv[1]);
+	std::string algo(argv[2]);
+	int size = std::stoi(argv[3]);
+	int sample_rate = std::stoi(argv[4]);
 
-	double pitch = pitch_algorithms[pitch_types[FLAGS_algo]](x, FLAGS_sample_rate);
+	auto x = generate_sinewave(2*size, freq, sample_rate);
 
-	std::cout << "Freq: " << FLAGS_freq << "\tpitch: " << pitch << std::endl;
+	double pitch = pitch_algorithms[pitch_types[algo]](x, sample_rate);
+
+	std::cout << "Freq: " << freq << "\tpitch: " << pitch << std::endl;
 	return 0;
 }
 
