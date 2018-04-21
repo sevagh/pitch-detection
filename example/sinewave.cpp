@@ -31,7 +31,7 @@ main(int argc, char **argv)
 		return -1;
 	}
 
-	auto x = generate_sinewave(FLAGS_size, FLAGS_freq, FLAGS_sample_rate);
+	auto x = generate_sinewave(2*FLAGS_size, FLAGS_freq, FLAGS_sample_rate);
 
 	double pitch = pitch_algorithms[pitch_types[FLAGS_algo]](x, FLAGS_sample_rate);
 
