@@ -1,6 +1,6 @@
 ### Pitch detection algorithms
 
-A collection of C++ pitch detection algorithms, all based on autocorrelation with FFTW3.
+A collection of C++ pitch detection algorithms.
 
 * McLeod Pitch Method
 * YIN
@@ -11,6 +11,16 @@ A collection of C++ pitch detection algorithms, all based on autocorrelation wit
 YIN and McLeod implementations are inspired by https://github.com/JorenSix/TarsosDSP.
 
 MPM performs best on real musical instruments and voice; see https://github.com/sevagh/Pitcha and https://github.com/sevagh/transcribe, two of my projects which use the MPM.
+
+### Install
+
+Dependent on FFTW3 and gflags.
+
+`make && sudo make install`.
+
+To use in your code:
+
+`#include <pitch_detection.h>` and `g++ [...] -lpitch_detection`
 
 ### Usage
 
@@ -44,13 +54,3 @@ Alternatively some samples are available at [samples](./samples):
 $ ./bin/stdin --algo yin <samples/1337_hz.txt
 Pitch: 1337.49
 ```
-
-### Examples
-
-Dependent on https://github.com/sevagh/libxcorr and gflags.
-
-`make && sudo make install`.
-
-To use in your code:
-
-`#include <pitch_detection.h>` and `g++ [...] -lpitch_detection`
