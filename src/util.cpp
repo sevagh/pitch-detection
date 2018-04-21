@@ -16,7 +16,8 @@ hanning_window(std::vector<double> &signal)
 }
 
 void
-zero_pad(std::vector<double> &original_signal, unsigned int size, unsigned int pos)
+zero_pad(
+    std::vector<double> &original_signal, unsigned int size, unsigned int pos)
 {
 	original_signal.insert(original_signal.begin() + pos, size, 0.0);
 }
