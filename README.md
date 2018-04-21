@@ -4,7 +4,7 @@ A collection of C++ pitch detection algorithms.
 
 * McLeod Pitch Method
 * YIN
-* Autocorrelation
+* ~~Autocorrelation~~ removed because it gives incorrect results - MPM is an enhancement on standard autocorrelation
 * DFT
 * Goertzel
 
