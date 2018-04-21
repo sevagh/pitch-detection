@@ -10,6 +10,9 @@
 #include <utility>
 #include <vector>
 #include "example.h"
+extern "C" {
+#include <fftw3.h>
+}
 
 static std::vector<double>
 generate_sinewave(size_t size, double frequency, int sample_rate);
@@ -41,7 +44,7 @@ generate_sinewave(size_t size, double frequency, int sample_rate)
 	size_t lut_size = size / 4;
 
 	std::vector<int> lut{};
-	std::vector<double> tone_single_channel{};
+	double *_tone_single_channel = fftw_alloc_real(size / 2);
 
 	double doublef = (double)frequency;
 	double delta_phi = doublef * lut_size * 1.0 / sample_rate;
@@ -53,11 +56,12 @@ generate_sinewave(size_t size, double frequency, int sample_rate)
 
 	for (int i = 0; i < signed(size / 2); ++i) {
 		int val = double(lut[(int)phase]);
-		tone_single_channel.push_back(val);
+		_tone_single_channel[i] = val;
 		phase += delta_phi;
 		if (phase >= lut_size)
 			phase -= lut_size;
 	}
 
+	std::vector<double> tone_single_channel(_tone_single_channel, _tone_single_channel + size / 2);
 	return tone_single_channel;
 }

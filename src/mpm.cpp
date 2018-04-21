@@ -2,6 +2,8 @@
 #include <cassert>
 #include <complex>
 #include <float.h>
+#include <cstring>
+#include <cmath>
 #include <numeric>
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
@@ -9,13 +11,6 @@
 extern "C" {
 #include <fftw3.h>
 }
-
-/*
-#include <complex>
-#include <cstdlib>
-#include <cstring>
-#include <pitch_detection_priv.h>
-*/
 
 static std::vector<double>
 acorr_r(const std::vector<double> &signal)
@@ -43,27 +38,32 @@ acorr_r(const std::vector<double> &signal)
 	zero_pad(signala_ext, N2 - N, 0);     // signala on the right
 	zero_pad(signalb_ext, N2 - N, N - 1); // signalb on the left
 
-	std::vector<std::complex<double>> outa(N2, {0.0, 0.0});
-	std::vector<std::complex<double>> outb(N2, {0.0, 0.0});
-	std::vector<std::complex<double>> out(N2, {0.0, 0.0});
+	auto *outa = fftw_alloc_complex(N2);
+	auto *outb = fftw_alloc_complex(N2);
+	auto *out = fftw_alloc_complex(N2);
 	std::vector<double> result(N2, 0.0);
 
 	fftw_plan pa =
 	    fftw_plan_dft_r2c_1d(N2, reinterpret_cast<double *>(signala_ext.data()),
-	        reinterpret_cast<fftw_complex *>(outa.data()), FFTW_ESTIMATE);
+	        outa, FFTW_ESTIMATE);
 	fftw_plan pb =
 	    fftw_plan_dft_r2c_1d(N2, reinterpret_cast<double *>(signalb_ext.data()),
-	        reinterpret_cast<fftw_complex *>(outb.data()), FFTW_ESTIMATE);
+	        outb, FFTW_ESTIMATE);
 	fftw_plan px =
-	    fftw_plan_dft_c2r_1d(N2, reinterpret_cast<fftw_complex *>(out.data()),
+	    fftw_plan_dft_c2r_1d(N2, out,
 	        reinterpret_cast<double *>(result.data()), FFTW_ESTIMATE);
 
 	fftw_execute(pa);
 	fftw_execute(pb);
 
 	std::complex<double> scale = {1.0 / (double)N2, 0.0};
-	for (int i = 0; i < N2; ++i)
-		out[i] = outa[i] * conj(outb[i]) * scale;
+	for (int i = 0; i < N2; ++i) {
+		std::complex<double> a, b;
+		memcpy(&a, &outa[i], sizeof(fftw_complex));
+		memcpy(&b, &outb[i], sizeof(fftw_complex));
+		auto result = a * conj(b) * scale;
+		memcpy(&out[i], &result, sizeof(fftw_complex));
+	}
 
 	fftw_execute(px);
 
