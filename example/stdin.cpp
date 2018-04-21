@@ -2,22 +2,15 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
-#include <gflags/gflags.h>
 #include <iostream>
 #include <limits>
 #include <pitch_detection.h>
 #include <utility>
 #include <vector>
 
-DEFINE_double(sample_rate, 48000, "Input sample rate");
-DEFINE_string(algo, "mpm", "Algorithm to test");
-
 int
 main(int argc, char **argv)
 {
-	gflags::SetUsageMessage("help\n");
-	gflags::ParseCommandLineFlags(&argc, &argv, true);
-
 	std::vector<double> x;
 	double n;
 	while (std::cin >> n)
@@ -25,8 +18,16 @@ main(int argc, char **argv)
 
 	std::cout << "Size: " << x.size() << std::endl;
 
+	if (argc != 3) {
+		std::cerr << "Usage: stdin <algo> <sample_rate>" << std::endl;
+		return -1;
+	}
+
+	std::string algo(argv[1]);
+	int sample_rate = std::stoi(argv[2]);
+
 	double pitch =
-	    pitch_algorithms[pitch_types[FLAGS_algo]](x, FLAGS_sample_rate);
+	    pitch_algorithms[pitch_types[algo]](x, sample_rate);
 
 	std::cout << "Pitch: " << pitch << std::endl;
 	return 0;

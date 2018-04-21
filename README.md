@@ -14,7 +14,7 @@ MPM performs best on real musical instruments and voice; see https://github.com/
 
 ### Install
 
-Dependent on FFTW3 and gflags.
+Dependent on FFTW3.
 
 `make && sudo make install`.
 
