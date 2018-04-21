@@ -11,6 +11,11 @@
 int
 main(int argc, char **argv)
 {
+	if (argc != 3) {
+		std::cerr << "Usage: stdin <algo> <sample_rate>" << std::endl;
+		return -1;
+	}
+
 	std::vector<double> x;
 	double n;
 	while (std::cin >> n)
@@ -18,10 +23,6 @@ main(int argc, char **argv)
 
 	std::cout << "Size: " << x.size() << std::endl;
 
-	if (argc != 3) {
-		std::cerr << "Usage: stdin <algo> <sample_rate>" << std::endl;
-		return -1;
-	}
 
 	std::string algo(argv[1]);
 	int sample_rate = std::stoi(argv[2]);
