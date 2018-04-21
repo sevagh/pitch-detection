@@ -5,30 +5,6 @@
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
 #include <vector>
-#include <xcorr.h>
-
-static std::vector<double>
-normalized_square_difference(const std::vector<double> &data)
-{
-	int size = data.size();
-	int size2 = 2 * size - 1;
-
-	std::vector<std::complex<double>> acf_complex(size2);
-	std::vector<double> acf_real(size);
-	std::vector<double> acf_real_2(size);
-
-	xcorr(data, data, acf_complex, size);
-
-	for (int i = 0; i < size; ++i)
-		acf_real[i] =
-		    (acf_complex[i + size2 / 2]).real() / acf_complex[size2 / 2].real();
-
-	for (auto it = acf_complex.begin() + size2 / 2; it != acf_complex.end();
-	     ++it)
-		acf_real_2.push_back((*it).real() / acf_complex[size2 / 2].real());
-
-	return acf_real;
-}
 
 static std::vector<int>
 peak_picking(const std::vector<double> &nsdf)
@@ -74,7 +50,7 @@ peak_picking(const std::vector<double> &nsdf)
 double
 get_pitch_mpm(const std::vector<double> &data, int sample_rate)
 {
-	std::vector<double> nsdf = normalized_square_difference(data);
+	std::vector<double> nsdf = acorr_r(data, true);
 	std::vector<int> max_positions = peak_picking(nsdf);
 	std::vector<std::pair<double, double>> estimates;
 
