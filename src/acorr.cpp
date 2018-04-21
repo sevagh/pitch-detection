@@ -3,11 +3,11 @@
 #include <cstring>
 #include <vector>
 #include <pitch_detection_priv.h>
+#include <cassert>
+#include <iostream>
 extern "C" {
 #include <fftw3.h>
 }
-
-#include <cassert>
 
 std::vector<double>
 _acorr_r(const std::vector<double> &signal, bool normalize);
@@ -31,21 +31,23 @@ _acorr_r(const std::vector<double> &signal, bool normalize)
 	int N2 = 2 * N - 1;
 
 	/* https://stackoverflow.com/questions/466204/rounding-up-to-next-power-of-2 */
-	N2--;
-	N2 |= N2 >> 1;
-	N2 |= N2 >> 2;
-	N2 |= N2 >> 4;
-	N2 |= N2 >> 8;
-	N2 |= N2 >> 16;
-	N2++;
+	if (N2 & (N2 - 1)) {
+		N2--;
+		N2 |= N2 >> 1;
+		N2 |= N2 >> 2;
+		N2 |= N2 >> 4;
+		N2 |= N2 >> 8;
+		N2 |= N2 >> 16;
+		N2++;
+	}
 
 	assert(!(N2 & (N2 - 1)));
 
 	std::vector<double> signala_ext(signal);
 	std::vector<double> signalb_ext(signal);
 
-	zero_pad(signala_ext, N, N-1); //signala on the right
-	zero_pad(signalb_ext, N, 0); //signalb on the left
+	zero_pad(signala_ext, N2 - N, 0); //signala on the right
+	zero_pad(signalb_ext, N2 - N, N - 1); //signalb on the left
 
 	std::vector<std::complex<double>> outa(N2, {0.0, 0.0});
 	std::vector<std::complex<double>> outb(N2, {0.0, 0.0});
@@ -80,7 +82,7 @@ _acorr_r(const std::vector<double> &signal, bool normalize)
 	if (normalize) {
 		std::vector<double> normalized_result(N, 0.0);
 		for (int i = 0; i < N; ++i)
-			normalized_result[i] = result[i + N2 / 2] / result[N2 / 2];
+			normalized_result[i] = result[i + (N2 - N)] / result[N2 - N];
 		return normalized_result;
 	}
 
