@@ -1,9 +1,9 @@
 #include <algorithm>
 #include <cassert>
-#include <complex>
-#include <float.h>
-#include <cstring>
 #include <cmath>
+#include <complex>
+#include <cstring>
+#include <float.h>
 #include <numeric>
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
@@ -43,15 +43,12 @@ acorr_r(const std::vector<double> &signal)
 	auto *out = fftw_alloc_complex(N2);
 	std::vector<double> result(N2, 0.0);
 
-	fftw_plan pa =
-	    fftw_plan_dft_r2c_1d(N2, reinterpret_cast<double *>(signala_ext.data()),
-	        outa, FFTW_ESTIMATE);
-	fftw_plan pb =
-	    fftw_plan_dft_r2c_1d(N2, reinterpret_cast<double *>(signalb_ext.data()),
-	        outb, FFTW_ESTIMATE);
-	fftw_plan px =
-	    fftw_plan_dft_c2r_1d(N2, out,
-	        reinterpret_cast<double *>(result.data()), FFTW_ESTIMATE);
+	fftw_plan pa = fftw_plan_dft_r2c_1d(N2,
+	    reinterpret_cast<double *>(signala_ext.data()), outa, FFTW_ESTIMATE);
+	fftw_plan pb = fftw_plan_dft_r2c_1d(N2,
+	    reinterpret_cast<double *>(signalb_ext.data()), outb, FFTW_ESTIMATE);
+	fftw_plan px = fftw_plan_dft_c2r_1d(
+	    N2, out, reinterpret_cast<double *>(result.data()), FFTW_ESTIMATE);
 
 	fftw_execute(pa);
 	fftw_execute(pb);

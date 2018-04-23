@@ -34,7 +34,7 @@ main(int argc, char **argv)
 
 	double pitch = pitch_algorithms[pitch_types[algo]](x, sample_rate);
 
-	std::cout << "Freq: " << freq << "\tpitch: " << pitch << std::endl;
+	std::cout << "Size: " << size << "\tfreq: " << freq << "\tpitch: " << pitch << std::endl;
 	return 0;
 }
 
