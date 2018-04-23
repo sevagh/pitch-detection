@@ -21,15 +21,12 @@ main(int argc, char **argv)
 	while (std::cin >> n)
 		x.push_back(n);
 
-	std::cout << "Size: " << x.size() << std::endl;
-
-
 	std::string algo(argv[1]);
 	int sample_rate = std::stoi(argv[2]);
 
 	double pitch =
 	    pitch_algorithms[pitch_types[algo]](x, sample_rate);
 
-	std::cout << "Pitch: " << pitch << std::endl;
+	std::cout << "Size: " << x.size() << "\tpitch: " << pitch << std::endl;
 	return 0;
 }
