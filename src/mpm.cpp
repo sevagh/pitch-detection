@@ -35,8 +35,8 @@ acorr_r(const std::vector<double> &signal)
 	std::vector<double> signala_ext(signal);
 	std::vector<double> signalb_ext(signal);
 
-	zero_pad(signala_ext, N2 - N, 0);     // signala on the right
-	zero_pad(signalb_ext, N2 - N, N - 1); // signalb on the left
+	zero_pad(signala_ext, N2 - N, 0); // signala on the right
+	zero_pad(signalb_ext, N2 - N, N); // signalb on the left
 
 	auto *outa = fftw_alloc_complex(N2);
 	auto *outb = fftw_alloc_complex(N2);
