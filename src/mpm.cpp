@@ -8,9 +8,7 @@
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
 #include <vector>
-extern "C" {
-#include <fftw3.h>
-}
+#include <ffts/ffts.h>
 
 static std::vector<double>
 acorr_r(const std::vector<double> &signal)
@@ -32,47 +30,36 @@ acorr_r(const std::vector<double> &signal)
 
 	assert(!(N2 & (N2 - 1)));
 
-	std::vector<double> signala_ext(signal);
-	std::vector<double> signalb_ext(signal);
+	auto fft_forward = ffts_init_1d(N2, false);
+	auto fft_backward = ffts_init_1d(N2, false);
+	
+	std::vector<std::complex<double>> signala_ext(N2);
+	std::vector<std::complex<double>> signalb_ext(N2);
 
-	zero_pad(signala_ext, N2 - N, 0); // signala on the right
-	zero_pad(signalb_ext, N2 - N, N); // signalb on the left
-
-	auto *outa = fftw_alloc_complex(N2);
-	auto *outb = fftw_alloc_complex(N2);
-	auto *out = fftw_alloc_complex(N2);
-	std::vector<double> result(N2, 0.0);
-
-	fftw_plan pa = fftw_plan_dft_r2c_1d(N2,
-	    reinterpret_cast<double *>(signala_ext.data()), outa, FFTW_ESTIMATE);
-	fftw_plan pb = fftw_plan_dft_r2c_1d(N2,
-	    reinterpret_cast<double *>(signalb_ext.data()), outb, FFTW_ESTIMATE);
-	fftw_plan px = fftw_plan_dft_c2r_1d(
-	    N2, out, reinterpret_cast<double *>(result.data()), FFTW_ESTIMATE);
-
-	fftw_execute(pa);
-	fftw_execute(pb);
-
-	std::complex<double> scale = {1.0 / (double)N2, 0.0};
-	for (int i = 0; i < N2; ++i) {
-		std::complex<double> a, b;
-		memcpy(&a, &outa[i], sizeof(fftw_complex));
-		memcpy(&b, &outb[i], sizeof(fftw_complex));
-		auto result = a * conj(b) * scale;
-		memcpy(&out[i], &result, sizeof(fftw_complex));
+	for (int i = 0; i < N; i++) {
+		signala_ext[(N2 - N) + i] = {signal[i], 0.0};
+		signalb_ext[i] = {signal[i], 0.0};
 	}
 
-	fftw_execute(px);
+	std::vector<std::complex<double>> outa(N2);
+	std::vector<std::complex<double>> outb(N2);
+	std::vector<std::complex<double>> out(N2);
+	std::vector<std::complex<double>> result(N2);
 
-	fftw_destroy_plan(pa);
-	fftw_destroy_plan(pb);
-	fftw_destroy_plan(px);
+	ffts_execute(fft_forward, signala_ext.data(), outa.data());
+	ffts_execute(fft_forward, signalb_ext.data(), outb.data());
 
-	fftw_cleanup();
+	for (int i = 0; i < N2; ++i)
+		out[i] = outa[i] * std::conj(outb[i]);
+
+	ffts_execute(fft_backward, out.data(), result.data());
+
+	ffts_free(fft_forward);
+	ffts_free(fft_backward);
 
 	std::vector<double> normalized_result(N, 0.0);
 	for (int i = 0; i < N; ++i)
-		normalized_result[i] = result[i + (N2 - N)] / result[N2 - N];
+		normalized_result[i] = std::real(result[i + (N2 - N)]) / std::real(result[N2 - N]);
 	return normalized_result;
 }
 
