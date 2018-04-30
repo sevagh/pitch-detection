@@ -26,7 +26,7 @@ lint:
 build: libpitch_detection.so
 
 libpitch_detection.so: directories $(OBJS)
-	$(CXX) $(OBJS) -shared -o $(LIBDIR)/$@ -lfftw3 $(CXX_FLAGS)
+	$(CXX) $(OBJS) -shared -o $(LIBDIR)/$@ -lffts $(CXX_FLAGS)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	$(CXX) -c $< $(CXX_FLAGS) -I$(INCLUDEDIR) -o $@

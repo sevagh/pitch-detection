@@ -4,24 +4,6 @@
 #include <iostream>
 #include <vector>
 
-void
-hanning_window(std::vector<double> &signal)
-{
-	std::transform(signal.begin(), signal.end(), signal.begin(),
-	    [ sz = (double)signal.size(), idx = 0 ](double n) mutable {
-		    double ret = n * 0.5 * (1.0 - cos(2.0 * M_PI * idx / sz));
-		    ++idx;
-		    return ret;
-	    });
-}
-
-void
-zero_pad(
-    std::vector<double> &original_signal, unsigned int size, unsigned int pos)
-{
-	original_signal.insert(original_signal.begin() + pos, size, 0.0);
-}
-
 static double
 get_snr(double frequency, const std::vector<double> &data, double sampling_rate,
     double (*fp)(double, const std::vector<double> &, double))
