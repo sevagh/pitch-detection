@@ -49,8 +49,9 @@ acorr_r(const std::vector<double> &signal)
 	ffts_execute(fft_forward, signala_ext.data(), outa.data());
 	ffts_execute(fft_forward, signalb_ext.data(), outb.data());
 
+	std::complex<double> scale = {1.0 / (double)N2, 0.0};
 	for (int i = 0; i < N2; ++i)
-		out[i] = outa[i] * std::conj(outb[i]);
+		out[i] = outa[i] * std::conj(outb[i]) * scale;
 
 	ffts_execute(fft_backward, out.data(), result.data());
 
