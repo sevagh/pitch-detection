@@ -3,53 +3,39 @@
 #include <cmath>
 #include <complex>
 #include <cstring>
+#include <ffts/ffts.h>
 #include <float.h>
 #include <numeric>
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
 #include <vector>
-#include <ffts/ffts.h>
 
 static std::vector<double>
 acorr_r(const std::vector<double> &signal)
 {
 	int N = signal.size();
-	int N2 = 2 * N - 1;
-
-	/* https://stackoverflow.com/questions/466204/rounding-up-to-next-power-of-2
-	 */
-	if (N2 & (N2 - 1)) {
-		N2--;
-		N2 |= N2 >> 1;
-		N2 |= N2 >> 2;
-		N2 |= N2 >> 4;
-		N2 |= N2 >> 8;
-		N2 |= N2 >> 16;
-		N2++;
-	}
-
-	assert(!(N2 & (N2 - 1)));
+	int N2 = 2 * N;// - 1;
 
 	auto fft_forward = ffts_init_1d(N2, false);
 	auto fft_backward = ffts_init_1d(N2, false);
-	
-	std::vector<std::complex<double>> signala_ext(N2);
-	std::vector<std::complex<double>> signalb_ext(N2);
+
+	std::vector<std::complex<float>> signala_ext(N2);
+	std::vector<std::complex<float>> signalb_ext(N2);
 
 	for (int i = 0; i < N; i++) {
-		signala_ext[(N2 - N) + i] = {signal[i], 0.0};
-		signalb_ext[i] = {signal[i], 0.0};
+		signala_ext[(N2 - N) + i] = {float(signal[i]), 0.0};
+		signalb_ext[i] = {float(signal[i]), 0.0};
 	}
 
-	std::vector<std::complex<double>> outa(N2);
-	std::vector<std::complex<double>> outb(N2);
-	std::vector<std::complex<double>> out(N2);
-	std::vector<std::complex<double>> result(N2);
+	std::vector<std::complex<float>> outa(N2);
+	std::vector<std::complex<float>> outb(N2);
+	std::vector<std::complex<float>> out(N2);
+	std::vector<std::complex<float>> result(N2);
 
 	ffts_execute(fft_forward, signala_ext.data(), outa.data());
 	ffts_execute(fft_forward, signalb_ext.data(), outb.data());
 
-	std::complex<double> scale = {1.0 / (double)N2, 0.0};
+	std::complex<float> scale = {1.0f / (float)N2, 0.0};
 	for (int i = 0; i < N2; ++i)
 		out[i] = outa[i] * std::conj(outb[i]) * scale;
 
@@ -60,7 +46,8 @@ acorr_r(const std::vector<double> &signal)
 
 	std::vector<double> normalized_result(N, 0.0);
 	for (int i = 0; i < N; ++i)
-		normalized_result[i] = std::real(result[i + (N2 - N)]) / std::real(result[N2 - N]);
+		normalized_result[i] =
+		    std::real(result[i + (N2 - N)]) / std::real(result[N2 - N]);
 	return normalized_result;
 }
 
