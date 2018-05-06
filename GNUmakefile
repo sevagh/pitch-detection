@@ -1,6 +1,5 @@
 SRCDIR 		:= src
 EXAMPLEDIR	:= example
-OBJDIR	 	:= obj
 LIBDIR		:= lib
 BINDIR		:= bin
 INCLUDEDIR	:= include
@@ -13,8 +12,9 @@ HDRS		:= $(wildcard $(INCLUDEDIR)/*.h)
 
 CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC -fext-numeric-literals -ffast-math -flto
 
-OBJS  		:= $(SRCS:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 BINS  		:= $(EXAMPLES:$(EXAMPLEDIR)/%.cpp=$(BINDIR)/%)
+
+FFT_FLAG	?= -lffts
 
 .PHONY: all
 
@@ -23,27 +23,22 @@ all: build
 lint:
 	@$(foreach file,$(SRCS) $(HDRS),clang-format -i $(file);)
 
-build: libpitch_detection.so
-
-libpitch_detection.so: directories $(OBJS)
-	$(CXX) $(OBJS) -shared -o $(LIBDIR)/$@ -lffts $(CXX_FLAGS)
-
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
-	$(CXX) -c $< $(CXX_FLAGS) -I$(INCLUDEDIR) -o $@
+build: directories
+	$(CXX) -shared -o $(LIBDIR)/libpitch_detection.so $(FFT_FLAG) $(CXX_FLAGS) $(SRCS) -I$(INCLUDEDIR)
 
 directories:
-	@mkdir -p $(OBJDIR) $(LIBDIR) $(BINDIR)
+	@mkdir -p $(LIBDIR) $(BINDIR)
 
 clean:
-	-rm -rf $(OBJDIR) $(LIBDIR) $(BINDIR)
+	-rm -rf $(LIBDIR) $(BINDIR)
 
 install: build
 	cp $(INCLUDEDIR)/pitch_detection.h $(INSTALLHDR)
 	cp $(LIBDIR)/libpitch_detection.so $(INSTALLLIB)
 
-examples: directories build $(BINS)
+examples: build directories $(BINS)
 
 $(BINDIR)/%: $(EXAMPLEDIR)/%.cpp
-	$(CXX) $< $(LIBDIR)/libpitch_detection.so $(CXX_FLAGS) -o $@ -lfftw3 -I$(INCLUDEDIR)
+	$(CXX) $< $(LIBDIR)/libpitch_detection.so $(CXX_FLAGS) -o $@ $(FFT_FLAG) -I$(INCLUDEDIR)
 
 .PHONY: libxcorr clean
