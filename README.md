@@ -14,9 +14,13 @@ MPM performs best on real musical instruments and voice; see https://github.com/
 
 ### Install
 
-Dependent on https://github.com/anthonix/ffts.
+**Optionally** uses https://github.com/anthonix/ffts.
 
 `make && sudo make install`.
+
+To build portably, without linking to ffts (i.e. using time-domain autocorrelation, check [mpm.cpp](./src/mpm.cpp) for details):
+
+`FFT_FLAG="-DPORTABLE_XCORR" make`
 
 To use in your code:
 

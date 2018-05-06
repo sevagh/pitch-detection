@@ -3,7 +3,9 @@
 #include <cmath>
 #include <complex>
 #include <cstring>
+#ifndef PORTABLE_XCORR
 #include <ffts/ffts.h>
+#endif /* PORTABLE_XCORR */
 #include <float.h>
 #include <numeric>
 #include <pitch_detection.h>
@@ -13,6 +15,7 @@
 static std::vector<double>
 acorr_r(const std::vector<double> &signal)
 {
+#ifndef PORTABLE_XCORR
 	int N = signal.size();
 	int N2 = 2 * N;
 
@@ -49,6 +52,22 @@ acorr_r(const std::vector<double> &signal)
 		normalized_result[i] =
 		    std::real(result[i + (N2 - N)]) / std::real(result[N2 - N]);
 	return normalized_result;
+#else
+	std::vector<double> nsdf{};
+	int size = signed(signal.size());
+	int tau;
+	for (tau = 0; tau < size; tau++) {
+		double acf = 0;
+		double divisorM = 0;
+		for (int i = 0; i < size - tau; i++) {
+			acf += signal[i] * signal[i + tau];
+			divisorM +=
+			    signal[i] * signal[i] + signal[i + tau] * signal[i + tau];
+		}
+		nsdf.push_back(2 * acf / divisorM);
+	}
+	return nsdf;
+#endif /* PORTABLE_XCORR */
 }
 
 static std::vector<int>
