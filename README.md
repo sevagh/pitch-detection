@@ -24,6 +24,8 @@ To use in your code:
 
 ### Examples usage
 
+**NB**: using input vectors of size power-of-2 will perform better due FFT optimizations.
+
 `make examples`
 
 stdin:
