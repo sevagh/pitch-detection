@@ -51,10 +51,10 @@ $ ./bin/sinewave 1337 yin 8092 48000
 Freq: 1337      pitch: 1337.48
 ```
 
-Use https://github.com/sevagh/sine-generator to generate sine waves and feed the result to stdin.cpp:
+Use ./sine-generator to generate sine waves and feed the result to stdin.cpp:
 
 ```
-$ wget -qO- "https://raw.githubusercontent.com/sevagh/sine-generator/master/sine.sh" | sh -s -- 4096 1337 | ./bin/stdin mpm 48000
+$ ./sine-generator/master/sine.sh | sh -s -- 4096 1337 | ./bin/stdin mpm 48000
 Size: 4096
 Pitch: 1337.01
 ```
