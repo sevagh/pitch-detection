@@ -19,28 +19,23 @@ acorr_r(const std::vector<double> &signal)
 	int N = signal.size();
 	int N2 = 2 * N;
 
-	auto fft_forward = ffts_init_1d(N2, false);
-	auto fft_backward = ffts_init_1d(N2, false);
+	auto fft_forward = ffts_init_1d(N2, FFTS_FORWARD);
+	auto fft_backward = ffts_init_1d(N2, FFTS_BACKWARD);
 
-	std::vector<std::complex<float>> signala_ext(N2);
 	std::vector<std::complex<float>> signalb_ext(N2);
 
-	for (int i = 0; i < N; i++) {
-		signala_ext[(N2 - N) + i] = {float(signal[i]), 0.0};
+	for (int i = 0; i < N; i++)
 		signalb_ext[i] = {float(signal[i]), 0.0};
-	}
 
-	std::vector<std::complex<float>> outa(N2);
 	std::vector<std::complex<float>> outb(N2);
 	std::vector<std::complex<float>> out(N2);
 	std::vector<std::complex<float>> result(N2);
 
-	ffts_execute(fft_forward, signala_ext.data(), outa.data());
 	ffts_execute(fft_forward, signalb_ext.data(), outb.data());
 
 	std::complex<float> scale = {1.0f / (float)N2, 0.0};
 	for (int i = 0; i < N; ++i)
-		out[i] = outa[i] * std::conj(outb[i]) * scale;
+		out[i] = outb[i] * std::conj(outb[i]) * scale;
 
 	ffts_execute(fft_backward, out.data(), result.data());
 
@@ -49,8 +44,7 @@ acorr_r(const std::vector<double> &signal)
 
 	std::vector<double> normalized_result(N, 0.0);
 	for (int i = 0; i < N; ++i)
-		normalized_result[i] =
-		    std::real(result[i + (N2 - N)]) / std::real(result[N2 - N]);
+		normalized_result[i] = std::real(result[i]) / std::real(result[0]);
 	return normalized_result;
 #else
 	std::vector<double> nsdf{};

@@ -18,7 +18,7 @@ FFT_FLAG	?= -lffts
 
 .PHONY: all
 
-all: build
+all: build examples
 
 lint:
 	@$(foreach file,$(SRCS) $(HDRS),clang-format -i $(file);)
