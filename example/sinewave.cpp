@@ -46,11 +46,12 @@ DEFINE_uint64(size, 4096, "Sine wave size (single channel)");
 DEFINE_validator(size, [](const char *flagname, uint64_t value) {
 	if (value >= 0)
 		return true;
-	if (!(value && !(value & (value - 1))))
-		std::cerr << "FFTS performs better with power-of-two sizes"
-		          << std::endl;
+
 	return false;
 });
+
+DEFINE_bool(plot, false, "Output sinewave data to stderr");
+DEFINE_bool(quiet, false, "Suppress most outputs");
 
 static std::vector<double>
 generate_sinewave(
@@ -62,13 +63,21 @@ main(int argc, char **argv)
 	gflags::SetUsageMessage("help\n");
 	gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-	auto x = generate_sinewave(
+	auto data = generate_sinewave(
 	    2 * FLAGS_size, FLAGS_frequency, FLAGS_sample_rate, FLAGS_noise);
 
-	double pitch =
-	    pitch_algorithms[pitch_types[FLAGS_algo]](x, FLAGS_sample_rate);
+	if (FLAGS_plot)
+		for (auto x: data)
+			std::cout << x << std::endl;
 
-	std::cout << "Size: " << FLAGS_size << "\tfreq: " << FLAGS_frequency
+	if (!FLAGS_quiet && (FLAGS_algo == "mpm") && !(FLAGS_size && !(FLAGS_size & (FLAGS_size - 1))))
+		std::cerr << "FFTS performs better with power-of-two sizes"
+		          << std::endl;
+
+	double pitch =
+	    pitch_algorithms[pitch_types[FLAGS_algo]](data, FLAGS_sample_rate);
+
+	std::cerr << "Size: " << FLAGS_size << "\tfreq: " << FLAGS_frequency
 	          << "\tpitch: " << pitch << std::endl;
 	return 0;
 }
