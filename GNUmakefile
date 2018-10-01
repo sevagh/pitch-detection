@@ -20,7 +20,7 @@ FFT_FLAG	?= -lffts
 
 all: build examples
 
-lint:
+fmt:
 	@$(foreach file,$(SRCS) $(HDRS),clang-format -i $(file);)
 
 build: directories
