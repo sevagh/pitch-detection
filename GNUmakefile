@@ -20,7 +20,7 @@ FFT_FLAG	?= -lffts
 
 all: build examples
 
-lint:
+fmt:
 	@$(foreach file,$(SRCS) $(HDRS),clang-format -i $(file);)
 
 build: directories
@@ -39,6 +39,6 @@ install: build
 examples: build directories $(BINS)
 
 $(BINDIR)/%: $(EXAMPLEDIR)/%.cpp
-	$(CXX) $< $(LIBDIR)/libpitch_detection.so $(CXX_FLAGS) -o $@ $(FFT_FLAG) -I$(INCLUDEDIR)
+	$(CXX) $< $(LIBDIR)/libpitch_detection.so $(CXX_FLAGS) -o $@ $(FFT_FLAG) -I$(INCLUDEDIR) -lgflags
 
 .PHONY: libxcorr clean

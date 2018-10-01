@@ -4,7 +4,7 @@ A collection of C++ pitch detection algorithms.
 
 * McLeod Pitch Method
 * YIN
-* ~~Autocorrelation~~ removed because it gives incorrect results - MPM is an enhancement on standard autocorrelation
+* Autocorrelation
 * DFT
 * Goertzel
 
@@ -18,7 +18,7 @@ MPM performs best on real musical instruments and voice; see https://github.com/
 
 `make && sudo make install`.
 
-To build portably, without linking to ffts (i.e. using time-domain autocorrelation, check [mpm.cpp](./src/mpm.cpp) for details):
+To build portably, without linking to ffts (i.e. using time-domain autocorrelation, check the [autocorrelation](./src/autocorrelation.cpp) source for details):
 
 `FFT_FLAG="-DPORTABLE_XCORR" make`
 
@@ -32,29 +32,15 @@ To use in your code:
 
 `make examples`
 
-stdin:
-
-```
-$ ./bin/stdin
-Usage: stdin <algo> <sample_rate>
-$ ./bin/stdin mpm 48000 <samples/1337_hz_huge.txt
-Size: 32368
-Pitch: 1337
-```
 
 sinewave:
 
 ```
-$ ./bin/sinewave
-Usage: sinewave <freq> <algo> <size> <sample_rate>
-$ ./bin/sinewave 1337 yin 8092 48000
-Freq: 1337      pitch: 1337.48
-```
-
-Use ./sine-generator to generate sine waves and feed the result to stdin.cpp:
-
-```
-$ ./sine-generator/master/sine.sh | sh -s -- 4096 1337 | ./bin/stdin mpm 48000
-Size: 4096
-Pitch: 1337.01
+$ ./bin/sinewave --help
+Flags from example/sinewave.cpp:
+    -algo (Algorithm to test) type: string default: "mpm"
+    -frequency (Sinewave frequency in Hz) type: double default: -1
+    -noise (Noise to introduce in %) type: double default: 0
+    -sample_rate (Sample rate in Hz) type: uint64 default: 48000
+    -size (Sine wave size (single channel)) type: uint64 default: 4096
 ```
