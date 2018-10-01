@@ -4,7 +4,7 @@ A collection of C++ pitch detection algorithms.
 
 * McLeod Pitch Method
 * YIN
-* ~~Autocorrelation~~ removed because it gives incorrect results - MPM is an enhancement on standard autocorrelation
+* Autocorrelation
 * DFT
 * Goertzel
 
@@ -18,7 +18,7 @@ MPM performs best on real musical instruments and voice; see https://github.com/
 
 `make && sudo make install`.
 
-To build portably, without linking to ffts (i.e. using time-domain autocorrelation, check [mpm.cpp](./src/mpm.cpp) for details):
+To build portably, without linking to ffts (i.e. using time-domain autocorrelation, check the [autocorrelation](./src/autocorrelation.cpp) source for details):
 
 `FFT_FLAG="-DPORTABLE_XCORR" make`
 
@@ -32,15 +32,6 @@ To use in your code:
 
 `make examples`
 
-stdin:
-
-```
-$ ./bin/stdin
-Usage: stdin <algo> <sample_rate>
-$ ./bin/stdin mpm 48000 <samples/1337_hz_huge.txt
-Size: 32368
-Pitch: 1337
-```
 
 sinewave:
 
