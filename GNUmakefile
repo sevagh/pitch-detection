@@ -39,6 +39,6 @@ install: build
 examples: build directories $(BINS)
 
 $(BINDIR)/%: $(EXAMPLEDIR)/%.cpp
-	$(CXX) $< $(LIBDIR)/libpitch_detection.so $(CXX_FLAGS) -o $@ $(FFT_FLAG) -I$(INCLUDEDIR)
+	$(CXX) $< $(LIBDIR)/libpitch_detection.so $(CXX_FLAGS) -o $@ $(FFT_FLAG) -I$(INCLUDEDIR) -lgflags
 
 .PHONY: libxcorr clean
