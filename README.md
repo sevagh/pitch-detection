@@ -8,32 +8,41 @@ A collection of C++ pitch detection algorithms.
 * DFT
 * Goertzel
 
-YIN and McLeod implementations are inspired by https://github.com/JorenSix/TarsosDSP.
-
-MPM performs best on real musical instruments and voice; see https://github.com/sevagh/Pitcha and https://github.com/sevagh/transcribe, two of my projects which use the MPM.
+MPM performs best on real musical instruments and voice; see [pitcha](https://github.com/sevagh/pitcha) and [transcribe](https://github.com/sevagh/transcribe).
 
 ### Install
 
-**Optionally** uses https://github.com/anthonix/ffts.
+Depends on [ffts](https://github.com/anthonix/ffts).
 
-`make && sudo make install`.
+```
+$ make
+$ FFT_FLAG="-DPORTABLE_XCORR" make # build with no FFTS
+$ sudo make install
+```
 
-To build portably, without linking to ffts (i.e. using time-domain autocorrelation, check the [autocorrelation](./src/autocorrelation.cpp) source for details):
+Use with `#include <pitch_detection.h>` and the flag `-lpitch_detection`.
 
-`FFT_FLAG="-DPORTABLE_XCORR" make`
 
 To use in your code:
 
-`#include <pitch_detection.h>` and `g++ [...] -lpitch_detection`
-
-### Examples usage
+```
+$ head -n1 main.cpp
+#include <pitch_detection.h>
+$ g++ main.cpp -lpitch_detection
+```
 
 **NB**: using input vectors of size power-of-2 will perform better due FFT optimizations.
 
-`make examples`
+### Sinewave example
 
+Depends on [gflags](https://github.com/gflags/gflags):
 
-sinewave:
+```
+$ sudo dnf install gflags-devel
+$ make examples
+```
+
+Usage:
 
 ```
 $ ./bin/sinewave --help
