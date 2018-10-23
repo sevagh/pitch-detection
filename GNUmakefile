@@ -18,7 +18,7 @@ FFT_FLAG	?= -lffts
 
 .PHONY: all
 
-all: build examples
+all: build
 
 fmt:
 	@$(foreach file,$(SRCS) $(HDRS),clang-format -i $(file);)
@@ -36,7 +36,7 @@ install: build
 	cp $(INCLUDEDIR)/pitch_detection.h $(INSTALLHDR)
 	cp $(LIBDIR)/libpitch_detection.so $(INSTALLLIB)
 
-examples: build directories $(BINS)
+examples: $(BINS)
 
 $(BINDIR)/%: $(EXAMPLEDIR)/%.cpp
 	$(CXX) $< $(LIBDIR)/libpitch_detection.so $(CXX_FLAGS) -o $@ $(FFT_FLAG) -I$(INCLUDEDIR) -lgflags
