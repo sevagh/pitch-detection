@@ -26,7 +26,8 @@ peak_picking(const std::vector<double> &nsdf)
 		pos = 1;
 
 	while (pos < size - 1) {
-		if (nsdf[pos] > nsdf[pos - 1] && nsdf[pos] >= nsdf[pos + 1] && (cur_max_pos == 0 || nsdf[pos] > nsdf[curr_max_pos]) {
+		if (nsdf[pos] > nsdf[pos - 1] && nsdf[pos] >= nsdf[pos + 1] &&
+		    (cur_max_pos == 0 || nsdf[pos] > nsdf[cur_max_pos])) {
 			cur_max_pos = pos;
 		}
 		pos++;
