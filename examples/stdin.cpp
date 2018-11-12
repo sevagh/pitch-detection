@@ -2,12 +2,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <gflags/gflags.h>
 #include <iostream>
 #include <limits>
 #include <pitch_detection.h>
 #include <utility>
 #include <vector>
-#include <gflags/gflags.h>
 
 DEFINE_uint64(sample_rate, 48000, "Sample rate in Hz");
 DEFINE_validator(sample_rate, [](const char *flagname, uint64_t value) {

@@ -5,8 +5,6 @@ A collection of C++ pitch detection algorithms.
 * McLeod Pitch Method
 * YIN
 * Autocorrelation
-* DFT
-* Goertzel
 
 MPM performs best on real musical instruments and voice.
 
