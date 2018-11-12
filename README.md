@@ -8,6 +8,8 @@ A collection of C++ pitch detection algorithms.
 
 MPM performs best on real musical instruments and voice.
 
+Visualization of McLeod pitch method (and the advantages over autocorrelation) here: https://github.com/sevagh/mcleod
+
 ### Install
 
 Depends on [ffts](https://github.com/anthonix/ffts). Input vectors of size power-of-2 will perform better due to FFTS optimizations.

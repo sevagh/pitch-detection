@@ -9,21 +9,12 @@
 #include <gflags/gflags.h>
 #include <iostream>
 #include <pitch_detection.h>
-#include <random>
-#include <string>
 #include <utility>
 #include <vector>
 
 DEFINE_double(frequency, -1.0, "Sinewave frequency in Hz");
 DEFINE_validator(frequency, [](const char *flagname, double value) {
 	if (value >= 0.0)
-		return true;
-	return false;
-});
-
-DEFINE_double(noise, 0.0, "Noise to introduce in %");
-DEFINE_validator(noise, [](const char *flagname, double value) {
-	if ((value >= 0.0) && (value <= 100.0))
 		return true;
 	return false;
 });
@@ -51,13 +42,9 @@ DEFINE_validator(size, [](const char *flagname, int value) {
 	return false;
 });
 
-DEFINE_bool(plot, false, "Output sinewave data to stdout");
-DEFINE_bool(plot_lags, false, "Output sinewave data with lags to stdout");
-DEFINE_bool(quiet, false, "Suppress most outputs");
-
+// forward declaration
 static std::vector<double>
-generate_sinewave(
-    size_t size, double frequency, int sample_rate, double noise_perc);
+generate_sinewave(size_t size, double frequency, int sample_rate);
 
 int
 main(int argc, char **argv)
@@ -65,48 +52,10 @@ main(int argc, char **argv)
 	gflags::SetUsageMessage("help\n");
 	gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-	auto data = generate_sinewave(
-	    2 * FLAGS_size, FLAGS_frequency, FLAGS_sample_rate, FLAGS_noise);
+	auto data =
+	    generate_sinewave(2 * FLAGS_size, FLAGS_frequency, FLAGS_sample_rate);
 
-	if (FLAGS_plot) {
-		if (FLAGS_plot_lags) {
-			std::cerr << "--plot and --plot_lags are mutually exclusive"
-			          << ::std::endl;
-
-			return -1;
-		}
-
-		for (auto x : data)
-			std::cout << x << std::endl;
-	}
-
-	if (FLAGS_plot_lags) {
-		std::vector<double> orig(2 * FLAGS_size);
-		std::vector<double> quarter_lag(2 * FLAGS_size);
-		std::vector<double> half_lag(2 * FLAGS_size);
-		std::vector<double> full_lag(2 * FLAGS_size);
-
-		for (int i = 0; i < 2 * FLAGS_size; ++i) {
-			if (i < FLAGS_size)
-				orig[i] = data[i];
-			if ((i > FLAGS_size / 4) && (i < FLAGS_size / 4 + FLAGS_size)) {
-				quarter_lag[i] = data[i - FLAGS_size / 4];
-			}
-			if ((i > FLAGS_size / 2) && (i < FLAGS_size / 2 + FLAGS_size)) {
-				half_lag[i] = data[i - FLAGS_size / 2];
-			}
-			if (i > FLAGS_size) {
-				full_lag[i] = data[i - FLAGS_size];
-			}
-		}
-
-		for (int i = 0; i < 2 * FLAGS_size; ++i) {
-			std::cout << orig[i] << "\t" << quarter_lag[i] << "\t"
-			          << half_lag[i] << "\t" << full_lag[i] << std::endl;
-		}
-	}
-
-	if (!FLAGS_quiet && (FLAGS_algo == "mpm") &&
+	if ((FLAGS_algo == "mpm") &&
 	    !(FLAGS_size && !(FLAGS_size & (FLAGS_size - 1))))
 		std::cerr << "FFTS performs better with power-of-two sizes"
 		          << std::endl;
@@ -120,20 +69,8 @@ main(int argc, char **argv)
 }
 
 static std::vector<double>
-generate_sinewave(
-    size_t size, double frequency, int sample_rate, double noise_perc)
+generate_sinewave(size_t size, double frequency, int sample_rate)
 {
-	int num_elements_to_skip = int(noise_perc / 100.0 * size / 2);
-
-	std::random_device rnd_device;
-	std::mt19937 mersenne_engine{rnd_device()}; // Generates random integers
-	std::uniform_int_distribution<int> dist(0, int(size / 2) - 1);
-
-	auto gen = [&dist, &mersenne_engine]() { return dist(mersenne_engine); };
-
-	std::vector<int> elements_to_skip(num_elements_to_skip);
-	std::generate(begin(elements_to_skip), end(elements_to_skip), gen);
-
 	size_t lut_size = size / 4;
 
 	std::vector<int> lut{};
@@ -163,17 +100,8 @@ generate_sinewave(
 			phase -= lut_size;
 	}
 
-	std::uniform_real_distribution<double> amplitude_dist(min, max);
-	auto amplitude_gen = [&amplitude_dist, &mersenne_engine]() {
-		return amplitude_dist(mersenne_engine);
-	};
-
 	std::vector<double> tone_single_channel(
 	    _tone_single_channel, _tone_single_channel + size / 2);
-
-	for (auto skip : elements_to_skip) {
-		tone_single_channel.at(skip) = amplitude_gen();
-	}
 
 	return tone_single_channel;
 }
