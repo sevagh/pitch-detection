@@ -10,7 +10,23 @@ MPM performs best on real musical instruments and voice.
 
 Visualization of McLeod pitch method (and the advantages over autocorrelation) here: https://github.com/sevagh/mcleod
 
-### Install
+### Real guitar results
+
+The file [guitar_e.txt](./guitar_e.txt) contains 4095 audio samples from a 44100Hz recording of an open low E guitar string - the data was extracted using [pydub](https://github.com/jiaaro/pydub) from a live recording. The program is the stdin example - `cat guitar_e.txt | ./bin/stdin --sample_rate 44100` 
+
+Expected value: **82.41Hz**
+
+Results:
+
+| algo | result |
+| ---- | ------ |
+| MPM  ffts | 82.5838 |
+| MPM no ffts | 82.539
+| YIN | 82.6221 | 
+| Autocorrelation ffts | 282.344 |
+| Autocorrelation no ffts | 249.766 |
+
+### Install and build examples
 
 Depends on [ffts](https://github.com/anthonix/ffts). Input vectors of size power-of-2 will perform better due to FFTS optimizations.
 
@@ -43,5 +59,3 @@ $ make examples
 ```
 
 Use with `#include <pitch_detection.h>` and the flag `-lpitch_detection`.
-
-Use the examples at `bin/`.
