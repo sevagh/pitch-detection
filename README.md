@@ -76,9 +76,21 @@ To run the tests, you need [googletest](https://github.com/google/googletest), a
 To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make bench && ./bin/bench`:
 
 ```
---------------------------------------------------------------------
-Benchmark                             Time           CPU Iterations
---------------------------------------------------------------------
-BM_Yin_Sinewave_128k_samples  984091850 ns  982514163 ns          1
-BM_Mpm_Sinewave_128k_samples   37793353 ns   37492225 ns         19
+---------------------------------------------------------------
+Benchmark                        Time           CPU Iterations
+---------------------------------------------------------------
+BM_Yin_Sinewave/1024         63486 ns      63279 ns       8546
+BM_Yin_Sinewave/4096       1016642 ns    1014480 ns        686
+BM_Yin_Sinewave/32768     66091599 ns   65909062 ns         10
+BM_Yin_Sinewave/262144  4242461569 ns 4231010624 ns          1
+BM_Yin_Sinewave/1048576 68476200029 ns 68141451569 ns          1
+BM_Yin_Sinewave_BigO          0.06 N^2       0.06 N^2
+BM_Yin_Sinewave_RMS              0 %          0 %
+BM_Mpm_Sinewave/1024         61976 ns      61476 ns      11298
+BM_Mpm_Sinewave/4096        203864 ns     202747 ns       3473
+BM_Mpm_Sinewave/32768      1733893 ns    1719823 ns        407
+BM_Mpm_Sinewave/262144    22363698 ns   22242660 ns         31
+BM_Mpm_Sinewave/1048576   99488665 ns   98906626 ns          7
+BM_Mpm_Sinewave_BigO          4.74 NlgN       4.72 NlgN
+BM_Mpm_Sinewave_RMS              1 %          1 %
 ```

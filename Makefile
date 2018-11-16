@@ -28,6 +28,9 @@ bin/%: example/%.cpp
 directories:
 	@mkdir -p lib bin
 
+fmt:
+	find . -regex '.*\.\(cpp\|h\)' -exec clang-format -style=file -i {} \;
+
 clean:
 	-rm -rf lib bin
 
