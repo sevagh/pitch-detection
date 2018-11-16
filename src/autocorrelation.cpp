@@ -80,7 +80,7 @@ get_acf_periodicity(const std::vector<double> &data)
 }
 
 double
-get_pitch_autocorrelation(const std::vector<double> &data, int sample_rate)
+pitch::autocorrelation(const std::vector<double> &data, int sample_rate)
 {
 	double peak_bin_index_periodicity = get_acf_periodicity(acorr_r(data));
 

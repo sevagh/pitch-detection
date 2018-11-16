@@ -6,26 +6,12 @@
 #include <pitch_detection.h>
 #include <vector>
 
-enum pitch_algorithm_type {
-	mpm,
-	autocorrelation,
-	yin,
-	goertzel,
-	dft,
-};
+using pitch_func = std::function<double(std::vector<double> &, int)>;
 
-using pitch_algorithm = std::function<double(std::vector<double> &, int)>;
-
-inline std::map<pitch_algorithm_type, pitch_algorithm> pitch_algorithms = {
-    {mpm, get_pitch_mpm},
-    {yin, get_pitch_yin},
-    {autocorrelation, get_pitch_autocorrelation},
-};
-
-inline std::map<std::string, pitch_algorithm_type> pitch_types = {
-    {"mpm", mpm},
-    {"autocorrelation", autocorrelation},
-    {"yin", yin},
+inline std::map<std::string, pitch_func> pitch_funcs = {
+    {"mpm", pitch::mpm},
+    {"yin", pitch::yin},
+    {"autocorrelation", pitch::autocorrelation},
 };
 
 #endif /* STDIN_H */

@@ -8,6 +8,10 @@ A collection of C++ pitch detection algorithms.
 
 Visualization of McLeod pitch method (and the advantages over autocorrelation) here: https://github.com/sevagh/mcleod
 
+### API breaking change - 15/11/2018
+
+**N.B.** `get_pitch_yin`, `get_pitch_mpm`, `get_pitch_autocorrelation` have become `pitch::yin`, `pitch::mpm`, `pitch::autocorrelation`.
+
 ### Tests
 
 Test code lives in [test](./test). To run the tests, you need [googletest](https://github.com/google/googletest), and run `make test`:

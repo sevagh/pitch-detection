@@ -18,7 +18,7 @@ DEFINE_validator(sample_rate,
 
 DEFINE_string(algo, "mpm", "Algorithm to test");
 DEFINE_validator(algo, [](const char *flagname, const std::string &value) {
-	return (pitch_types.find(value) != pitch_types.end());
+	return (pitch_funcs.find(value) != pitch_funcs.end());
 });
 
 DEFINE_int32(size, 4096, "Sine wave size (single channel)");
@@ -39,8 +39,7 @@ main(int argc, char **argv)
 		std::cerr << "FFTS performs better with power-of-two sizes"
 		          << std::endl;
 
-	double pitch =
-	    pitch_algorithms[pitch_types[FLAGS_algo]](data, FLAGS_sample_rate);
+	double pitch = pitch_funcs[FLAGS_algo](data, FLAGS_sample_rate);
 
 	std::cerr << "Size: " << FLAGS_size << "\tfreq: " << FLAGS_frequency
 	          << "\tpitch: " << pitch << std::endl;
