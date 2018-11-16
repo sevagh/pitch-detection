@@ -17,6 +17,7 @@ UTIL_HDRS	:= $(wildcard $(UTILDIR)/*.h)
 
 TESTDIR		:= test
 TEST_SRCS	:= $(wildcard $(TESTDIR)/*.cpp)
+TEST_HDRS	:= $(wildcard $(TESTDIR)/*.h)
 
 EXAMPLEDIR	:= example
 EXAMPLE_SRCS	:= $(wildcard $(EXAMPLEDIR)/*.cpp)
@@ -33,7 +34,7 @@ FFT_FLAG	?= -lffts
 all: build
 
 fmt:
-	@$(foreach file,$(PITCH_SRCS) $(PITCH_HDRS) $(EXAMPLE_SRCS) $(EXAMPLE_HDRS) $(UTIL_SRCS) $(UTIL_HDRS),clang-format -i $(file);)
+	@$(foreach file,$(PITCH_SRCS) $(PITCH_HDRS) $(EXAMPLE_SRCS) $(EXAMPLE_HDRS) $(UTIL_SRCS) $(UTIL_HDRS) $(TEST_SRCS) $(TEST_HDRS),clang-format -i $(file);)
 
 build: directories
 	$(CXX) -shared -o $(LIBDIR)/libpitch_detection.so $(FFT_FLAG) $(CXX_FLAGS) $(PITCH_SRCS) -I$(PITCH_INCLUDEDIR)

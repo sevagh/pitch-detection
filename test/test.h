@@ -1,10 +1,10 @@
 #ifndef TEST_H
 #define TEST_H
 
-#include <vector>
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 std::vector<double>
 vec_from_file(std::string path)
