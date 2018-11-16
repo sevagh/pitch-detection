@@ -31,7 +31,7 @@ main(int argc, char **argv)
 	gflags::SetUsageMessage("help\n");
 	gflags::ParseCommandLineFlags(&argc, &argv, true);
 
-	auto data = util::generate_sinewave(
+	auto data = util::sinewave(
 	    2 * FLAGS_size, FLAGS_frequency, FLAGS_sample_rate);
 
 	if ((FLAGS_algo == "mpm") &&

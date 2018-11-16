@@ -48,7 +48,7 @@ util::closest_note(double pitch)
 }
 
 std::vector<double>
-util::generate_sinewave(size_t size, double frequency, int sample_rate)
+util::sinewave(size_t size, double frequency, int sample_rate)
 {
 	size_t lut_size = size / 4;
 

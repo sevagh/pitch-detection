@@ -15,7 +15,10 @@ UTILDIR		:= util
 UTIL_SRCS	:= $(wildcard $(UTILDIR)/*.cpp)
 UTIL_HDRS	:= $(wildcard $(UTILDIR)/*.h)
 
-EXAMPLEDIR	:= examples
+TESTDIR		:= test
+TEST_SRCS	:= $(wildcard $(TESTDIR)/*.cpp)
+
+EXAMPLEDIR	:= example
 EXAMPLE_SRCS	:= $(wildcard $(EXAMPLEDIR)/*.cpp)
 EXAMPLE_HDRS	:= $(wildcard $(EXAMPLEDIR)/*.h)
 
@@ -48,9 +51,14 @@ install: build
 	cp $(PITCH_INCLUDEDIR)/pitch_detection.h $(INSTALLHDR)
 	cp $(LIBDIR)/libpitch_detection.so $(INSTALLLIB)
 
-examples: build
-examples: util
-examples: $(BINS)
+test: build
+test: util
+test:
+	$(CXX) $(CXX_FLAGS) $(LIBDIR)/*.so $(TEST_SRCS) -o $(BINDIR)/tests -I$(PITCH_INCLUDEDIR) -I$(UTILDIR) -lpthread -lgtest $(FFT_FLAG)
+
+example: build
+example: util
+example: $(BINS)
 
 $(BINDIR)/%: $(EXAMPLEDIR)/%.cpp
 	$(CXX) $< $(LIBDIR)/*.so $(CXX_FLAGS) -o $@ $(FFT_FLAG) -I$(PITCH_INCLUDEDIR) -I$(UTILDIR) -lgflags

@@ -26,7 +26,7 @@ Results:
 | Autocorrelation ffts | 282.344 |
 | Autocorrelation no ffts | 249.766 |
 
-### Install and build examples
+### Install and build example
 
 Depends on [ffts](https://github.com/anthonix/ffts). Input vectors of size power-of-2 will perform better due to FFTS optimizations.
 
@@ -44,7 +44,7 @@ $ git clone https://github.com/sevagh/pitch-detection
 $ cd pitch-detection
 $ make
 $ sudo make install
-$ make examples
+$ make example
 ```
 
 Without ffts:
@@ -55,7 +55,7 @@ $ git clone https://github.com/sevagh/pitch-detection
 $ cd pitch-detection 
 $ FFT_FLAG="-DPORTABLE_XCORR" make # build with no FFTS
 $ sudo make install
-$ make examples
+$ make example
 ```
 
 Use with `#include <pitch_detection.h>` and the flag `-lpitch_detection`.
