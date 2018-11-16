@@ -1,6 +1,6 @@
 ### Pitch detection algorithms
 
-A collection of autocorrelation-based C++ pitch detection algorithms.
+A collection of C++ pitch detection algorithms.
 
 * [McLeod Pitch Method](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf)
 * [YIN](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf)
@@ -11,6 +11,33 @@ Visualization of McLeod pitch method (and the advantages over autocorrelation) h
 ### API breaking change - 15/11/2018
 
 **N.B.** `get_pitch_yin`, `get_pitch_mpm`, `get_pitch_autocorrelation` have become `pitch::yin`, `pitch::mpm`, `pitch::autocorrelation`.
+
+### Build and install
+
+Using this project should be as easy as `make && sudo make install` on Linux with a modern GCC - I don't officially support other platforms.
+
+This project depends on [ffts](https://github.com/anthonix/ffts). You can build without ffts by specifying `FFT_FLAG="-DPORTABLE_XCORR"`, which substitutes FFT autocorrelation for time-domain autocorrelation. This will severely impact the performance of MPM.
+
+### Examples
+
+To build the examples, you need [gflags](https://github.com/gflags/gflags). Build them with `make example`. Each example binary has full `--help` text but here's some quick usage for,
+
+sinewave:
+
+```
+$ ./bin/sinewave --frequency 1234 --algo mpm --size 8092
+FFTS performs better with power-of-two sizes
+Size: 8092      freq: 1234      pitch: 1233.99
+closest note: Eb6 (1245)
+```
+
+stdin:
+
+```
+$ ./bin/stdin --sample_rate 44100 <sample/E2_44100_acousticguitar.txt
+Size: 4095      pitch: 82.5838
+closest note: E2 (82.41)
+```
 
 ### Tests
 
@@ -55,39 +82,3 @@ Benchmark                             Time           CPU Iterations
 BM_Yin_Sinewave_128k_samples  984091850 ns  982514163 ns          1
 BM_Mpm_Sinewave_128k_samples   37793353 ns   37492225 ns         19
 ```
-
-My implementation of YIN is using time-domain autocorrelation vs. FFT and the disadvantage is obvious from the benchmark.
-
-### Install
-
-Depends on [ffts](https://github.com/anthonix/ffts). Input vectors of size power-of-2 will perform better due to FFTS optimizations.
-
-Instructions are generated from a bare Fedora 28 Docker container.
-
-With ffts:
-
-```
-$ dnf install git cmake make gcc gcc-c++ gflags
-$ git clone https://github.com/anthonix/ffts
-$ cd ffts
-$ mkdir build && cd build && cmake .. && make && make install
-$ cd ../../
-$ git clone https://github.com/sevagh/pitch-detection
-$ cd pitch-detection
-$ make
-$ sudo make install
-$ make example
-```
-
-Without ffts:
-
-```
-$ dnf install git make gcc gcc-c++ gflags
-$ git clone https://github.com/sevagh/pitch-detection
-$ cd pitch-detection 
-$ FFT_FLAG="-DPORTABLE_XCORR" make # build with no FFTS
-$ sudo make install
-$ make example
-```
-
-Use with `#include <pitch_detection.h>` and the flag `-lpitch_detection`.
