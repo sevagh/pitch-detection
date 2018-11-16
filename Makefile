@@ -11,7 +11,6 @@ build: directories
 util: directories
 	$(CXX) $(CXX_FLAGS) -shared -o lib/util.so util/*.cpp
 
-
 test: build util
 	$(CXX) $@/*.cpp -o bin/$@ $(TEST_FLAGS) -lgtest
 
