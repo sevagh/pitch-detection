@@ -10,7 +10,7 @@ Visualization of McLeod pitch method (and the advantages over autocorrelation) h
 
 ### Tests
 
-Test and benchmark code live in [test](./test). To run the tests, you need [googletest](https://github.com/google/googletest) and [google benchmark](https://github.com/google/benchmark), and run `make test`:
+Test code lives in [test](./test). To run the tests, you need [googletest](https://github.com/google/googletest), and run `make test`:
 
 ```
 [----------] 5 tests from MpmInstrumentTest
@@ -39,6 +39,20 @@ Test and benchmark code live in [test](./test). To run the tests, you need [goog
 [       OK ] YinInstrumentTest.Classical_FSharp4_48000 (7353 ms)
 [----------] 5 tests from YinInstrumentTest (18374 ms total)
 ```
+
+### Bench
+
+Bench code lives in [bench](./bench). To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make bench`:
+
+```
+--------------------------------------------------------------------
+Benchmark                             Time           CPU Iterations
+--------------------------------------------------------------------
+BM_Yin_Sinewave_128k_samples  984091850 ns  982514163 ns          1
+BM_Mpm_Sinewave_128k_samples   37793353 ns   37492225 ns         19
+```
+
+My implementation of YIN is using time-domain autocorrelation, rather than FFT, and the disadvantage is obvious from the benchmark.
 
 ### Install
 

@@ -19,6 +19,11 @@ TESTDIR		:= test
 TEST_SRCS	:= $(wildcard $(TESTDIR)/*.cpp)
 TEST_HDRS	:= $(wildcard $(TESTDIR)/*.h)
 
+BENCHDIR	:= bench
+BENCH_SRCS	:= $(wildcard $(BENCHDIR)/*.cpp)
+BENCH_HDRS	:= $(wildcard $(BENCHDIR)/*.h)
+
+
 EXAMPLEDIR	:= example
 EXAMPLE_SRCS	:= $(wildcard $(EXAMPLEDIR)/*.cpp)
 EXAMPLE_HDRS	:= $(wildcard $(EXAMPLEDIR)/*.h)
@@ -34,7 +39,7 @@ FFT_FLAG	?= -lffts
 all: build
 
 fmt:
-	@$(foreach file,$(PITCH_SRCS) $(PITCH_HDRS) $(EXAMPLE_SRCS) $(EXAMPLE_HDRS) $(UTIL_SRCS) $(UTIL_HDRS) $(TEST_SRCS) $(TEST_HDRS),clang-format -i $(file);)
+	@$(foreach file,$(PITCH_SRCS) $(PITCH_HDRS) $(EXAMPLE_SRCS) $(EXAMPLE_HDRS) $(UTIL_SRCS) $(UTIL_HDRS) $(TEST_SRCS) $(TEST_HDRS) $(BENCH_SRCS) $(BENCH_HDRS),clang-format -i $(file);)
 
 build: directories
 	$(CXX) -shared -o $(LIBDIR)/libpitch_detection.so $(FFT_FLAG) $(CXX_FLAGS) $(PITCH_SRCS) -I$(PITCH_INCLUDEDIR)
@@ -60,6 +65,14 @@ build_test: build
 build_test: util
 build_test:
 	$(CXX) $(CXX_FLAGS) $(LIBDIR)/*.so $(TEST_SRCS) -o $(BINDIR)/pitch_tests -I$(PITCH_INCLUDEDIR) -I$(UTILDIR) -lpthread -lgtest $(FFT_FLAG)
+
+bench: build_bench
+bench:
+	$(BINDIR)/pitch_benches
+
+build_bench: build
+build_bench:
+	$(CXX) $(CXX_FLAGS) $(LIBDIR)/*.so $(BENCH_SRCS) -o $(BINDIR)/pitch_benches -I$(PITCH_INCLUDEDIR) -I$(UTILDIR) -lgtest $(FFT_FLAG) -lbenchmark -lpthread
 
 example: build
 example: util
