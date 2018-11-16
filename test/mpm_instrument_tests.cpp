@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 #include <pitch_detection.h>
 
-TEST(MpmTest, Violin_A4_44100)
+TEST(MpmInstrumentTest, Violin_A4_44100)
 {
 	auto data = vec_from_file("./sample/A4_44100_violin.txt");
 	double pitch = get_pitch_mpm(data, 44100);
@@ -10,7 +10,7 @@ TEST(MpmTest, Violin_A4_44100)
 	EXPECT_NEAR(expected, pitch, 0.01 * expected);
 }
 
-TEST(MpmTest, Piano_B4_44100)
+TEST(MpmInstrumentTest, Piano_B4_44100)
 {
 	auto data = vec_from_file("./sample/B4_44100_piano.txt");
 	double pitch = get_pitch_mpm(data, 44100);
@@ -18,7 +18,7 @@ TEST(MpmTest, Piano_B4_44100)
 	EXPECT_NEAR(expected, pitch, 0.01 * expected);
 }
 
-TEST(MpmTest, Piano_D4_44100)
+TEST(MpmInstrumentTest, Piano_D4_44100)
 {
 	auto data = vec_from_file("./sample/D4_44100_piano.txt");
 	double pitch = get_pitch_mpm(data, 44100);
@@ -26,7 +26,7 @@ TEST(MpmTest, Piano_D4_44100)
 	EXPECT_NEAR(expected, pitch, 0.01 * expected);
 }
 
-TEST(MpmTest, Acoustic_E2_44100)
+TEST(MpmInstrumentTest, Acoustic_E2_44100)
 {
 	auto data = vec_from_file("./sample/E2_44100_acousticguitar.txt");
 	double pitch = get_pitch_mpm(data, 44100);
@@ -34,7 +34,7 @@ TEST(MpmTest, Acoustic_E2_44100)
 	EXPECT_NEAR(expected, pitch, 0.01 * expected);
 }
 
-TEST(MpmTest, Classical_FSharp4_48000)
+TEST(MpmInstrumentTest, Classical_FSharp4_48000)
 {
 	auto data = vec_from_file("./sample/F-4_48000_classicalguitar.txt");
 	double pitch = get_pitch_mpm(data, 48000);

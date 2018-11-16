@@ -3,15 +3,7 @@
 #include <pitch_detection.h>
 #include <util.h>
 
-TEST(MpmTest, Sinewave_19point5Hz)
-{
-	double freq = 19.5;
-	auto data = util::sinewave(4096, freq, 48000);
-	double pitch = get_pitch_yin(data, 48000);
-	EXPECT_NEAR(freq, pitch, 0.1 * freq); // larger error for tiny numbers
-}
-
-TEST(MpmTest, Sinewave_77Hz)
+TEST(MpmSinewaveTest, Sinewave_77Hz)
 {
 	double freq = 77.0;
 	auto data = util::sinewave(4096, freq, 48000);
@@ -19,7 +11,7 @@ TEST(MpmTest, Sinewave_77Hz)
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
-TEST(MpmTest, Sinewave_100Hz)
+TEST(MpmSinewaveTest, Sinewave_100Hz)
 {
 	double freq = 100.0;
 	auto data = util::sinewave(4096, freq, 48000);
@@ -27,7 +19,7 @@ TEST(MpmTest, Sinewave_100Hz)
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
-TEST(MpmTest, Sinewave_233Hz)
+TEST(MpmSinewaveTest, Sinewave_233Hz)
 {
 	double freq = 233.0;
 	auto data = util::sinewave(4096, freq, 48000);
@@ -35,7 +27,7 @@ TEST(MpmTest, Sinewave_233Hz)
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
-TEST(MpmTest, Sinewave_298Hz)
+TEST(MpmSinewaveTest, Sinewave_298Hz)
 {
 	double freq = 298.0;
 	auto data = util::sinewave(4096, freq, 48000);
@@ -43,7 +35,7 @@ TEST(MpmTest, Sinewave_298Hz)
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
-TEST(MpmTest, Sinewave_1583Hz)
+TEST(MpmSinewaveTest, Sinewave_1583Hz)
 {
 	double freq = 1583.0;
 	auto data = util::sinewave(4096, freq, 48000);
@@ -51,7 +43,7 @@ TEST(MpmTest, Sinewave_1583Hz)
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
-TEST(MpmTest, Sinewave_3398Hz)
+TEST(MpmSinewaveTest, Sinewave_3398Hz)
 {
 	double freq = 3398.0;
 	auto data = util::sinewave(4096, freq, 48000);
@@ -59,7 +51,7 @@ TEST(MpmTest, Sinewave_3398Hz)
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
-TEST(MpmTest, Sinewave_4200Hz)
+TEST(MpmSinewaveTest, Sinewave_4200Hz)
 {
 	double freq = 4200.0;
 	auto data = util::sinewave(4096, freq, 48000);
