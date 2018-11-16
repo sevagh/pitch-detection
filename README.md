@@ -2,31 +2,45 @@
 
 A collection of C++ pitch detection algorithms.
 
-* McLeod Pitch Method
-* YIN
+* [McLeod Pitch Method](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf)
+* [YIN](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf)
 * Autocorrelation
-
-MPM performs best on real musical instruments and voice.
 
 Visualization of McLeod pitch method (and the advantages over autocorrelation) here: https://github.com/sevagh/mcleod
 
-### Real guitar results
+### Tests
 
-The file [guitar_e.txt](./guitar_e.txt) contains 4095 audio samples from a 44100Hz recording of an open low E guitar string - the data was extracted using [pydub](https://github.com/jiaaro/pydub) from a live recording. The program is the stdin example - `cat guitar_e.txt | ./bin/stdin --sample_rate 44100` 
+Test and benchmark code live in [test](./test). To run the tests, you need [googletest](https://github.com/google/googletest) and [google benchmark](https://github.com/google/benchmark), and run `make test`:
 
-Expected value: **82.41Hz**
+```
+[----------] 5 tests from MpmInstrumentTest
+[ RUN      ] MpmInstrumentTest.Violin_A4_44100
+[       OK ] MpmInstrumentTest.Violin_A4_44100 (234 ms)
+[ RUN      ] MpmInstrumentTest.Piano_B4_44100
+[       OK ] MpmInstrumentTest.Piano_B4_44100 (101 ms)
+[ RUN      ] MpmInstrumentTest.Piano_D4_44100
+[       OK ] MpmInstrumentTest.Piano_D4_44100 (116 ms)
+[ RUN      ] MpmInstrumentTest.Acoustic_E2_44100
+[       OK ] MpmInstrumentTest.Acoustic_E2_44100 (4 ms)
+[ RUN      ] MpmInstrumentTest.Classical_FSharp4_48000
+[       OK ] MpmInstrumentTest.Classical_FSharp4_48000 (239 ms)
+[----------] 5 tests from MpmInstrumentTest (695 ms total)
 
-Results:
+[----------] 5 tests from YinInstrumentTest
+[ RUN      ] YinInstrumentTest.Violin_A4_44100
+[       OK ] YinInstrumentTest.Violin_A4_44100 (7416 ms)
+[ RUN      ] YinInstrumentTest.Piano_B4_44100
+[       OK ] YinInstrumentTest.Piano_B4_44100 (1153 ms)
+[ RUN      ] YinInstrumentTest.Piano_D4_44100
+[       OK ] YinInstrumentTest.Piano_D4_44100 (2446 ms)
+[ RUN      ] YinInstrumentTest.Acoustic_E2_44100
+[       OK ] YinInstrumentTest.Acoustic_E2_44100 (6 ms)
+[ RUN      ] YinInstrumentTest.Classical_FSharp4_48000
+[       OK ] YinInstrumentTest.Classical_FSharp4_48000 (7353 ms)
+[----------] 5 tests from YinInstrumentTest (18374 ms total)
+```
 
-| algo | result |
-| ---- | ------ |
-| MPM  ffts | 82.5838 |
-| MPM no ffts | 82.539
-| YIN | 82.6221 | 
-| Autocorrelation ffts | 282.344 |
-| Autocorrelation no ffts | 249.766 |
-
-### Install and build example
+### Install
 
 Depends on [ffts](https://github.com/anthonix/ffts). Input vectors of size power-of-2 will perform better due to FFTS optimizations.
 
