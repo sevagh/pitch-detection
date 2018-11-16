@@ -1,6 +1,6 @@
 ### Pitch detection algorithms
 
-A collection of C++ pitch detection algorithms.
+A collection of autocorrelation-based C++ pitch detection algorithms.
 
 * [McLeod Pitch Method](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf)
 * [YIN](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf)
