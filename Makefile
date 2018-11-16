@@ -1,7 +1,7 @@
 CXX		?= gcc
-FFT_FLAG	?= -lffts
-
 CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC -fext-numeric-literals -ffast-math -flto
+TEST_FLAGS 	:= $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread $(FFT_FLAG)
+FFT_FLAG 	?= -lffts
 
 all: build
 
@@ -11,7 +11,6 @@ build: directories
 util: directories
 	$(CXX) $(CXX_FLAGS) -shared -o lib/util.so util/*.cpp
 
-TEST_FLAGS := $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread $(FFT_FLAG)
 
 test: build util
 	$(CXX) $@/*.cpp -o bin/$@ $(TEST_FLAGS) -lgtest
