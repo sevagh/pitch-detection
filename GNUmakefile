@@ -52,10 +52,12 @@ install: build
 	cp $(PITCH_INCLUDEDIR)/pitch_detection.h $(INSTALLHDR)
 	cp $(LIBDIR)/libpitch_detection.so $(INSTALLLIB)
 
-test: build
-test: util
+test: build_test
 test:
-	$(CXX) $(CXX_FLAGS) $(LIBDIR)/*.so $(TEST_SRCS) -o $(BINDIR)/tests -I$(PITCH_INCLUDEDIR) -I$(UTILDIR) -lpthread -lgtest $(FFT_FLAG)
+	$(BINDIR)/pitch_tests
+
+build_test: build
+	$(CXX) $(CXX_FLAGS) $(LIBDIR)/*.so $(TEST_SRCS) -o $(BINDIR)/pitch_tests -I$(PITCH_INCLUDEDIR) -I$(UTILDIR) -lpthread -lgtest $(FFT_FLAG)
 
 example: build
 example: util
