@@ -54,7 +54,7 @@ cumulative_mean_normalized_difference(std::vector<double> &yin_buffer)
 }
 
 double
-get_pitch_yin(const std::vector<double> &audio_buffer, int sample_rate)
+pitch::yin(const std::vector<double> &audio_buffer, int sample_rate)
 {
 	int tau_estimate;
 

@@ -3,13 +3,16 @@
 
 #include <vector>
 
+namespace pitch
+{
 double
-get_pitch_autocorrelation(const std::vector<double> &data, int sample_rate);
+autocorrelation(const std::vector<double> &data, int sample_rate);
 
 double
-get_pitch_yin(const std::vector<double> &audio_buffer, int sample_rate);
+yin(const std::vector<double> &audio_buffer, int sample_rate);
 
 double
-get_pitch_mpm(const std::vector<double> &audio_buffer, int sample_rate);
+mpm(const std::vector<double> &audio_buffer, int sample_rate);
+} // namespace pitch
 
 #endif /* PITCH_DETECTION_H */

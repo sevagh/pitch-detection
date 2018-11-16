@@ -48,7 +48,7 @@ peak_picking(const std::vector<double> &nsdf)
 }
 
 double
-get_pitch_mpm(const std::vector<double> &data, int sample_rate)
+pitch::mpm(const std::vector<double> &data, int sample_rate)
 {
 	std::vector<double> nsdf = acorr_r(data);
 	std::vector<int> max_positions = peak_picking(nsdf);
