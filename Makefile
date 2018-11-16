@@ -1,7 +1,7 @@
 CXX		?= gcc
 CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC -fext-numeric-literals -ffast-math -flto
-TEST_FLAGS 	:= $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread $(FFT_FLAG)
 FFT_FLAG 	?= -lffts
+TEST_FLAGS 	:= $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread $(FFT_FLAG)
 
 all: build
 

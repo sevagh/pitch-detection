@@ -28,9 +28,6 @@ difference(const std::vector<double> &data)
 	double delta;
 	int yin_buffer_size = signed(data.size() / 2);
 	std::vector<double> yin_buffer(yin_buffer_size, 0.0);
-	for (tau = 0; tau < yin_buffer_size; tau++) {
-		yin_buffer[tau] = 0;
-	}
 	for (tau = 1; tau < yin_buffer_size; tau++) {
 		for (index = 0; index < yin_buffer_size; index++) {
 			delta = data[index] - data[index + tau];
