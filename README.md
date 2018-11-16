@@ -14,7 +14,7 @@ Visualization of McLeod pitch method (and the advantages over autocorrelation) h
 
 ### Tests
 
-Test code lives in [test](./test). To run the tests, you need [googletest](https://github.com/google/googletest), and run `make test`:
+Test code lives in [test](./test). To run the tests, you need [googletest](https://github.com/google/googletest), and run `make test && ./bin/test`:
 
 ```
 [----------] 5 tests from MpmInstrumentTest
@@ -46,7 +46,7 @@ Test code lives in [test](./test). To run the tests, you need [googletest](https
 
 ### Bench
 
-Bench code lives in [bench](./bench). To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make bench`:
+Bench code lives in [bench](./bench). To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make bench && ./bin/bench`:
 
 ```
 --------------------------------------------------------------------
