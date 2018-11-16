@@ -1,11 +1,10 @@
 #include "example.h"
-#include <cstdlib>
-#include <cstring>
 #include <fstream>
 #include <gflags/gflags.h>
 #include <iostream>
 #include <limits>
 #include <pitch_detection.h>
+#include <util.h>
 #include <utility>
 #include <vector>
 
@@ -41,5 +40,11 @@ main(int argc, char **argv)
 	    pitch_algorithms[pitch_types[FLAGS_algo]](data, FLAGS_sample_rate);
 
 	std::cout << "Size: " << SIZE << "\tpitch: " << pitch << std::endl;
+
+	auto closest = util::closest_note(pitch);
+
+	std::cerr << "closest note: " << std::get<0>(closest) << " ("
+	          << std::get<1>(closest) << ")" << std::endl;
+
 	return 0;
 }

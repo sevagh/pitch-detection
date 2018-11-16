@@ -47,7 +47,7 @@ main(int argc, char **argv)
 
 	auto closest = util::closest_note(pitch);
 
-	std::cerr << "closest note: " << std::get<0>(closest) << "("
+	std::cerr << "closest note: " << std::get<0>(closest) << " ("
 	          << std::get<1>(closest) << ")" << std::endl;
 	return 0;
 }
