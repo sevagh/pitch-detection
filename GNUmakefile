@@ -1,15 +1,23 @@
-SRCDIR 		:= src
-EXAMPLEDIR	:= examples
-LIBDIR		:= lib
-BINDIR		:= bin
-INCLUDEDIR	:= include
+CXX		?= gcc
+
 INSTALLHDR	:= /usr/include
 INSTALLLIB	:= /usr/lib
 
-SRCS		:= $(wildcard $(SRCDIR)/*.cpp)
+LIBDIR		:= lib
+BINDIR		:= bin
+
+PITCH_SRCDIR 		:= src
+PITCH_INCLUDEDIR	:= include
+PITCH_SRCS		:= $(wildcard $(PITCH_SRCDIR)/*.cpp)
+PITCH_HDRS		:= $(wildcard $(PITCH_INCLUDEDIR)/*.h)
+
+UTILDIR		:= util
+UTIL_SRCS	:= $(wildcard $(UTILDIR)/*.cpp)
+UTIL_HDRS	:= $(wildcard $(UTILDIR)/*.h)
+
+EXAMPLEDIR	:= examples
 EXAMPLE_SRCS	:= $(wildcard $(EXAMPLEDIR)/*.cpp)
 EXAMPLE_HDRS	:= $(wildcard $(EXAMPLEDIR)/*.h)
-HDRS		:= $(wildcard $(INCLUDEDIR)/*.h)
 
 CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC -fext-numeric-literals -ffast-math -flto
 
@@ -22,10 +30,13 @@ FFT_FLAG	?= -lffts
 all: build
 
 fmt:
-	@$(foreach file,$(SRCS) $(HDRS) $(EXAMPLE_SRCS) $(EXAMPLE_HDRS),clang-format -i $(file);)
+	@$(foreach file,$(PITCH_SRCS) $(PITCH_HDRS) $(EXAMPLE_SRCS) $(EXAMPLE_HDRS) $(UTIL_SRCS) $(UTIL_HDRS),clang-format -i $(file);)
 
 build: directories
-	$(CXX) -shared -o $(LIBDIR)/libpitch_detection.so $(FFT_FLAG) $(CXX_FLAGS) $(SRCS) -I$(INCLUDEDIR)
+	$(CXX) -shared -o $(LIBDIR)/libpitch_detection.so $(FFT_FLAG) $(CXX_FLAGS) $(PITCH_SRCS) -I$(PITCH_INCLUDEDIR)
+
+util: directories
+	$(CXX) -shared -o $(LIBDIR)/util.so $(CXX_FLAGS) $(UTIL_SRCS) -I$(UTILDIR)
 
 directories:
 	@mkdir -p $(LIBDIR) $(BINDIR)
@@ -34,13 +45,14 @@ clean:
 	-rm -rf $(LIBDIR) $(BINDIR)
 
 install: build
-	cp $(INCLUDEDIR)/pitch_detection.h $(INSTALLHDR)
+	cp $(PITCH_INCLUDEDIR)/pitch_detection.h $(INSTALLHDR)
 	cp $(LIBDIR)/libpitch_detection.so $(INSTALLLIB)
 
 examples: build
+examples: util
 examples: $(BINS)
 
 $(BINDIR)/%: $(EXAMPLEDIR)/%.cpp
-	$(CXX) $< $(LIBDIR)/libpitch_detection.so $(CXX_FLAGS) -o $@ $(FFT_FLAG) -I$(INCLUDEDIR) -lgflags
+	$(CXX) $< $(LIBDIR)/*.so $(CXX_FLAGS) -o $@ $(FFT_FLAG) -I$(PITCH_INCLUDEDIR) -I$(UTILDIR) -lgflags
 
 .PHONY: clean
