@@ -57,6 +57,8 @@ test:
 	$(BINDIR)/pitch_tests
 
 build_test: build
+build_test: util
+build_test:
 	$(CXX) $(CXX_FLAGS) $(LIBDIR)/*.so $(TEST_SRCS) -o $(BINDIR)/pitch_tests -I$(PITCH_INCLUDEDIR) -I$(UTILDIR) -lpthread -lgtest $(FFT_FLAG)
 
 example: build
