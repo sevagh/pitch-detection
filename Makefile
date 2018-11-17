@@ -1,13 +1,12 @@
 CXX		?= gcc
 CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC -fext-numeric-literals -ffast-math -flto
 CXX_PROFILE	:= -ggdb -fno-omit-frame-pointer -fPIC
-FFT_FLAG 	?= -lffts
-TEST_FLAGS 	:= $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread $(FFT_FLAG)
+TEST_FLAGS 	:= $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread -lffts
 
 all: build
 
 build: directories
-	$(CXX) $(CXX_FLAGS) -shared -o lib/libpitch_detection.so $(FFT_FLAG) src/*.cpp -Iinclude
+	$(CXX) $(CXX_FLAGS) -shared -o lib/libpitch_detection.so -lffts src/*.cpp -Iinclude
 
 util: directories
 	$(CXX) $(CXX_FLAGS) -shared -o lib/util.so util/*.cpp
@@ -23,7 +22,7 @@ profile: bench
 
 example: build util bin/sinewave bin/stdin
 bin/%: example/%.cpp
-	$(CXX) $< lib/*.so -o $@ $(CXX_FLAGS) -o $@ $(FFT_FLAG) -Iinclude -Iutil -lgflags
+	$(CXX) $< lib/*.so -o $@ $(CXX_FLAGS) -o $@ -lffts -Iinclude -Iutil -lgflags
 
 directories:
 	@mkdir -p lib bin

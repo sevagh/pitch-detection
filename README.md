@@ -16,7 +16,7 @@ Visualization of McLeod pitch method (and the advantages over autocorrelation) h
 
 Using this project should be as easy as `make && sudo make install` on Linux with a modern GCC - I don't officially support other platforms.
 
-This project depends on [ffts](https://github.com/anthonix/ffts). You can build without ffts by specifying `FFT_FLAG="-DPORTABLE_XCORR"`, which substitutes FFT autocorrelation for time-domain autocorrelation. This will severely impact the performance of MPM.
+This project depends on [ffts](https://github.com/anthonix/ffts).
 
 ### Examples
 
