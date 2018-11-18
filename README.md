@@ -2,11 +2,11 @@
 
 A collection of C++ pitch detection algorithms.
 
-* [McLeod Pitch Method](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf)
+* [McLeod pitch method](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf)
 * [YIN](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf)
 * Autocorrelation
 
-Visualization of McLeod pitch method (and the advantages over autocorrelation) here: https://github.com/sevagh/mcleod
+Visualizations of these methods can be viewed at https://github.com/sevagh/mcleod https://github.com/sevagh/yin
 
 ### API breaking change - 15/11/2018
 
