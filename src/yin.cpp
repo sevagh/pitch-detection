@@ -1,4 +1,3 @@
-#include <cstdlib>
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
 #include <tuple>
@@ -21,21 +20,30 @@ absolute_threshold(const std::vector<double> &yin_buffer)
 }
 
 static std::vector<double>
-cumulative_mean_normalized_difference(const std::vector<double> &data)
+difference(const std::vector<double> &data)
 {
-	int index, tau;
+	std::vector<double> acorr = acorr_r(data);
+
+	std::vector<double> difference;
+	difference.reserve(acorr.size() / 2);
+
+	for (int tau = 0; tau < signed(difference.capacity()); tau++)
+		difference.push_back(2 * acorr[0] - 2 * acorr[tau]);
+
+	return difference;
+}
+
+static void
+cumulative_mean_normalized_difference(std::vector<double> &yin_buffer)
+{
 	double running_sum = 0.0f;
-	int yin_buffer_size = signed(data.size() / 2);
-	std::vector<double> yin_buffer(yin_buffer_size, 0.0f);
-	for (tau = 1; tau < yin_buffer_size; tau++) {
-		for (index = 0; index < yin_buffer_size; index++) {
-			yin_buffer[tau] += (data[index] - data[index + tau]) *
-			                   (data[index] - data[index + tau]);
-		}
+
+	yin_buffer[0] = 1;
+
+	for (int tau = 1; tau < signed(yin_buffer.size()); tau++) {
 		running_sum += yin_buffer[tau];
 		yin_buffer[tau] *= tau / running_sum;
 	}
-	return yin_buffer;
 }
 
 double
@@ -43,8 +51,9 @@ pitch::yin(const std::vector<double> &audio_buffer, int sample_rate)
 {
 	int tau_estimate;
 
-	std::vector<double> yin_buffer =
-	    cumulative_mean_normalized_difference(audio_buffer);
+	std::vector<double> yin_buffer = difference(audio_buffer);
+
+	cumulative_mean_normalized_difference(yin_buffer);
 
 	tau_estimate = absolute_threshold(yin_buffer);
 

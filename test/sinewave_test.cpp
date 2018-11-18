@@ -27,7 +27,7 @@ TEST_P(YinSinewaveTest, GetFreq)
 }
 
 INSTANTIATE_TEST_CASE_P(MpmSinewave, MpmSinewaveTest,
-    ::testing::Values(100.0, 233.0, 298.0, 1583.0, 3398.0, 4200.0));
+    ::testing::Values(77.0, 100.0, 233.0, 298.0, 1583.0, 3398.0, 4200.0));
 
 INSTANTIATE_TEST_CASE_P(YinSinewave, YinSinewaveTest,
     ::testing::Values(77.0, 100.0, 233.0, 298.0, 1583.0, 3398.0, 4200.0));
