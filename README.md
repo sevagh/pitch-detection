@@ -10,7 +10,7 @@ Visualizations of these methods can be viewed at https://github.com/sevagh/mcleo
 
 YIN doesn't suffer the same weakness as the McLeod pitch method - inaccuracy at low pitches - there's no cutoff. Also, with my recent YIN-FFT implementation, the performance of the two is almost identical.
 
-### YIN FFT approximation - 18/11/2018
+### YIN FFT approximation - 2018/11/18
 
 The YIN paper includes the formulation for the difference function, `d_t`, for a lag tau, as expressed in terms of the autocorrelation `r_t`:
 
