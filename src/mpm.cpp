@@ -1,8 +1,5 @@
 #include <algorithm>
-#include <cassert>
-#include <cmath>
 #include <complex>
-#include <cstring>
 #include <float.h>
 #include <numeric>
 #include <pitch_detection.h>

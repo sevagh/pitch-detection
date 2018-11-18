@@ -1,8 +1,6 @@
 #include <algorithm>
-#include <cmath>
 #include <complex>
 #include <ffts/ffts.h>
-#include <iostream>
 #include <numeric>
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>

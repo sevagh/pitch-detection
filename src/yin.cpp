@@ -1,4 +1,3 @@
-#include <iostream>
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
 #include <tuple>
