@@ -8,7 +8,6 @@
 
 /* YIN configs */
 #define YIN_DEFAULT_THRESHOLD 0.20
-#define YIN_DEFAULT_OVERLAP 1536
 
 #include <complex>
 #include <vector>

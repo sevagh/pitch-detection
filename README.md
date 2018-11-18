@@ -2,15 +2,86 @@
 
 A collection of C++ pitch detection algorithms.
 
-* [McLeod pitch method](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf)
+* [McLeod Pitch Method](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf)
 * [YIN](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf)
 * Autocorrelation
 
 Visualizations of these methods can be viewed at https://github.com/sevagh/mcleod https://github.com/sevagh/yin
 
-### API breaking change - 15/11/2018
+YIN doesn't suffer the same weakness as the McLeod pitch method - inaccuracy at low pitches - there's no cutoff. Also, with my recent YIN-FFT implementation, the performance of the two is almost identical.
 
-**N.B.** `get_pitch_yin`, `get_pitch_mpm`, `get_pitch_autocorrelation` have become `pitch::yin`, `pitch::mpm`, `pitch::autocorrelation`.
+### YIN FFT approximation - 18/11/2018
+
+The YIN paper includes the formulation for the difference function, `d_t`, for a lag tau, as expressed in terms of the autocorrelation `r_t`:
+
+```
+d_t(tau) = r_t(0) + r_(t+tau)(0) - 2*r_t(tau)
+```
+
+The term `r_(t+tau)` was confusing for me, so in my code I substituted it for
+
+```
+d_t(tau) = 2*r_t(0) - 2*r_t(tau)
+```
+
+, where `r_t(tau)` is the same FFT-based autocorrelation function I use for MPM.
+
+This is a big performance win for YIN from **O(N^2)** to **O(NlogN)**, and all of the tests are still passing.
+
+The accuracy didn't take a huge hit.
+
+Time-domain YIN result:
+```
+$ time ./bin/stdin --sample_rate 44100 --algo yin <./sample/F-4_48000_classicalguitar.txt
+Size: 174759    pitch: 342.271
+closest note: F4 (349.2)
+
+real    0m8.066s
+user    0m8.020s
+sys     0m0.004s
+```
+
+FFT YIN result:
+
+```
+$ time ./bin/stdin --sample_rate 44100 --algo yin <./sample/F-4_48000_classicalguitar.txt
+Size: 174759    pitch: 342.238
+closest note: F4 (349.2)
+
+real    0m0.262s
+user    0m0.216s
+sys     0m0.043s
+```
+
+Time-domain YIN benchmark:
+
+```
+---------------------------------------------------------------
+Benchmark                        Time           CPU Iterations
+---------------------------------------------------------------
+BM_Yin_Sinewave/1024         60976 ns      60878 ns      11130
+BM_Yin_Sinewave/4096       1002633 ns    1000951 ns        688
+BM_Yin_Sinewave/32768     64198002 ns   64096428 ns         11
+BM_Yin_Sinewave/262144  4125974701 ns 4114026064 ns          1
+BM_Yin_Sinewave/1048576 67683358752 ns 67461192598 ns          1
+BM_Yin_Sinewave_BigO          0.06 N^2       0.06 N^2
+BM_Yin_Sinewave_RMS              0 %          0 %
+```
+
+FFT YIN benchmark:
+
+```
+---------------------------------------------------------------
+Benchmark                        Time           CPU Iterations
+---------------------------------------------------------------
+BM_Yin_Sinewave/1024         60657 ns      60202 ns      11223
+BM_Yin_Sinewave/4096        241264 ns     239170 ns       2967
+BM_Yin_Sinewave/32768      2077014 ns    2054092 ns        340
+BM_Yin_Sinewave/262144    19811215 ns   19568974 ns         36
+BM_Yin_Sinewave/1048576   95163598 ns   93849952 ns          7
+BM_Yin_Sinewave_BigO          4.52 NlgN       4.46 NlgN
+BM_Yin_Sinewave_RMS              3 %          3 %
+```
 
 ### Build and install
 
@@ -79,18 +150,18 @@ To run the bench, you need [google benchmark](https://github.com/google/benchmar
 ---------------------------------------------------------------
 Benchmark                        Time           CPU Iterations
 ---------------------------------------------------------------
-BM_Yin_Sinewave/1024         63486 ns      63279 ns       8546
-BM_Yin_Sinewave/4096       1016642 ns    1014480 ns        686
-BM_Yin_Sinewave/32768     66091599 ns   65909062 ns         10
-BM_Yin_Sinewave/262144  4242461569 ns 4231010624 ns          1
-BM_Yin_Sinewave/1048576 68476200029 ns 68141451569 ns          1
-BM_Yin_Sinewave_BigO          0.06 N^2       0.06 N^2
-BM_Yin_Sinewave_RMS              0 %          0 %
-BM_Mpm_Sinewave/1024         61976 ns      61476 ns      11298
-BM_Mpm_Sinewave/4096        203864 ns     202747 ns       3473
-BM_Mpm_Sinewave/32768      1733893 ns    1719823 ns        407
-BM_Mpm_Sinewave/262144    22363698 ns   22242660 ns         31
-BM_Mpm_Sinewave/1048576   99488665 ns   98906626 ns          7
-BM_Mpm_Sinewave_BigO          4.74 NlgN       4.72 NlgN
-BM_Mpm_Sinewave_RMS              1 %          1 %
+BM_Yin_Sinewave/1024         61782 ns      61237 ns      10621
+BM_Yin_Sinewave/4096        241637 ns     239616 ns       2935
+BM_Yin_Sinewave/32768      2054685 ns    2035207 ns        346
+BM_Yin_Sinewave/262144    19950330 ns   19846980 ns         36
+BM_Yin_Sinewave/1048576   94049749 ns   93521579 ns          7
+BM_Yin_Sinewave_BigO          4.47 NlgN       4.45 NlgN
+BM_Yin_Sinewave_RMS              2 %          2 %
+BM_Mpm_Sinewave/1024         63301 ns      62817 ns      11099
+BM_Mpm_Sinewave/4096        211330 ns     210247 ns       3308
+BM_Mpm_Sinewave/32768      1823055 ns    1814052 ns        384
+BM_Mpm_Sinewave/262144    17376578 ns   17284055 ns         40
+BM_Mpm_Sinewave/1048576   97836061 ns   97294387 ns          7
+BM_Mpm_Sinewave_BigO          4.62 NlgN       4.59 NlgN
+BM_Mpm_Sinewave_RMS              9 %          9 %
 ```
