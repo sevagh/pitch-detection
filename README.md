@@ -6,7 +6,7 @@ A collection of C++ pitch detection algorithms.
 * [YIN](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf)
 * Autocorrelation
 
-Visualizations of these methods can be viewed at https://github.com/sevagh/mcleod https://github.com/sevagh/yin
+Visualizations of these methods can be viewed at https://gitlab.com/sevagh/mcleod https://gitlab.com/sevagh/yin
 
 YIN doesn't suffer the same weakness as the McLeod pitch method - inaccuracy at low pitches - there's no cutoff. Also, with my recent YIN-FFT implementation, the performance of the two is almost identical.
 
