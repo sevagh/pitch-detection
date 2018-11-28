@@ -6,6 +6,7 @@
 class MpmSinewaveTest : public testing::TestWithParam<double>
 {
 };
+
 class YinSinewaveTest : public testing::TestWithParam<double>
 {
 };
@@ -23,6 +24,24 @@ TEST_P(YinSinewaveTest, GetFreq)
 	double freq = GetParam();
 	auto data = util::sinewave(8092, freq, 48000);
 	double pitch = pitch::yin(data, 48000);
+	EXPECT_NEAR(freq, pitch, 0.01 * freq);
+}
+
+TEST_P(MpmSinewaveTest, GetFreqManualAlloc)
+{
+	double freq = GetParam();
+	auto data = util::sinewave(8092, freq, 48000);
+	PitchAlloc pa(data.size());
+	double pitch = pitch_manual_alloc::mpm(data, 48000, &pa);
+	EXPECT_NEAR(freq, pitch, 0.01 * freq);
+}
+
+TEST_P(YinSinewaveTest, GetFreqManualAlloc)
+{
+	double freq = GetParam();
+	auto data = util::sinewave(8092, freq, 48000);
+	YinAlloc ya(data.size());
+	double pitch = pitch_manual_alloc::yin(data, 48000, &ya);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
