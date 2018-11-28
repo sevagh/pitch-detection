@@ -15,6 +15,7 @@
 
 // forward decl
 class PitchAlloc;
+class YinAlloc;
 
 std::pair<double, double>
 parabolic_interpolation(const std::vector<double> &, double);
@@ -44,6 +45,19 @@ class PitchAlloc
 	{
 		ffts_free(fft_forward);
 		ffts_free(fft_backward);
+	}
+};
+
+class YinAlloc : public PitchAlloc
+{
+  public:
+	long N4;
+	std::vector<double> yin_buffer;
+
+	YinAlloc(long audio_buffer_size)
+	    : PitchAlloc(audio_buffer_size), N4(N / 2),
+	      yin_buffer(std::vector<double>(N4))
+	{
 	}
 };
 
