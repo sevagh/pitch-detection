@@ -6,13 +6,11 @@ A collection of autocorrelation-based C++ pitch detection algorithms with **O(nl
 * YIN - [paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
 * Autocorrelation
 
-The implementations of YIN and MPM have been iteratively optimized with perf, googlebench, and heaptrack. If you can detect any more potential optimizations, please contribute.
-
 ### Build and install
 
 Using this project should be as easy as `make && sudo make install` on Linux with a modern GCC - I don't officially support other platforms.
 
-This project depends on [ffts](https://github.com/anthonix/ffts). To run the tests, you need [googletest](https://github.com/google/googletest), and run `make test && ./bin/test`. To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make bench && ./bin/bench`.
+This project depends on [ffts](https://github.com/anthonix/ffts). To run the tests, you need [googletest](https://github.com/google/googletest), and run `make test && ./bin/test`. To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make bench && ./bin/bench`. To profile with perf, you can use `make profile` to compile the benchmarks with `-fno-omit-frame-pointer`.
 
 ### Usage
 
@@ -46,8 +44,6 @@ for (int i = 0; i < 10000; ++i) {
 ```
 
 #### Advantages of manual memory allocation
-
-Measured and graphed using https://github.com/KDE/heaptrack and [membench.cpp](./bench/membench.cpp)
 
 The auto allocation strategy performs hundreds of thousands of allocations:
 
