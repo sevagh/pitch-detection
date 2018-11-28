@@ -2,11 +2,9 @@
 
 A collection of autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running time.
 
-* [McLeod Pitch Method](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf)
-* [YIN](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf)
+* McLeod pitch method - [paper](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf) - [visualization](./misc/mcleod)
+* YIN - [paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
 * Autocorrelation
-
-Visualizations of these methods can be viewed at https://gitlab.com/sevagh/mcleod https://gitlab.com/sevagh/yin
 
 ### Build and install
 
