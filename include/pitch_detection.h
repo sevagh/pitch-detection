@@ -30,6 +30,14 @@ class PitchAlloc
 	}
 };
 
+class MpmAlloc : public PitchAlloc
+{
+  public:
+	MpmAlloc(long audio_buffer_size) : PitchAlloc(audio_buffer_size)
+	{
+	}
+};
+
 class YinAlloc : public PitchAlloc
 {
   public:
@@ -64,7 +72,7 @@ double
 yin(const std::vector<double> &, int, YinAlloc *);
 
 double
-mpm(const std::vector<double> &, int, PitchAlloc *);
+mpm(const std::vector<double> &, int, MpmAlloc *);
 } // namespace pitch_manual_alloc
 
 #endif /* PITCH_DETECTION_H */

@@ -31,8 +31,8 @@ TEST_P(MpmSinewaveTest, GetFreqManualAlloc)
 {
 	double freq = GetParam();
 	auto data = util::sinewave(8092, freq, 48000);
-	PitchAlloc pa(data.size());
-	double pitch = pitch_manual_alloc::mpm(data, 48000, &pa);
+	MpmAlloc ma(data.size());
+	double pitch = pitch_manual_alloc::mpm(data, 48000, &ma);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 

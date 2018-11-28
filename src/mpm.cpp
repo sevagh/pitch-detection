@@ -47,7 +47,7 @@ peak_picking(const std::vector<double> &nsdf)
 double
 pitch::mpm(const std::vector<double> &audio_buffer, int sample_rate)
 {
-	PitchAlloc pa(audio_buffer.size());
+	MpmAlloc pa(audio_buffer.size());
 	acorr_r(audio_buffer, &pa);
 
 	std::vector<int> max_positions = peak_picking(pa.out_real);
@@ -83,7 +83,7 @@ pitch::mpm(const std::vector<double> &audio_buffer, int sample_rate)
 
 double
 pitch_manual_alloc::mpm(
-    const std::vector<double> &audio_buffer, int sample_rate, PitchAlloc *pa)
+    const std::vector<double> &audio_buffer, int sample_rate, MpmAlloc *pa)
 {
 	acorr_r(audio_buffer, pa);
 
