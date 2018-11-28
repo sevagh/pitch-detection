@@ -20,15 +20,15 @@ absolute_threshold(const std::vector<double> &yin_buffer)
 }
 
 static std::vector<double>
-difference(const std::vector<double> &data)
+difference(const std::vector<double> &audio_buffer, PitchAlloc *pa)
 {
-	std::vector<double> acorr = acorr_r(data);
+	acorr_r(audio_buffer, pa);
 
 	std::vector<double> difference;
-	difference.reserve(acorr.size() / 2);
+	difference.reserve(pa->N / 2);
 
 	for (int tau = 0; tau < signed(difference.capacity()); tau++)
-		difference.push_back(2 * acorr[0] - 2 * acorr[tau]);
+		difference.push_back(2 * pa->out_real[0] - 2 * pa->out_real[tau]);
 
 	return difference;
 }
@@ -51,10 +51,10 @@ pitch::yin(const std::vector<double> &audio_buffer, int sample_rate)
 {
 	int tau_estimate;
 
-	std::vector<double> yin_buffer = difference(audio_buffer);
+	PitchAlloc pa(audio_buffer.size());
 
+	auto yin_buffer = difference(audio_buffer, &pa);
 	cumulative_mean_normalized_difference(yin_buffer);
-
 	tau_estimate = absolute_threshold(yin_buffer);
 
 	return (tau_estimate != -1)

@@ -45,18 +45,20 @@ peak_picking(const std::vector<double> &nsdf)
 }
 
 double
-pitch::mpm(const std::vector<double> &data, int sample_rate)
+pitch::mpm(const std::vector<double> &audio_buffer, int sample_rate)
 {
-	std::vector<double> nsdf = acorr_r(data);
-	std::vector<int> max_positions = peak_picking(nsdf);
+	PitchAlloc pa(audio_buffer.size());
+	acorr_r(audio_buffer, &pa);
+
+	std::vector<int> max_positions = peak_picking(pa.out_real);
 	std::vector<std::pair<double, double>> estimates;
 
 	double highest_amplitude = -DBL_MAX;
 
 	for (int i : max_positions) {
-		highest_amplitude = std::max(highest_amplitude, nsdf[i]);
-		if (nsdf[i] > MPM_SMALL_CUTOFF) {
-			auto x = parabolic_interpolation(nsdf, i);
+		highest_amplitude = std::max(highest_amplitude, pa.out_real[i]);
+		if (pa.out_real[i] > MPM_SMALL_CUTOFF) {
+			auto x = parabolic_interpolation(pa.out_real, i);
 			estimates.push_back(x);
 			highest_amplitude = std::max(highest_amplitude, std::get<1>(x));
 		}
