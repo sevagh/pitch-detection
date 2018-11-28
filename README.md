@@ -43,6 +43,20 @@ for (int i = 0; i < 10000; ++i) {
 }
 ```
 
+#### Advantages of manual memory allocation
+
+Measured and graphed using https://github.com/KDE/heaptrack and [membench.cpp](./bench/membench.cpp)
+
+Automatic allocations performs hundreds of thousands of allocations:
+
+![auto-use](./misc/membench/auto-mem.png)
+![auto-alloc](./misc/membench/auto-alloc.png)
+
+Manual allocation, as expected, performs much less allocations:
+
+![manual-use](./misc/membench/manual-mem.png)
+![manual-alloc](./misc/membench/manual-alloc.png)
+
 ### Examples
 
 To build the examples, you need [gflags](https://github.com/gflags/gflags). Build them with `make example`. Each example binary has full `--help` text but here's some quick usage for,

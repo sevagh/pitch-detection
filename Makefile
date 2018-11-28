@@ -14,7 +14,8 @@ test: build util
 	$(CXX) $@/*.cpp -o bin/$@ $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread -lffts -lgtest -lgtest_main
 
 bench: build util
-	$(CXX) $@/*.cpp -o bin/$@ $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread -lffts -lbenchmark
+	$(CXX) $@/$@.cpp -o bin/$@ $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread -lffts -lbenchmark
+	$(CXX) $@/mem$@.cpp -o bin/mem$@ $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lffts -lgflags
 
 profile: CXX_FLAGS=$(CXX_PROFILE)
 profile: bench
