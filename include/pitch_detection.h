@@ -59,6 +59,7 @@ class YinAlloc : public PitchAlloc
 
 namespace pitch
 {
+
 double
 autocorrelation(const std::vector<double> &, int);
 
@@ -67,10 +68,12 @@ yin(const std::vector<double> &, int);
 
 double
 mpm(const std::vector<double> &, int);
+
 } // namespace pitch
 
 namespace pitch_manual_alloc
 {
+
 double
 autocorrelation(const std::vector<double> &, int, PitchAlloc *);
 
@@ -79,6 +82,7 @@ yin(const std::vector<double> &, int, YinAlloc *);
 
 double
 mpm(const std::vector<double> &, int, MpmAlloc *);
+
 } // namespace pitch_manual_alloc
 
 #endif /* PITCH_DETECTION_H */
