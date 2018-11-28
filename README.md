@@ -6,6 +6,8 @@ A collection of autocorrelation-based C++ pitch detection algorithms with **O(nl
 * YIN - [paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
 * Autocorrelation
 
+The implementations of YIN and MPM have been iteratively optimized with perf, googlebench, and heaptrack. If you can detect any more potential optimizations, please contribute.
+
 ### Build and install
 
 Using this project should be as easy as `make && sudo make install` on Linux with a modern GCC - I don't officially support other platforms.
@@ -47,12 +49,12 @@ for (int i = 0; i < 10000; ++i) {
 
 Measured and graphed using https://github.com/KDE/heaptrack and [membench.cpp](./bench/membench.cpp)
 
-Automatic allocations performs hundreds of thousands of allocations:
+The auto allocation strategy performs hundreds of thousands of allocations:
 
 ![auto-use](./misc/membench/auto-mem.png)
 ![auto-alloc](./misc/membench/auto-alloc.png)
 
-Manual allocation, as expected, performs much less allocations:
+Manual allocation, as expected, performs less allocations by several orders of magnitude:
 
 ![manual-use](./misc/membench/manual-mem.png)
 ![manual-alloc](./misc/membench/manual-alloc.png)
