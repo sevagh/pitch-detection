@@ -19,10 +19,10 @@ Compile your code with `-lpitch_detection`:
 ```c++
 #include <pitch_detection.h>
 
-//auto audio_buffer, sample rate 48000
+//std::vector<double> audio_buffer with sample rate e.g. 48000
 
-auto pitch_yin = pitch::yin(&audio_buffer, 48000);
-auto pitch_mpm = pitch::mpm(&audio_buffer, 48000);
+auto pitch_yin = pitch::yin(audio_buffer, 48000);
+auto pitch_mpm = pitch::mpm(audio_buffer, 48000);
 ```
 
 #### Manual memory allocation
@@ -32,14 +32,16 @@ If you want to detect pitch for multiple audio buffers of a uniform size, you ca
 ```c++
 #include <pitch_detection.h>
 
-//buffers are fixed at length 8092
+//buffers have fixed length e.g. 48000, same as sample rate
 
-MpmAlloc ma(8092);
-YinAlloc ya(8092);
+MpmAlloc ma(48000);
+YinAlloc ya(48000);
 
 for (int i = 0; i < 10000; ++i) {
-        auto pitch_yin = pitch_manual_alloc::yin(&audio_buffer, 48000, &ya);
-        auto pitch_mpm = pitch_manual_alloc::mpm(&audio_buffer, 48000, &ma);
+        //std::vector<double> audio_buffer size 48000 sample rate 48000
+
+        auto pitch_yin = pitch_manual_alloc::yin(audio_buffer, 48000, &ya);
+        auto pitch_mpm = pitch_manual_alloc::mpm(audio_buffer, 48000, &ma);
 }
 ```
 
