@@ -6,35 +6,23 @@
 #include <pitch_detection_priv.h>
 #include <vector>
 
-std::vector<double>
-acorr_r(const std::vector<double> &signal)
+void
+acorr_r(const std::vector<double> &signal, PitchAlloc *pa)
 {
-	int N = signal.size();
-	int N2 = 2 * N;
-
-	auto fft_forward = ffts_init_1d(N2, FFTS_FORWARD);
-	auto fft_backward = ffts_init_1d(N2, FFTS_BACKWARD);
-
-	std::vector<std::complex<float>> outb(N2);
-	std::transform(signal.begin(), signal.begin() + N, outb.begin(),
+	std::transform(signal.begin(), signal.begin() + pa->N, pa->out_im.begin(),
 	    [](double x) -> std::complex<double> { return std::complex(x, 0.0); });
 
-	ffts_execute(fft_forward, outb.data(), outb.data());
+	ffts_execute(pa->fft_forward, pa->out_im.data(), pa->out_im.data());
 
-	std::complex<float> scale = {1.0f / (float)N2, 0.0};
-	for (int i = 0; i < N; ++i)
-		outb[i] *= std::conj(outb[i]) * scale;
+	std::complex<float> scale = {1.0f / (float)pa->N2, 0.0};
+	for (int i = 0; i < pa->N; ++i)
+		pa->out_im[i] *= std::conj(pa->out_im[i]) * scale;
 
-	ffts_execute(fft_backward, outb.data(), outb.data());
+	ffts_execute(pa->fft_backward, pa->out_im.data(), pa->out_im.data());
 
-	ffts_free(fft_forward);
-	ffts_free(fft_backward);
-
-	std::vector<double> real_result(N, 0.0);
-	std::transform(outb.begin(), outb.begin() + N, real_result.begin(),
+	std::transform(pa->out_im.begin(), pa->out_im.begin() + pa->N,
+	    pa->out_real.begin(),
 	    [](std::complex<float> cplx) -> double { return std::real(cplx); });
-
-	return real_result;
 }
 
 static double
@@ -55,9 +43,25 @@ get_acf_periodicity(const std::vector<double> &data)
 }
 
 double
-pitch::autocorrelation(const std::vector<double> &data, int sample_rate)
+pitch::autocorrelation(const std::vector<double> &audio_buffer, int sample_rate)
 {
-	double peak_bin_index_periodicity = get_acf_periodicity(acorr_r(data));
+	PitchAlloc pa(audio_buffer.size());
+	acorr_r(audio_buffer, &pa);
+
+	double peak_bin_index_periodicity = get_acf_periodicity(pa.out_real);
+
+	return (sample_rate / peak_bin_index_periodicity);
+}
+
+double
+pitch_manual_alloc::autocorrelation(
+    const std::vector<double> &audio_buffer, int sample_rate, PitchAlloc *pa)
+{
+	acorr_r(audio_buffer, pa);
+
+	double peak_bin_index_periodicity = get_acf_periodicity(pa->out_real);
+
+	pa->clear();
 
 	return (sample_rate / peak_bin_index_periodicity);
 }

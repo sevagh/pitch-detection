@@ -1,5 +1,5 @@
 pub fn get_open_e() -> Vec<f64> {
-    let open_e_4096 = include_str!("../../../sample/E2_44100_acousticguitar.txt");
+    let open_e_4096 = include_str!("../../sample/E2_44100_acousticguitar.txt");
     let data: Vec<f64> = open_e_4096
         .lines()
         .filter_map(|s| s.trim().parse::<f64>().ok())
