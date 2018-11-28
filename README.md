@@ -10,11 +10,7 @@ A collection of autocorrelation-based C++ pitch detection algorithms with **O(nl
 
 Using this project should be as easy as `make && sudo make install` on Linux with a modern GCC - I don't officially support other platforms.
 
-This project depends on [ffts](https://github.com/anthonix/ffts).
-
-To run the tests, you need [googletest](https://github.com/google/googletest), and run `make test && ./bin/test`.
-
-To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make bench && ./bin/bench`.
+This project depends on [ffts](https://github.com/anthonix/ffts). To run the tests, you need [googletest](https://github.com/google/googletest), and run `make test && ./bin/test`. To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make bench && ./bin/bench`.
 
 ### Usage
 
@@ -34,14 +30,16 @@ auto pitch_mpm = pitch::mpm(&audio_buffer, 48000);
 If you want to detect pitch for multiple audio buffers of a uniform size, you can allocate the pitch buffers once:
 
 ```c++
+#include <pitch_detection.h>
+
 //buffers are fixed at length 8092
 
 MpmAlloc ma(8092);
 YinAlloc ya(8092);
 
 for (int i = 0; i < 10000; ++i) {
-    auto pitch_yin = pitch_manual_alloc::yin(&audio_buffer, 48000, &pa);
-    auto pitch_mpm = pitch_manual_alloc::mpm(&audio_buffer, 48000, &ya);
+        auto pitch_yin = pitch_manual_alloc::yin(&audio_buffer, 48000, &ya);
+        auto pitch_mpm = pitch_manual_alloc::mpm(&audio_buffer, 48000, &ma);
 }
 ```
 
