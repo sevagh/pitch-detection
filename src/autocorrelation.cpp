@@ -52,3 +52,14 @@ pitch::autocorrelation(const std::vector<double> &audio_buffer, int sample_rate)
 
 	return (sample_rate / peak_bin_index_periodicity);
 }
+
+double
+pitch_manual_alloc::autocorrelation(
+    const std::vector<double> &audio_buffer, int sample_rate, PitchAlloc *pa)
+{
+	acorr_r(audio_buffer, pa);
+
+	double peak_bin_index_periodicity = get_acf_periodicity(pa->out_real);
+
+	return (sample_rate / peak_bin_index_periodicity);
+}
