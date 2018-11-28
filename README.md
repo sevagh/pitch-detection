@@ -69,7 +69,7 @@ closest note: Eb6 (1245)
 stdin:
 
 ```
-$ ./bin/stdin --sample_rate 44100 <sample/E2_44100_acousticguitar.txt
+$ ./bin/stdin --sample_rate 44100 <./misc/sample/E2_44100_acousticguitar.txt
 Size: 4095      pitch: 82.5838
 closest note: E2 (82.41)
 ```
