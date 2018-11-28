@@ -28,6 +28,12 @@ class PitchAlloc
 		ffts_free(fft_forward);
 		ffts_free(fft_backward);
 	}
+
+	void
+	clear()
+	{
+		std::fill(out_im.begin(), out_im.end(), std::complex<double>(0.0, 0.0));
+	}
 };
 
 class MpmAlloc : public PitchAlloc

@@ -61,5 +61,7 @@ pitch_manual_alloc::autocorrelation(
 
 	double peak_bin_index_periodicity = get_acf_periodicity(pa->out_real);
 
+	pa->clear();
+
 	return (sample_rate / peak_bin_index_periodicity);
 }

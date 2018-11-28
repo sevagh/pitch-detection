@@ -45,6 +45,40 @@ TEST_P(YinSinewaveTest, GetFreqManualAlloc)
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
+TEST(MpmSinewaveTestManualAlloc, OneAllocMultipleFreq)
+{
+	auto data1 = util::sinewave(8092, 150.0, 48000);
+	auto data2 = util::sinewave(8092, 250.0, 48000);
+	auto data3 = util::sinewave(8092, 350.0, 48000);
+
+	MpmAlloc ma(data1.size());
+
+	double pitch1 = pitch_manual_alloc::mpm(data1, 48000, &ma);
+	double pitch2 = pitch_manual_alloc::mpm(data2, 48000, &ma);
+	double pitch3 = pitch_manual_alloc::mpm(data3, 48000, &ma);
+
+	EXPECT_NEAR(150.0, pitch1, 0.01 * 150.0);
+	EXPECT_NEAR(250.0, pitch2, 0.01 * 250.0);
+	EXPECT_NEAR(350.0, pitch3, 0.01 * 350.0);
+}
+
+TEST(YinSinewaveTestManualAlloc, OneAllocMultipleFreq)
+{
+	auto data1 = util::sinewave(8092, 150.0, 48000);
+	auto data2 = util::sinewave(8092, 250.0, 48000);
+	auto data3 = util::sinewave(8092, 350.0, 48000);
+
+	YinAlloc ya(data1.size());
+
+	double pitch1 = pitch_manual_alloc::yin(data1, 48000, &ya);
+	double pitch2 = pitch_manual_alloc::yin(data2, 48000, &ya);
+	double pitch3 = pitch_manual_alloc::yin(data3, 48000, &ya);
+
+	EXPECT_NEAR(150.0, pitch1, 0.01 * 150.0);
+	EXPECT_NEAR(250.0, pitch2, 0.01 * 250.0);
+	EXPECT_NEAR(350.0, pitch3, 0.01 * 350.0);
+}
+
 INSTANTIATE_TEST_CASE_P(MpmSinewave, MpmSinewaveTest,
     ::testing::Values(77.0, 100.0, 233.0, 298.0, 1583.0, 3398.0, 4200.0));
 

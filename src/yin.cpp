@@ -1,3 +1,4 @@
+#include <complex>
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
 #include <tuple>
@@ -68,8 +69,12 @@ pitch_manual_alloc::yin(
 	cumulative_mean_normalized_difference(ya->yin_buffer);
 	tau_estimate = absolute_threshold(ya->yin_buffer);
 
-	return (tau_estimate != -1)
-	           ? sample_rate / std::get<0>(parabolic_interpolation(
-	                               ya->yin_buffer, tau_estimate))
-	           : -1;
+	auto ret = (tau_estimate != -1)
+	               ? sample_rate / std::get<0>(parabolic_interpolation(
+	                                   ya->yin_buffer, tau_estimate))
+	               : -1;
+
+	ya->clear();
+
+	return ret;
 }

@@ -83,19 +83,19 @@ pitch::mpm(const std::vector<double> &audio_buffer, int sample_rate)
 
 double
 pitch_manual_alloc::mpm(
-    const std::vector<double> &audio_buffer, int sample_rate, MpmAlloc *pa)
+    const std::vector<double> &audio_buffer, int sample_rate, MpmAlloc *ma)
 {
-	acorr_r(audio_buffer, pa);
+	acorr_r(audio_buffer, ma);
 
-	std::vector<int> max_positions = peak_picking(pa->out_real);
+	std::vector<int> max_positions = peak_picking(ma->out_real);
 	std::vector<std::pair<double, double>> estimates;
 
 	double highest_amplitude = -DBL_MAX;
 
 	for (int i : max_positions) {
-		highest_amplitude = std::max(highest_amplitude, pa->out_real[i]);
-		if (pa->out_real[i] > MPM_SMALL_CUTOFF) {
-			auto x = parabolic_interpolation(pa->out_real, i);
+		highest_amplitude = std::max(highest_amplitude, ma->out_real[i]);
+		if (ma->out_real[i] > MPM_SMALL_CUTOFF) {
+			auto x = parabolic_interpolation(ma->out_real, i);
 			estimates.push_back(x);
 			highest_amplitude = std::max(highest_amplitude, std::get<1>(x));
 		}
@@ -115,5 +115,8 @@ pitch_manual_alloc::mpm(
 	}
 
 	double pitch_estimate = (sample_rate / period);
+
+	ma->clear();
+
 	return (pitch_estimate > MPM_LOWER_PITCH_CUTOFF) ? pitch_estimate : -1;
 }
