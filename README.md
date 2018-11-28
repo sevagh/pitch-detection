@@ -47,12 +47,10 @@ for (int i = 0; i < 10000; ++i) {
 
 The auto allocation strategy performs hundreds of thousands of allocations:
 
-![auto-use](./misc/membench/auto-mem.png)
 ![auto-alloc](./misc/membench/auto-alloc.png)
 
 Manual allocation, as expected, performs less allocations by several orders of magnitude:
 
-![manual-use](./misc/membench/manual-mem.png)
 ![manual-alloc](./misc/membench/manual-alloc.png)
 
 ### Examples
