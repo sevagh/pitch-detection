@@ -1,7 +1,6 @@
 CXX		?= gcc
 CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC -fext-numeric-literals -ffast-math -flto
-CXX_PROFILE	:= -ggdb -fno-omit-frame-pointer -fPIC
-TEST_FLAGS 	:= $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread -lffts
+CXX_PROFILE	:= -ggdb -fno-omit-frame-pointer -fPIC -std=c++17
 
 all: build
 
@@ -12,10 +11,10 @@ util: directories
 	$(CXX) $(CXX_FLAGS) -shared -o lib/util.so util/*.cpp
 
 test: build util
-	$(CXX) $@/*.cpp -o bin/$@ $(TEST_FLAGS) -lgtest -lgtest_main
+	$(CXX) $@/*.cpp -o bin/$@ $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread -lffts -lgtest -lgtest_main
 
 bench: build util
-	$(CXX) $@/*.cpp -o bin/$@ $(TEST_FLAGS) -lbenchmark
+	$(CXX) $@/*.cpp -o bin/$@ $(CXX_FLAGS) lib/*.so -Iinclude -Iutil -lpthread -lffts -lbenchmark
 
 profile: CXX_FLAGS=$(CXX_PROFILE)
 profile: bench
