@@ -1,87 +1,12 @@
 ### Pitch detection algorithms
 
-A collection of C++ pitch detection algorithms.
+A collection of autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running time.
 
 * [McLeod Pitch Method](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf)
 * [YIN](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf)
 * Autocorrelation
 
 Visualizations of these methods can be viewed at https://gitlab.com/sevagh/mcleod https://gitlab.com/sevagh/yin
-
-YIN doesn't suffer the same weakness as the McLeod pitch method - inaccuracy at low pitches - there's no cutoff. Also, with my recent YIN-FFT implementation, the performance of the two is almost identical.
-
-### YIN FFT approximation - 2018/11/18
-
-The YIN paper includes the formulation for the difference function, `d_t`, for a lag tau, as expressed in terms of the autocorrelation `r_t`:
-
-```
-d_t(tau) = r_t(0) + r_(t+tau)(0) - 2*r_t(tau)
-```
-
-The term `r_(t+tau)` was confusing for me, so in my code I substituted it for
-
-```
-d_t(tau) = 2*r_t(0) - 2*r_t(tau)
-```
-
-, where `r_t(tau)` is the same FFT-based autocorrelation function I use for MPM.
-
-This is a big performance win for YIN from **O(N^2)** to **O(NlogN)**, and all of the tests are still passing.
-
-The accuracy didn't take a huge hit.
-
-Time-domain YIN result:
-```
-$ time ./bin/stdin --sample_rate 44100 --algo yin <./sample/F-4_48000_classicalguitar.txt
-Size: 174759    pitch: 342.271
-closest note: F4 (349.2)
-
-real    0m8.066s
-user    0m8.020s
-sys     0m0.004s
-```
-
-FFT YIN result:
-
-```
-$ time ./bin/stdin --sample_rate 44100 --algo yin <./sample/F-4_48000_classicalguitar.txt
-Size: 174759    pitch: 342.238
-closest note: F4 (349.2)
-
-real    0m0.262s
-user    0m0.216s
-sys     0m0.043s
-```
-
-Time-domain YIN benchmark:
-
-```
----------------------------------------------------------------
-Benchmark                        Time           CPU Iterations
----------------------------------------------------------------
-BM_Yin_Sinewave/1024         60976 ns      60878 ns      11130
-BM_Yin_Sinewave/4096       1002633 ns    1000951 ns        688
-BM_Yin_Sinewave/32768     64198002 ns   64096428 ns         11
-BM_Yin_Sinewave/262144  4125974701 ns 4114026064 ns          1
-BM_Yin_Sinewave/1048576 67683358752 ns 67461192598 ns          1
-BM_Yin_Sinewave_BigO          0.06 N^2       0.06 N^2
-BM_Yin_Sinewave_RMS              0 %          0 %
-```
-
-FFT YIN benchmark:
-
-```
----------------------------------------------------------------
-Benchmark                        Time           CPU Iterations
----------------------------------------------------------------
-BM_Yin_Sinewave/1024         60657 ns      60202 ns      11223
-BM_Yin_Sinewave/4096        241264 ns     239170 ns       2967
-BM_Yin_Sinewave/32768      2077014 ns    2054092 ns        340
-BM_Yin_Sinewave/262144    19811215 ns   19568974 ns         36
-BM_Yin_Sinewave/1048576   95163598 ns   93849952 ns          7
-BM_Yin_Sinewave_BigO          4.52 NlgN       4.46 NlgN
-BM_Yin_Sinewave_RMS              3 %          3 %
-```
 
 ### Build and install
 
