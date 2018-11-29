@@ -1,13 +1,2 @@
-massif.*
-build
-callgrind.*
-*.orig
-*~
-#*
-obj
 lib
-bin
-*.swp
-*.data
-*.old
 .dir-locals.el

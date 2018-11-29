@@ -9,14 +9,14 @@
 /* YIN configs */
 #define YIN_DEFAULT_THRESHOLD 0.20
 
+#include "pitch_detection.h"
 #include <complex>
-#include <pitch_detection.h>
 #include <vector>
 
 std::pair<double, double>
 parabolic_interpolation(const std::vector<double> &, double);
 
 void
-acorr_r(const std::vector<double> &, PitchAlloc *);
+acorr_r(const std::vector<double> &, pitch_alloc::Mpm *);
 
 #endif /* PITCH_DETECTION__PRIV_H */

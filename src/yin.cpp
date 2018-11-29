@@ -1,6 +1,6 @@
+#include "pitch_detection.h"
+#include "pitch_detection_priv.h"
 #include <complex>
-#include <pitch_detection.h>
-#include <pitch_detection_priv.h>
 #include <tuple>
 #include <vector>
 
@@ -21,11 +21,11 @@ absolute_threshold(const std::vector<double> &yin_buffer)
 }
 
 static void
-difference(const std::vector<double> &audio_buffer, YinAlloc *ya)
+difference(const std::vector<double> &audio_buffer, pitch_alloc::Yin *ya)
 {
 	acorr_r(audio_buffer, ya);
 
-	for (int tau = 0; tau < ya->N4; tau++)
+	for (int tau = 0; tau < ya->N / 2; tau++)
 		ya->yin_buffer[tau] = 2 * ya->out_real[0] - 2 * ya->out_real[tau];
 }
 
@@ -43,8 +43,8 @@ cumulative_mean_normalized_difference(std::vector<double> &yin_buffer)
 }
 
 double
-pitch_manual_alloc::yin(
-    const std::vector<double> &audio_buffer, int sample_rate, YinAlloc *ya)
+pitch_alloc::yin(const std::vector<double> &audio_buffer, int sample_rate,
+    pitch_alloc::Yin *ya)
 {
 	int tau_estimate;
 
@@ -66,6 +66,6 @@ double
 pitch::yin(const std::vector<double> &audio_buffer, int sample_rate)
 {
 
-	YinAlloc ya(audio_buffer.size());
-	return pitch_manual_alloc::yin(audio_buffer, sample_rate, &ya);
+	pitch_alloc::Yin ya(audio_buffer.size());
+	return pitch_alloc::yin(audio_buffer, sample_rate, &ya);
 }
