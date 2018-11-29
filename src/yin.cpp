@@ -20,7 +20,7 @@ absolute_threshold(const std::vector<double> &yin_buffer)
 	return (tau == size || yin_buffer[tau] >= YIN_DEFAULT_THRESHOLD) ? -1 : tau;
 }
 
-void
+static void
 difference(const std::vector<double> &audio_buffer, YinAlloc *ya)
 {
 	acorr_r(audio_buffer, ya);
@@ -43,29 +43,13 @@ cumulative_mean_normalized_difference(std::vector<double> &yin_buffer)
 }
 
 double
-pitch::yin(const std::vector<double> &audio_buffer, int sample_rate)
-{
-	int tau_estimate;
-
-	YinAlloc ya(audio_buffer.size());
-
-	difference(audio_buffer, &ya);
-	cumulative_mean_normalized_difference(ya.yin_buffer);
-	tau_estimate = absolute_threshold(ya.yin_buffer);
-
-	return (tau_estimate != -1)
-	           ? sample_rate / std::get<0>(parabolic_interpolation(
-	                               ya.yin_buffer, tau_estimate))
-	           : -1;
-}
-
-double
 pitch_manual_alloc::yin(
     const std::vector<double> &audio_buffer, int sample_rate, YinAlloc *ya)
 {
 	int tau_estimate;
 
 	difference(audio_buffer, ya);
+
 	cumulative_mean_normalized_difference(ya->yin_buffer);
 	tau_estimate = absolute_threshold(ya->yin_buffer);
 
@@ -75,6 +59,13 @@ pitch_manual_alloc::yin(
 	               : -1;
 
 	ya->clear();
-
 	return ret;
+}
+
+double
+pitch::yin(const std::vector<double> &audio_buffer, int sample_rate)
+{
+
+	YinAlloc ya(audio_buffer.size());
+	return pitch_manual_alloc::yin(audio_buffer, sample_rate, &ya);
 }

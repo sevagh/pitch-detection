@@ -3,6 +3,7 @@
 
 #include <complex>
 #include <ffts/ffts.h>
+#include <stdexcept>
 #include <vector>
 
 class PitchAlloc
@@ -54,6 +55,9 @@ class YinAlloc : public PitchAlloc
 	    : PitchAlloc(audio_buffer_size), N4(N / 2),
 	      yin_buffer(std::vector<double>(N4))
 	{
+		if (N4 == 0) {
+			throw std::invalid_argument("yin needs an alloc > 1");
+		}
 	}
 };
 
