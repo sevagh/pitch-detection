@@ -4,12 +4,17 @@
 #include <numeric>
 #include <pitch_detection.h>
 #include <pitch_detection_priv.h>
+#include <stdexcept>
 #include <vector>
 
 void
-acorr_r(const std::vector<double> &signal, PitchAlloc *pa)
+acorr_r(const std::vector<double> &audio_buffer, PitchAlloc *pa)
 {
-	std::transform(signal.begin(), signal.begin() + pa->N, pa->out_im.begin(),
+	if (audio_buffer.size() == 0)
+		throw std::invalid_argument("audio_buffer shouldn't be empty");
+
+	std::transform(audio_buffer.begin(), audio_buffer.begin() + pa->N,
+	    pa->out_im.begin(),
 	    [](double x) -> std::complex<double> { return std::complex(x, 0.0); });
 
 	ffts_execute(pa->fft_forward, pa->out_im.data(), pa->out_im.data());
@@ -46,11 +51,8 @@ double
 pitch::autocorrelation(const std::vector<double> &audio_buffer, int sample_rate)
 {
 	PitchAlloc pa(audio_buffer.size());
-	acorr_r(audio_buffer, &pa);
 
-	double peak_bin_index_periodicity = get_acf_periodicity(pa.out_real);
-
-	return (sample_rate / peak_bin_index_periodicity);
+	return pitch_manual_alloc::autocorrelation(audio_buffer, sample_rate, &pa);
 }
 
 double
