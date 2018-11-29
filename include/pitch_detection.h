@@ -7,36 +7,67 @@
 #include <vector>
 
 /*
- * Allocate the buffers for Autocorrelation for re-use.
+ * The pitch namespace contains the functions:
+ *
+ * 	pitch::mpm(data, sample_rate)
+ * 	pitch::yin(data, sample_rate)
+ *
+ * It will auto-allocate any buffers.
+ */
+namespace pitch
+{
+
+double
+yin(const std::vector<double> &, int);
+
+double
+mpm(const std::vector<double> &, int);
+
+} // namespace pitch
+
+/*
+ * The pitch_alloc namespace contains the functions:
+ *
+ * 	pitch_alloc::mpm(data, sample_rate, pitch_alloc::Mpm)
+ * 	pitch_alloc::yin(data, sample_rate, pitch_alloc::Yin)
+ *
+ * It also contains the classes Yin and Mpm which contain the buffers.
+ *
+ * This namespace is used for Bring-Your-Own-Alloc.
+ */
+namespace pitch_alloc
+{
+
+/*
+ * Allocate the buffers for MPM for re-use.
  * Intended for multiple consistently-sized audio buffers.
  *
- * Usage: PitchAlloc pa(1024)
+ * Usage: pitch_alloc::Mpm ma(1024)
  *
  * It will throw std::bad_alloc for invalid sizes (<1)
  */
-class PitchAlloc
+class Mpm
 {
   public:
-	long N, N2;
+	long N;
 	std::vector<std::complex<float>> out_im;
 	std::vector<double> out_real;
 	ffts_plan_t *fft_forward;
 	ffts_plan_t *fft_backward;
 
-	PitchAlloc(long audio_buffer_size)
-	    : N(audio_buffer_size), N2(2 * N),
-	      out_im(std::vector<std::complex<float>>(N2)),
+	Mpm(long audio_buffer_size)
+	    : N(audio_buffer_size), out_im(std::vector<std::complex<float>>(N * 2)),
 	      out_real(std::vector<double>(N))
 	{
 		if (N == 0) {
 			throw std::bad_alloc();
 		}
 
-		fft_forward = ffts_init_1d(N2, FFTS_FORWARD);
-		fft_backward = ffts_init_1d(N2, FFTS_BACKWARD);
+		fft_forward = ffts_init_1d(N * 2, FFTS_FORWARD);
+		fft_backward = ffts_init_1d(N * 2, FFTS_BACKWARD);
 	}
 
-	~PitchAlloc()
+	~Mpm()
 	{
 		ffts_free(fft_forward);
 		ffts_free(fft_backward);
@@ -50,89 +81,32 @@ class PitchAlloc
 };
 
 /*
- * Allocate the buffers for MPM for re-use.
- * Intended for multiple consistently-sized audio buffers.
- *
- * Usage: MpmAlloc ma(1024)
- *
- * It will throw std::bad_alloc for invalid sizes (<1)
- */
-class MpmAlloc : public PitchAlloc
-{
-  public:
-	MpmAlloc(long audio_buffer_size) : PitchAlloc(audio_buffer_size)
-	{
-	}
-};
-
-/*
  * Allocate the buffers for YIN for re-use.
  * Intended for multiple consistently-sized audio buffers.
  *
- * Usage: YinAlloc ya(1024)
+ * Usage: pitch_alloc::Yin ya(1024)
  *
  * It will throw std::bad_alloc for invalid sizes (<2)
  */
-class YinAlloc : public PitchAlloc
+class Yin : public Mpm
 {
   public:
-	long N4;
 	std::vector<double> yin_buffer;
 
-	YinAlloc(long audio_buffer_size)
-	    : PitchAlloc(audio_buffer_size), N4(N / 2),
-	      yin_buffer(std::vector<double>(N4))
+	Yin(long audio_buffer_size)
+	    : Mpm(audio_buffer_size), yin_buffer(std::vector<double>(N / 2))
 	{
-		if (N4 == 0) {
+		if (N / 2 == 0) {
 			throw std::bad_alloc();
 		}
 	}
 };
 
-/*
- * The pitch namespace contains the functions:
- *
- * 	autocorrelation(data, sample_rate)
- * 	mpm(data, sample_rate)
- * 	yin(data, sample_rate)
- *
- * It will auto-allocate any buffers.
- */
-namespace pitch
-{
+double
+yin(const std::vector<double> &, int, Yin *);
 
 double
-autocorrelation(const std::vector<double> &, int);
-
-double
-yin(const std::vector<double> &, int);
-
-double
-mpm(const std::vector<double> &, int);
-
-} // namespace pitch
-
-/*
- * The pitch_manual_alloc namespace contains the functions:
- *
- * 	autocorrelation(data, sample_rate, PitchAlloc)
- * 	mpm(data, sample_rate, MpmAlloc)
- * 	yin(data, sample_rate, YinAlloc)
- *
- * These ones are Bring-Your-Own-Alloc for reusing buffers.
- */
-namespace pitch_manual_alloc
-{
-
-double
-autocorrelation(const std::vector<double> &, int, PitchAlloc *);
-
-double
-yin(const std::vector<double> &, int, YinAlloc *);
-
-double
-mpm(const std::vector<double> &, int, MpmAlloc *);
-
-} // namespace pitch_manual_alloc
+mpm(const std::vector<double> &, int, Mpm *);
+} // namespace pitch_alloc
 
 #endif /* PITCH_DETECTION_H */

@@ -1,5 +1,5 @@
+#include "pitch_detection.h"
 #include <gtest/gtest.h>
-#include <pitch_detection.h>
 
 TEST(MpmEdgeCase, EmptyData)
 {
@@ -14,12 +14,12 @@ TEST(MpmEdgeCase, SmallData)
 
 TEST(MpmEdgeCase, InvalidAlloc)
 {
-	EXPECT_THROW(MpmAlloc ma(-1), std::bad_alloc);
+	EXPECT_THROW(pitch_alloc::Mpm ma(-1), std::bad_alloc);
 }
 
 TEST(MpmEdgeCase, EmptyAlloc)
 {
-	EXPECT_THROW(MpmAlloc ma(0), std::bad_alloc);
+	EXPECT_THROW(pitch_alloc::Mpm ma(0), std::bad_alloc);
 }
 
 TEST(YinEdgeCase, EmptyData)
@@ -39,10 +39,10 @@ TEST(YinEdgeCase, SmallData)
 
 TEST(YinEdgeCase, InvalidAlloc)
 {
-	EXPECT_THROW(YinAlloc ya(-1), std::bad_alloc);
+	EXPECT_THROW(pitch_alloc::Yin ya(-1), std::bad_alloc);
 }
 
 TEST(YinEdgeCase, EmptyAlloc)
 {
-	EXPECT_THROW(YinAlloc ma(0), std::bad_alloc);
+	EXPECT_THROW(pitch_alloc::Yin ma(0), std::bad_alloc);
 }

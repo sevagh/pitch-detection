@@ -1,9 +1,9 @@
+#include "pitch_detection.h"
+#include "pitch_detection_priv.h"
 #include <algorithm>
 #include <complex>
 #include <float.h>
 #include <numeric>
-#include <pitch_detection.h>
-#include <pitch_detection_priv.h>
 #include <vector>
 
 static std::vector<int>
@@ -45,8 +45,8 @@ peak_picking(const std::vector<double> &nsdf)
 }
 
 double
-pitch_manual_alloc::mpm(
-    const std::vector<double> &audio_buffer, int sample_rate, MpmAlloc *ma)
+pitch_alloc::mpm(const std::vector<double> &audio_buffer, int sample_rate,
+    pitch_alloc::Mpm *ma)
 {
 	acorr_r(audio_buffer, ma);
 
@@ -87,6 +87,6 @@ pitch_manual_alloc::mpm(
 double
 pitch::mpm(const std::vector<double> &audio_buffer, int sample_rate)
 {
-	MpmAlloc ma(audio_buffer.size());
-	return pitch_manual_alloc::mpm(audio_buffer, sample_rate, &ma);
+	pitch_alloc::Mpm ma(audio_buffer.size());
+	return pitch_alloc::mpm(audio_buffer, sample_rate, &ma);
 }
