@@ -14,7 +14,7 @@ This project depends on [ffts](https://github.com/anthonix/ffts). To run the tes
 
 ### Usage
 
-Compile your code with `-lpitch_detection`:
+The code is lightly documented in the [public header file](./include/pitch_detection.h). Compile your code with `-lpitch_detection`:
 
 ```c++
 #include <pitch_detection.h>

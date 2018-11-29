@@ -6,6 +6,14 @@
 #include <stdexcept>
 #include <vector>
 
+/*
+ * Allocate the buffers for Autocorrelation for re-use.
+ * Intended for multiple consistently-sized audio buffers.
+ *
+ * Usage: PitchAlloc pa(1024)
+ *
+ * It will throw std::bad_alloc for invalid sizes (<1)
+ */
 class PitchAlloc
 {
   public:
@@ -20,6 +28,10 @@ class PitchAlloc
 	      out_im(std::vector<std::complex<float>>(N2)),
 	      out_real(std::vector<double>(N))
 	{
+		if (N == 0) {
+			throw std::bad_alloc();
+		}
+
 		fft_forward = ffts_init_1d(N2, FFTS_FORWARD);
 		fft_backward = ffts_init_1d(N2, FFTS_BACKWARD);
 	}
@@ -37,6 +49,14 @@ class PitchAlloc
 	}
 };
 
+/*
+ * Allocate the buffers for MPM for re-use.
+ * Intended for multiple consistently-sized audio buffers.
+ *
+ * Usage: MpmAlloc ma(1024)
+ *
+ * It will throw std::bad_alloc for invalid sizes (<1)
+ */
 class MpmAlloc : public PitchAlloc
 {
   public:
@@ -45,6 +65,14 @@ class MpmAlloc : public PitchAlloc
 	}
 };
 
+/*
+ * Allocate the buffers for YIN for re-use.
+ * Intended for multiple consistently-sized audio buffers.
+ *
+ * Usage: YinAlloc ya(1024)
+ *
+ * It will throw std::bad_alloc for invalid sizes (<2)
+ */
 class YinAlloc : public PitchAlloc
 {
   public:
@@ -56,11 +84,20 @@ class YinAlloc : public PitchAlloc
 	      yin_buffer(std::vector<double>(N4))
 	{
 		if (N4 == 0) {
-			throw std::invalid_argument("yin needs an alloc > 1");
+			throw std::bad_alloc();
 		}
 	}
 };
 
+/*
+ * The pitch namespace contains the functions:
+ *
+ * 	autocorrelation(data, sample_rate)
+ * 	mpm(data, sample_rate)
+ * 	yin(data, sample_rate)
+ *
+ * It will auto-allocate any buffers.
+ */
 namespace pitch
 {
 
@@ -75,6 +112,15 @@ mpm(const std::vector<double> &, int);
 
 } // namespace pitch
 
+/*
+ * The pitch_manual_alloc namespace contains the functions:
+ *
+ * 	autocorrelation(data, sample_rate, PitchAlloc)
+ * 	mpm(data, sample_rate, MpmAlloc)
+ * 	yin(data, sample_rate, YinAlloc)
+ *
+ * These ones are Bring-Your-Own-Alloc for reusing buffers.
+ */
 namespace pitch_manual_alloc
 {
 
