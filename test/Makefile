@@ -13,6 +13,6 @@ benchmem:
 	$(CXX) ./$@.cpp ./util.cpp -o $@ $(CXX_FLAGS) -lgflags
 
 clean:
-	rm bench benchmem test
+	-rm bench benchmem test
 
 .PHONY: clean
