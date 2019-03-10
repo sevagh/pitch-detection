@@ -27,30 +27,30 @@ main(int argc, char **argv)
 		nqr::StereoToMono(file_data->samples.data(), audio_copy.data(),
 		    file_data->samples.size());
 
-		auto step_size = file_data->sampleRate * file_data->frameSize / 100;
+		auto step_size = file_data->sampleRate;
 		for (long unsigned int x = 0; x < file_data->samples.size();
 		     x += step_size) {
+			std::cout << "sample: " << x << std::endl;
 			if (x + step_size >= audio_copy.size()) {
 				break;
 			}
-			std::cout << "mpm pitch: "
-			          << pitch::mpm<float>(
-			                 std::vector<float>(audio_copy.begin() + x,
-			                     audio_copy.begin() + x + step_size),
-			                 file_data->sampleRate)
-			          << std::endl;
-			std::cout << "YIN pitch: "
-			          << pitch::yin<float>(
-			                 std::vector<float>(audio_copy.begin() + x,
-			                     audio_copy.begin() + x + step_size),
-			                 file_data->sampleRate)
-			          << std::endl;
-			std::cout << "pYIN pitch: "
-			          << pitch::pyin<float>(
-			                 std::vector<float>(audio_copy.begin() + x,
-			                     audio_copy.begin() + x + step_size),
-			                 file_data->sampleRate)
-			          << std::endl;
+			pitch::pyin<float>(std::vector<float>(audio_copy.begin() + x, audio_copy.begin() + x + step_size), file_data->sampleRate);
+			//std::cout << "mpm pitch: "
+			//          << pitch::mpm<float>(
+			//                 std::vector<float>(audio_copy.begin() + x,
+			//                     audio_copy.begin() + x + step_size),
+			//                 file_data->sampleRate)
+			//	  << "\t yin: "
+			//	  << pitch::yin<float>(
+			//                 std::vector<float>(audio_copy.begin() + x,
+			//                     audio_copy.begin() + x + step_size),
+			//                 file_data->sampleRate)
+			//	  << "\t pyin: "
+			//	  << pitch::pyin<float>(
+			//                 std::vector<float>(audio_copy.begin() + x,
+			//                     audio_copy.begin() + x + step_size),
+			//                 file_data->sampleRate)
+			//          << std::endl;
 		}
 	}
 }

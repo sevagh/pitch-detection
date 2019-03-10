@@ -6,15 +6,16 @@
 #include <map>
 #include <tuple>
 #include <vector>
+#include <iostream>
 
 template <typename T>
-static int
+static std::map<int, T>
 probabilistic_threshold(const std::vector<T> &yin_buffer)
 {
 	ssize_t size = yin_buffer.size();
 	int tau;
 
-	std::map<int, T> pitches_with_probability;
+	std::map<int, T> t0_with_probability;
 
 	T threshold = 0.0;
 	for (int n = 0; n < PYIN_THRESHOLD_N;
@@ -30,17 +31,12 @@ probabilistic_threshold(const std::vector<T> &yin_buffer)
 				break;
 			}
 		}
-		auto iverson = (tau == size || yin_buffer[tau] >= threshold) ? 0 : 1;
 		auto a = yin_buffer[tau] < threshold ? 1 : PYIN_Pa;
 
-		pitches_with_probability[tau] += a * threshold * iverson;
+		t0_with_probability[tau] += a * threshold;
 	}
 
-	auto best_tau = std::max_element(std::begin(pitches_with_probability),
-	    std::end(pitches_with_probability),
-	    [](const auto &p1, const auto &p2) { return p1.second < p2.second; });
-
-	return best_tau->first;
+	return t0_with_probability;
 }
 
 template <typename T>
@@ -48,17 +44,23 @@ T
 pitch_alloc::pyin(const std::vector<T> &audio_buffer, int sample_rate,
     pitch_alloc::Yin<T> *ya)
 {
-	int tau_estimate;
-
 	difference(audio_buffer, ya);
 
 	cumulative_mean_normalized_difference(ya->yin_buffer);
-	tau_estimate = probabilistic_threshold(ya->yin_buffer);
 
-	auto ret = (tau_estimate != -1)
+	auto tau_estimates = probabilistic_threshold(ya->yin_buffer);
+
+	T ret;
+
+	for (auto tau_estimate : tau_estimates) {
+		ret = (tau_estimate.first != 0)
 	               ? sample_rate / std::get<0>(parabolic_interpolation(
-	                                   ya->yin_buffer, tau_estimate))
+	                                   ya->yin_buffer, tau_estimate.first))
 	               : -1;
+
+		std::cout << "pitch: " << ret << "\tprob: " << tau_estimate.second << std::endl;
+	}
+	
 
 	ya->clear();
 	return ret;
@@ -85,7 +87,7 @@ template float
 pitch_alloc::pyin<float>(const std::vector<float> &audio_buffer,
     int sample_rate, pitch_alloc::Yin<float> *ya);
 
-template static int
+template static std::map<int, double>
 probabilistic_threshold<double>(const std::vector<double> &yin_buffer);
-template static int
+template static std::map<int, float>
 probabilistic_threshold<float>(const std::vector<float> &yin_buffer);
