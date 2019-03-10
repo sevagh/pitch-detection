@@ -6,8 +6,9 @@
 #include <numeric>
 #include <vector>
 
+template <typename T>
 static std::vector<int>
-peak_picking(const std::vector<double> &nsdf)
+peak_picking(const std::vector<T> &nsdf)
 {
 	std::vector<int> max_positions{};
 	int pos = 0;
@@ -44,16 +45,17 @@ peak_picking(const std::vector<double> &nsdf)
 	return max_positions;
 }
 
-double
-pitch_alloc::mpm(const std::vector<double> &audio_buffer, int sample_rate,
-    pitch_alloc::Mpm *ma)
+template <typename T>
+T
+pitch_alloc::mpm(const std::vector<T> &audio_buffer, int sample_rate,
+    pitch_alloc::Mpm<T> *ma)
 {
 	acorr_r(audio_buffer, ma);
 
 	std::vector<int> max_positions = peak_picking(ma->out_real);
-	std::vector<std::pair<double, double>> estimates;
+	std::vector<std::pair<T, T>> estimates;
 
-	double highest_amplitude = -DBL_MAX;
+	T highest_amplitude = -DBL_MAX;
 
 	for (int i : max_positions) {
 		highest_amplitude = std::max(highest_amplitude, ma->out_real[i]);
@@ -67,8 +69,8 @@ pitch_alloc::mpm(const std::vector<double> &audio_buffer, int sample_rate,
 	if (estimates.empty())
 		return -1;
 
-	double actual_cutoff = MPM_CUTOFF * highest_amplitude;
-	double period = 0;
+	T actual_cutoff = MPM_CUTOFF * highest_amplitude;
+	T period = 0;
 
 	for (auto i : estimates) {
 		if (std::get<1>(i) >= actual_cutoff) {
@@ -77,16 +79,32 @@ pitch_alloc::mpm(const std::vector<double> &audio_buffer, int sample_rate,
 		}
 	}
 
-	double pitch_estimate = (sample_rate / period);
+	T pitch_estimate = (sample_rate / period);
 
 	ma->clear();
 
 	return (pitch_estimate > MPM_LOWER_PITCH_CUTOFF) ? pitch_estimate : -1;
 }
 
-double
-pitch::mpm(const std::vector<double> &audio_buffer, int sample_rate)
+template <typename T>
+T
+pitch::mpm(const std::vector<T> &audio_buffer, int sample_rate)
 {
-	pitch_alloc::Mpm ma(audio_buffer.size());
+	pitch_alloc::Mpm<T> ma(audio_buffer.size());
 	return pitch_alloc::mpm(audio_buffer, sample_rate, &ma);
 }
+
+template class pitch_alloc::Mpm<double>;
+template class pitch_alloc::Mpm<float>;
+
+template double
+pitch::mpm<double>(const std::vector<double> &audio_buffer, int sample_rate);
+template double
+pitch_alloc::mpm<double>(const std::vector<double> &audio_buffer,
+    int sample_rate, pitch_alloc::Mpm<double> *ma);
+
+template float
+pitch::mpm<float>(const std::vector<float> &audio_buffer, int sample_rate);
+template float
+pitch_alloc::mpm<float>(const std::vector<float> &audio_buffer, int sample_rate,
+    pitch_alloc::Mpm<float> *ma);

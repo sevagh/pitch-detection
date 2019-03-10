@@ -1,23 +1,26 @@
-#include "pitch_detection_priv.h"
+#include "pitch_detection.h"
 #include <algorithm>
 #include <complex>
 #include <ffts/ffts.h>
 #include <numeric>
 #include <vector>
 
+template <typename T>
 void
-acorr_r(const std::vector<double> &audio_buffer, pitch_alloc::Mpm *ma)
+acorr_r(const std::vector<T> &audio_buffer, pitch_alloc::Mpm<T> *ma)
 {
 	if (audio_buffer.size() == 0)
 		throw std::invalid_argument("audio_buffer shouldn't be empty");
 
 	std::transform(audio_buffer.begin(), audio_buffer.begin() + ma->N,
-	    ma->out_im.begin(),
-	    [](double x) -> std::complex<double> { return std::complex(x, 0.0); });
+	    ma->out_im.begin(), [](T x) -> std::complex<T> {
+		    return std::complex(x, static_cast<T>(0.0));
+	    });
 
 	ffts_execute(ma->fft_forward, ma->out_im.data(), ma->out_im.data());
 
-	std::complex<float> scale = {1.0f / (float)(ma->N * 2), 0.0};
+	std::complex<float> scale = {
+	    1.0f / (float)(ma->N * 2), static_cast<T>(0.0)};
 	for (int i = 0; i < ma->N; ++i)
 		ma->out_im[i] *= std::conj(ma->out_im[i]) * scale;
 
@@ -25,5 +28,12 @@ acorr_r(const std::vector<double> &audio_buffer, pitch_alloc::Mpm *ma)
 
 	std::transform(ma->out_im.begin(), ma->out_im.begin() + ma->N,
 	    ma->out_real.begin(),
-	    [](std::complex<float> cplx) -> double { return std::real(cplx); });
+	    [](std::complex<float> cplx) -> T { return std::real(cplx); });
 }
+
+template void
+acorr_r<double>(
+    const std::vector<double> &audio_buffer, pitch_alloc::Mpm<double> *ma);
+template void
+acorr_r<float>(
+    const std::vector<float> &audio_buffer, pitch_alloc::Mpm<float> *ma);

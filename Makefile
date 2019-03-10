@@ -6,13 +6,14 @@ all: lib
 lib:
 	@mkdir -p lib
 	$(CXX) $(CXX_FLAGS) -o lib/libpitch_detection.so -lffts -Iinclude \
+		src/pyin.cpp \
 		src/yin.cpp \
 		src/mpm.cpp \
 		src/autocorrelation.cpp \
 		src/parabolic_interpolation.cpp
 
 install: lib
-	cp include/pitch_detection.h /usr/include
+	cp -r include/ /usr/include/pitch_detection
 	cp lib/libpitch_detection.so /usr/lib
 
 fmt:

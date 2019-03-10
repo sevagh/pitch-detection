@@ -13,7 +13,7 @@ mpm_auto(int reps)
 	auto data = test_util::sinewave(48000, 1337, 48000);
 
 	for (int i = 0; i < reps; ++i) {
-		pitch::mpm(data, 48000);
+		pitch::mpm<double>(data, 48000);
 	}
 }
 
@@ -24,7 +24,7 @@ mpm_manual(int reps)
 	auto data = test_util::sinewave(48000, 1337, 48000);
 
 	// alloc once
-	pitch_alloc::Mpm ma(48000);
+	pitch_alloc::Mpm<double> ma(48000);
 
 	for (int i = 0; i < reps; ++i) {
 		pitch_alloc::mpm(data, 48000, &ma);

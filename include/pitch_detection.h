@@ -11,17 +11,24 @@
  *
  * 	pitch::mpm(data, sample_rate)
  * 	pitch::yin(data, sample_rate)
+ * 	pitch::pyin(data, sample_rate)
  *
  * It will auto-allocate any buffers.
  */
 namespace pitch
 {
 
-double
-yin(const std::vector<double> &, int);
+template <typename T>
+T
+yin(const std::vector<T> &, int);
 
-double
-mpm(const std::vector<double> &, int);
+template <typename T>
+T
+pyin(const std::vector<T> &, int);
+
+template <typename T>
+T
+mpm(const std::vector<T> &, int);
 
 } // namespace pitch
 
@@ -30,6 +37,7 @@ mpm(const std::vector<double> &, int);
  *
  * 	pitch_alloc::mpm(data, sample_rate, pitch_alloc::Mpm)
  * 	pitch_alloc::yin(data, sample_rate, pitch_alloc::Yin)
+ * 	pitch_alloc::pyin(data, sample_rate, pitch_alloc::Yin)
  *
  * It also contains the classes Yin and Mpm which contain the buffers.
  *
@@ -46,18 +54,18 @@ namespace pitch_alloc
  *
  * It will throw std::bad_alloc for invalid sizes (<1)
  */
-class Mpm
+template <typename T> class Mpm
 {
   public:
 	long N;
 	std::vector<std::complex<float>> out_im;
-	std::vector<double> out_real;
+	std::vector<T> out_real;
 	ffts_plan_t *fft_forward;
 	ffts_plan_t *fft_backward;
 
 	Mpm(long audio_buffer_size)
 	    : N(audio_buffer_size), out_im(std::vector<std::complex<float>>(N * 2)),
-	      out_real(std::vector<double>(N))
+	      out_real(std::vector<T>(N))
 	{
 		if (N == 0) {
 			throw std::bad_alloc();
@@ -88,25 +96,32 @@ class Mpm
  *
  * It will throw std::bad_alloc for invalid sizes (<2)
  */
-class Yin : public Mpm
+template <typename T> class Yin : public Mpm<T>
 {
   public:
 	std::vector<double> yin_buffer;
 
 	Yin(long audio_buffer_size)
-	    : Mpm(audio_buffer_size), yin_buffer(std::vector<double>(N / 2))
+	    : Mpm<T>(audio_buffer_size),
+	      yin_buffer(std::vector<double>(audio_buffer_size / 2))
 	{
-		if (N / 2 == 0) {
+		if (audio_buffer_size / 2 == 0) {
 			throw std::bad_alloc();
 		}
 	}
 };
 
-double
-yin(const std::vector<double> &, int, Yin *);
+template <typename T>
+T
+yin(const std::vector<T> &, int, Yin<T> *);
 
-double
-mpm(const std::vector<double> &, int, Mpm *);
+template <typename T>
+T
+pyin(const std::vector<T> &, int, Yin<T> *);
+
+template <typename T>
+T
+mpm(const std::vector<T> &, int, Mpm<T> *);
 } // namespace pitch_alloc
 
 #endif /* PITCH_DETECTION_H */

@@ -13,10 +13,12 @@
 #include <complex>
 #include <vector>
 
-std::pair<double, double>
-parabolic_interpolation(const std::vector<double> &, double);
+template <typename T>
+std::pair<T, T>
+parabolic_interpolation(const std::vector<T> &, int);
 
+template <typename T>
 void
-acorr_r(const std::vector<double> &, pitch_alloc::Mpm *);
+acorr_r(const std::vector<T> &, pitch_alloc::Mpm<T> *);
 
 #endif /* PITCH_DETECTION__PRIV_H */

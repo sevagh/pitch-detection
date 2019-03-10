@@ -15,7 +15,7 @@ This project depends on [ffts](https://github.com/anthonix/ffts). To run the tes
 
 The code is lightly documented in the [public header file](./include/pitch_detection.h). Compile your code with `-lpitch_detection`.
 
-The namespaces are `pitch` and `pitch_alloc`.
+The namespaces are `pitch` and `pitch_alloc`. The functions and classes are templated for `<double>` and `<float>` support.
 
 The `pitch` namespace functions are for automatic buffer allocation:
 
@@ -24,8 +24,8 @@ The `pitch` namespace functions are for automatic buffer allocation:
 
 //std::vector<double> audio_buffer with sample rate e.g. 48000
 
-double pitch_yin = pitch::yin(audio_buffer, 48000);
-double pitch_mpm = pitch::mpm(audio_buffer, 48000);
+double pitch_yin = pitch::yin<double>(audio_buffer, 48000);
+double pitch_mpm = pitch::mpm<double>(audio_buffer, 48000);
 ```
 
 #### Manual memory allocation
@@ -37,8 +37,8 @@ If you want to detect pitch for multiple audio buffers of a uniform size, you ca
 
 //buffers have fixed length e.g. 48000, same as sample rate
 
-pitch_alloc::Mpm ma(48000);
-pitch_alloc::Yin ya(48000);
+pitch_alloc::Mpm<double> ma(48000);
+pitch_alloc::Yin<double> ya(48000);
 
 for (int i = 0; i < 10000; ++i) {
         //std::vector<double> audio_buffer size 48000 sample rate 48000
