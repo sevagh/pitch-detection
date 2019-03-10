@@ -3,7 +3,6 @@
 #include "yin_priv.h"
 #include <algorithm>
 #include <complex>
-#include <iostream>
 #include <map>
 #include <tuple>
 #include <vector>
@@ -35,10 +34,6 @@ probabilistic_threshold(const std::vector<T> &yin_buffer)
 		auto a = yin_buffer[tau] < threshold ? 1 : PYIN_Pa;
 
 		pitches_with_probability[tau] += a * threshold * iverson;
-	}
-
-	for (auto x : pitches_with_probability) {
-		std::cout << "tau: " << x.first << "\t prob: " << x.second << std::endl;
 	}
 
 	auto best_tau = std::max_element(std::begin(pitches_with_probability),

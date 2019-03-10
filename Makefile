@@ -13,7 +13,7 @@ lib:
 		src/parabolic_interpolation.cpp
 
 install: lib
-	cp -r include/ /usr/include/pitch_detection
+	cp include/pitch_detection.h /usr/include
 	cp lib/libpitch_detection.so /usr/lib
 
 fmt:

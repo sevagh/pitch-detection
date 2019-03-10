@@ -1,5 +1,5 @@
+#include "pitch_detection.h"
 #include <libnyquist/Decoders.h>
-#include <pitch_detection.h>
 
 int
 main(int argc, char **argv)
@@ -8,6 +8,7 @@ main(int argc, char **argv)
 
 	if (argc != 2) {
 		std::cerr << "Usage: transcriber /path/to/audio/file" << std::endl;
+		return -1;
 	}
 
 	std::shared_ptr<nqr::AudioData> file_data =
@@ -25,5 +26,31 @@ main(int argc, char **argv)
 		std::vector<float> audio_copy(file_data->samples.size() / 2);
 		nqr::StereoToMono(file_data->samples.data(), audio_copy.data(),
 		    file_data->samples.size());
+
+		auto step_size = file_data->sampleRate * file_data->frameSize / 100;
+		for (long unsigned int x = 0; x < file_data->samples.size();
+		     x += step_size) {
+			if (x + step_size >= audio_copy.size()) {
+				break;
+			}
+			std::cout << "mpm pitch: "
+			          << pitch::mpm<float>(
+			                 std::vector<float>(audio_copy.begin() + x,
+			                     audio_copy.begin() + x + step_size),
+			                 file_data->sampleRate)
+			          << std::endl;
+			std::cout << "YIN pitch: "
+			          << pitch::yin<float>(
+			                 std::vector<float>(audio_copy.begin() + x,
+			                     audio_copy.begin() + x + step_size),
+			                 file_data->sampleRate)
+			          << std::endl;
+			std::cout << "pYIN pitch: "
+			          << pitch::pyin<float>(
+			                 std::vector<float>(audio_copy.begin() + x,
+			                     audio_copy.begin() + x + step_size),
+			                 file_data->sampleRate)
+			          << std::endl;
+		}
 	}
 }
