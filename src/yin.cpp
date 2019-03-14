@@ -1,3 +1,4 @@
+#include "yin_priv.h"
 #include "pitch_detection.h"
 #include "pitch_detection_priv.h"
 #include <complex>
@@ -11,14 +12,14 @@ absolute_threshold(const std::vector<T> &yin_buffer)
 	ssize_t size = yin_buffer.size();
 	int tau;
 	for (tau = 2; tau < size; tau++) {
-		if (yin_buffer[tau] < YIN_DEFAULT_THRESHOLD) {
+		if (yin_buffer[tau] < yin_consts::Threshold<T>) {
 			while (tau + 1 < size && yin_buffer[tau + 1] < yin_buffer[tau]) {
 				tau++;
 			}
 			break;
 		}
 	}
-	return (tau == size || yin_buffer[tau] >= YIN_DEFAULT_THRESHOLD) ? -1 : tau;
+	return (tau == size || yin_buffer[tau] >= yin_consts::Threshold<T>) ? -1 : tau;
 }
 
 template <typename T>

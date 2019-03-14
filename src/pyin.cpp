@@ -7,33 +7,38 @@
 #include <tuple>
 #include <vector>
 #include <iostream>
+#include <boost/math/special_functions/beta.hpp>
 
 template <typename T>
-static std::map<int, T>
+static std::map<T, std::map<int, T>>
 probabilistic_threshold(const std::vector<T> &yin_buffer)
 {
 	ssize_t size = yin_buffer.size();
 	int tau;
 
-	std::map<int, T> t0_with_probability;
+	std::map<T, std::map<int, T>> t0_with_probability;
 
-	T threshold = 0.0;
-	for (int n = 0; n < PYIN_THRESHOLD_N;
-	     ++n) { // use a range of 100 yin thresholds from 0.01 to unity
-		threshold += 0.01;
+	T threshold;
 
-		for (tau = 2; tau < size; tau++) {
-			if (yin_buffer[tau] < threshold) {
-				while (
-				    tau + 1 < size && yin_buffer[tau + 1] < yin_buffer[tau]) {
-					tau++;
+	for (int n = 1; n < yin_consts::Threshold_N; ++n) {
+		for (int x = 0; x < 3; ++x) {
+			threshold = boost::math::ibeta(yin_consts::Alpha<T>, yin_consts::Betas<T>[x], 0.01*n);
+
+			std::cout << "MEAN: " << yin_consts::Means<T>[x] << " BETA: " << threshold << std::endl;
+
+			for (tau = 2; tau < size; tau++) {
+				if (yin_buffer[tau] < threshold) {
+					while (
+					    tau + 1 < size && yin_buffer[tau + 1] < yin_buffer[tau]) {
+						tau++;
+					}
+					break;
 				}
-				break;
 			}
-		}
-		auto a = yin_buffer[tau] < threshold ? 1 : PYIN_Pa;
+			auto a = yin_buffer[tau] < threshold ? 1 : yin_consts::Pa<T>;
 
-		t0_with_probability[tau] += a * threshold;
+			t0_with_probability[yin_consts::Means<T>[x]][tau] += a * threshold;
+		}
 	}
 
 	return t0_with_probability;
@@ -52,13 +57,15 @@ pitch_alloc::pyin(const std::vector<T> &audio_buffer, int sample_rate,
 
 	T ret;
 
-	for (auto tau_estimate : tau_estimates) {
-		ret = (tau_estimate.first != 0)
-	               ? sample_rate / std::get<0>(parabolic_interpolation(
-	                                   ya->yin_buffer, tau_estimate.first))
-	               : -1;
+	for (auto means : tau_estimates) {
+		for (auto tau_estimate : means.second) {
+			ret = (tau_estimate.first != 0)
+			       ? sample_rate / std::get<0>(parabolic_interpolation(
+						   ya->yin_buffer, tau_estimate.first))
+			       : -1;
 
-		std::cout << "pitch: " << ret << "\tprob: " << tau_estimate.second << std::endl;
+			std::cout << "mean: " << means.first << " pitch: " << ret << "\tprob: " << tau_estimate.second << std::endl;
+		}
 	}
 	
 
@@ -87,7 +94,7 @@ template float
 pitch_alloc::pyin<float>(const std::vector<float> &audio_buffer,
     int sample_rate, pitch_alloc::Yin<float> *ya);
 
-template static std::map<int, double>
+template static std::map<double, std::map<int, double>>
 probabilistic_threshold<double>(const std::vector<double> &yin_buffer);
-template static std::map<int, float>
+template static std::map<float, std::map<int, float>>
 probabilistic_threshold<float>(const std::vector<float> &yin_buffer);
