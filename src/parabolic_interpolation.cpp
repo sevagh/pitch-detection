@@ -1,20 +1,27 @@
 #include <vector>
 
-std::pair<double, double>
-parabolic_interpolation(const std::vector<double> &array, double x)
+template <typename T>
+std::pair<T, T>
+parabolic_interpolation(const std::vector<T> &array, int x_)
 {
 	int x_adjusted;
+	T x = (T)x_;
 
 	if (x < 1) {
 		x_adjusted = (array[x] <= array[x + 1]) ? x : x + 1;
 	} else if (x > signed(array.size()) - 1) {
 		x_adjusted = (array[x] <= array[x - 1]) ? x : x - 1;
 	} else {
-		double den = array[x + 1] + array[x - 1] - 2 * array[x];
-		double delta = array[x - 1] - array[x + 1];
+		T den = array[x + 1] + array[x - 1] - 2 * array[x];
+		T delta = array[x - 1] - array[x + 1];
 		return (!den) ? std::make_pair(x, array[x])
 		              : std::make_pair(x + delta / (2 * den),
 		                    array[x] - delta * delta / (8 * den));
 	}
 	return std::make_pair(x_adjusted, array[x_adjusted]);
 }
+
+template std::pair<double, double>
+parabolic_interpolation<double>(const std::vector<double> &array, int x);
+template std::pair<float, float>
+parabolic_interpolation<float>(const std::vector<float> &array, int x);

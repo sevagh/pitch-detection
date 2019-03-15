@@ -14,7 +14,7 @@ TEST_P(MpmSinewaveTest, GetFreq)
 {
 	double freq = GetParam();
 	auto data = test_util::sinewave(8092, freq, 48000);
-	double pitch = pitch::mpm(data, 48000);
+	double pitch = pitch::mpm<double>(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
@@ -22,7 +22,7 @@ TEST_P(YinSinewaveTest, GetFreq)
 {
 	double freq = GetParam();
 	auto data = test_util::sinewave(8092, freq, 48000);
-	double pitch = pitch::yin(data, 48000);
+	double pitch = pitch::yin<double>(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
@@ -30,7 +30,7 @@ TEST_P(MpmSinewaveTest, GetFreqManualAlloc)
 {
 	double freq = GetParam();
 	auto data = test_util::sinewave(8092, freq, 48000);
-	pitch_alloc::Mpm ma(data.size());
+	pitch_alloc::Mpm<double> ma(data.size());
 	double pitch = pitch_alloc::mpm(data, 48000, &ma);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
@@ -39,7 +39,7 @@ TEST_P(YinSinewaveTest, GetFreqManualAlloc)
 {
 	double freq = GetParam();
 	auto data = test_util::sinewave(8092, freq, 48000);
-	pitch_alloc::Yin ya(data.size());
+	pitch_alloc::Yin<double> ya(data.size());
 	double pitch = pitch_alloc::yin(data, 48000, &ya);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
@@ -50,7 +50,7 @@ TEST(MpmSinewaveTestManualAlloc, OneAllocMultipleFreq)
 	auto data2 = test_util::sinewave(8092, 250.0, 48000);
 	auto data3 = test_util::sinewave(8092, 350.0, 48000);
 
-	pitch_alloc::Mpm ma(data1.size());
+	pitch_alloc::Mpm<double> ma(data1.size());
 
 	double pitch1 = pitch_alloc::mpm(data1, 48000, &ma);
 	double pitch2 = pitch_alloc::mpm(data2, 48000, &ma);
@@ -67,7 +67,7 @@ TEST(YinSinewaveTestManualAlloc, OneAllocMultipleFreq)
 	auto data2 = test_util::sinewave(8092, 250.0, 48000);
 	auto data3 = test_util::sinewave(8092, 350.0, 48000);
 
-	pitch_alloc::Yin ya(data1.size());
+	pitch_alloc::Yin<double> ya(data1.size());
 
 	double pitch1 = pitch_alloc::yin(data1, 48000, &ya);
 	double pitch2 = pitch_alloc::yin(data2, 48000, &ya);
