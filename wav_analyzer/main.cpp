@@ -25,24 +25,31 @@ main(int argc, char **argv)
 
 	std::transform(file_data->samples.begin(), file_data->samples.end(),
 	    file_data->samples.begin(),
-	    std::bind(std::multiplies<float>(), std::placeholders::_1, 1000));
+	    std::bind(std::multiplies<float>(), std::placeholders::_1, 10000));
+
+	std::vector<float> vec_to_analyze;
 
 	if (file_data->channelCount == 2) {
 		// convert stereo to mono
 		std::vector<float> audio_copy(file_data->samples.size() / 2);
 		nqr::StereoToMono(file_data->samples.data(), audio_copy.data(),
 		    file_data->samples.size());
-
-		pitch::pyin<float>(audio_copy, file_data->sampleRate);
-
-		return 0;
+		vec_to_analyze = std::vector<float>(
+		    audio_copy.begin() + 48000, audio_copy.begin() + 56092);
+	} else {
+		vec_to_analyze = std::vector<float>(file_data->samples.begin() + 48000,
+		    file_data->samples.begin() + 56092);
 	}
 
-	pitch::pyin<float>(file_data->samples, file_data->sampleRate);
 	std::cout << "mpm: "
-	          << pitch::mpm<float>(
-	                 std::vector<float>(file_data->samples.begin() + 48000,
-	                     file_data->samples.begin() + 56092),
-	                 file_data->sampleRate)
+	          << pitch::mpm<float>(vec_to_analyze, file_data->sampleRate)
 	          << std::endl;
+
+	std::cout << "yin: "
+	          << pitch::yin<float>(vec_to_analyze, file_data->sampleRate)
+	          << std::endl;
+
+	pitch::pyin<float>(vec_to_analyze, file_data->sampleRate);
+
+	return 0;
 }

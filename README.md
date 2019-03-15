@@ -2,8 +2,19 @@
 
 Autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running time:
 
-* McLeod pitch method - [paper](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf) - [visualization](./misc/mcleod)
-* YIN - [paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
+* McLeod pitch method - [2005 paper](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf) - [visualization](./misc/mcleod)
+* YIN - [2002 paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
+* Probabilistic YIN - [2014 paper](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf) - **partial implementation**
+
+### 2019 updates and goals
+
+The McLeod pitch method has been in this project since the beginning, April 2015. YIN was first added in November 2016, followed by YIN-FFT in November 2018.
+
+In 2019, I have some targets:
+
+* Write a good testbench to compare the algorithms head-to-head, based on the [Audio Degradation Toolbox](https://code.soundsoftware.ac.uk/projects/audio-degradation-toolbox), e.g. [Python version](https://github.com/EliosMolina/audio_degrader)
+* Complete the implementation of pYIN (I'm finding part 2.2 of the paper - HMM - tricky)
+* Look into adding [CREPE](https://github.com/marl/crepe)
 
 ### Build and install
 
@@ -28,8 +39,6 @@ double pitch_yin = pitch::yin<double>(audio_buffer, 48000);
 double pitch_mpm = pitch::mpm<double>(audio_buffer, 48000);
 ```
 
-#### Manual memory allocation
-
 If you want to detect pitch for multiple audio buffers of a uniform size, you can do more manual memory control with the `pitch_alloc` namespace:
 
 ```c++
@@ -48,12 +57,3 @@ for (int i = 0; i < 10000; ++i) {
 }
 ```
 
-#### Advantages of manual memory allocation
-
-The auto allocation strategy performs hundreds of thousands of allocations:
-
-![auto-alloc](./misc/membench/auto-alloc.png)
-
-Manual allocation, as expected, performs less allocations by several orders of magnitude:
-
-![manual-alloc](./misc/membench/manual-alloc.png)
