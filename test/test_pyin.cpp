@@ -11,6 +11,7 @@ TEST(PYinInstrumentTest, Violin_A4_44100)
 	double pitch_yin = pitch::yin(data, 44100);
 	double expected = 440.0;
 
-	std::cout << pitch_pyin << "\t" << pitch_yin << "\t" << pitch_mpm << std::endl;
+	std::cout << pitch_pyin << "\t" << pitch_yin << "\t" << pitch_mpm
+	          << std::endl;
 	EXPECT_NEAR(expected, pitch_pyin, 0.01 * expected);
 }

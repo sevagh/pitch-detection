@@ -1,9 +1,16 @@
-#include "yin_priv.h"
 #include "pitch_detection.h"
 #include "pitch_detection_priv.h"
 #include <complex>
 #include <tuple>
 #include <vector>
+
+namespace
+{
+namespace yin_consts
+{
+template <typename T> static const T Threshold = static_cast<T>(0.20);
+}
+} // namespace
 
 template <typename T>
 static int
@@ -19,7 +26,8 @@ absolute_threshold(const std::vector<T> &yin_buffer)
 			break;
 		}
 	}
-	return (tau == size || yin_buffer[tau] >= yin_consts::Threshold<T>) ? -1 : tau;
+	return (tau == size || yin_buffer[tau] >= yin_consts::Threshold<T>) ? -1
+	                                                                    : tau;
 }
 
 template <typename T>

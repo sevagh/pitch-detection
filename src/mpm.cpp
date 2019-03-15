@@ -6,6 +6,16 @@
 #include <numeric>
 #include <vector>
 
+namespace
+{
+namespace mpm_consts
+{
+template <typename T> static const T Cutoff = static_cast<T>(0.93);
+template <typename T> static const T Small_Cutoff = static_cast<T>(0.5);
+template <typename T> static const T Lower_Pitch_Cutoff = static_cast<T>(80.0);
+} // namespace mpm_consts
+} // namespace
+
 template <typename T>
 static std::vector<int>
 peak_picking(const std::vector<T> &nsdf)
@@ -59,7 +69,7 @@ pitch_alloc::mpm(const std::vector<T> &audio_buffer, int sample_rate,
 
 	for (int i : max_positions) {
 		highest_amplitude = std::max(highest_amplitude, ma->out_real[i]);
-		if (ma->out_real[i] > MPM_SMALL_CUTOFF) {
+		if (ma->out_real[i] > mpm_consts::Small_Cutoff<T>) {
 			auto x = parabolic_interpolation(ma->out_real, i);
 			estimates.push_back(x);
 			highest_amplitude = std::max(highest_amplitude, std::get<1>(x));
@@ -69,7 +79,7 @@ pitch_alloc::mpm(const std::vector<T> &audio_buffer, int sample_rate,
 	if (estimates.empty())
 		return -1;
 
-	T actual_cutoff = MPM_CUTOFF * highest_amplitude;
+	T actual_cutoff = mpm_consts::Cutoff<T> * highest_amplitude;
 	T period = 0;
 
 	for (auto i : estimates) {
@@ -83,7 +93,8 @@ pitch_alloc::mpm(const std::vector<T> &audio_buffer, int sample_rate,
 
 	ma->clear();
 
-	return (pitch_estimate > MPM_LOWER_PITCH_CUTOFF) ? pitch_estimate : -1;
+	return (pitch_estimate > mpm_consts::Lower_Pitch_Cutoff<T>) ? pitch_estimate
+	                                                            : -1;
 }
 
 template <typename T>
