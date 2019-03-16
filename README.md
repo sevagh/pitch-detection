@@ -4,17 +4,16 @@ Autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running t
 
 * McLeod pitch method - [2005 paper](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf) - [visualization](./misc/mcleod)
 * YIN - [2002 paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
-* Probabilistic YIN - [2014 paper](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf) - **partial implementation**
+* Probabilistic YIN - [2014 paper](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf)
 
 ### 2019 updates and goals
 
-The McLeod pitch method has been in this project since the beginning, April 2015. YIN was first added in November 2016, followed by YIN-FFT in November 2018.
+The McLeod pitch method has been in this project since the beginning, April 2015. YIN was first added in November 2016, followed by YIN-FFT in November 2018 and Probabilistic YIN in March 2019.
 
-In 2019, I have some targets:
+In 2019, I have additional targets:
 
-* Write a good testbench to compare the algorithms head-to-head, based on the [Audio Degradation Toolbox](https://code.soundsoftware.ac.uk/projects/audio-degradation-toolbox), e.g. [Python version](https://github.com/EliosMolina/audio_degrader)
-* Complete the implementation of pYIN (I'm finding part 2.2 of the paper - HMM - tricky)
-* Look into adding [CREPE](https://github.com/marl/crepe)
+* Write a good testbench to compare the algorithms head-to-head, based on the [Audio Degradation Toolbox](https://code.soundsoftware.ac.uk/projects/audio-degradation-toolbox)
+* Add [CREPE](https://github.com/marl/crepe)
 
 ### Build and install
 
@@ -57,3 +56,16 @@ for (int i = 0; i < 10000; ++i) {
 }
 ```
 
+### Magic constants
+
+I recently changed my treatment of magic constants (that I've copied from various places - the original paper, reference implementations, other implementations). They now go into the anonymous private namespaces `pyin_consts`, `yin_consts`, `mpm_consts`, e.g.:
+
+```c++
+namespace
+{
+namespace yin_consts
+{
+template <typename T> static const T Threshold = static_cast<T>(0.20);
+}
+} // namespace
+```

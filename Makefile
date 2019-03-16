@@ -1,11 +1,12 @@
 CXX		?= gcc
-CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC -fext-numeric-literals -ffast-math -flto -shared -lffts -Iinclude
+CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC -fext-numeric-literals -ffast-math -flto -shared -lffts -Iinclude -fopenmp -lmlpack
 
 all: lib
 
 lib:
 	@mkdir -p lib
 	$(CXX) $(CXX_FLAGS) -o lib/libpitch_detection.so \
+		src/hmm.cpp \
 		src/pyin.cpp \
 		src/yin.cpp \
 		src/mpm.cpp \

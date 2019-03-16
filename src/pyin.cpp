@@ -34,14 +34,16 @@ template <typename T> static const T Min_Threshold = 0.01;
 } // namespace pyin_consts
 } // namespace
 
+// pairs of (f0, probability)
 template <typename T>
-static std::map<int, T>
-probabilistic_threshold(const std::vector<T> &yin_buffer)
+static std::vector<std::pair<T, T>>
+probabilistic_threshold(const std::vector<T> &yin_buffer, int sample_rate)
 {
 	ssize_t size = yin_buffer.size();
 	int tau;
 
 	std::map<int, T> t0_with_probability;
+	std::vector<std::pair<T, T>> f0_with_probability;
 
 	T threshold = pyin_consts::Min_Threshold<T>;
 
@@ -57,37 +59,46 @@ probabilistic_threshold(const std::vector<T> &yin_buffer)
 			}
 		}
 		auto a = yin_buffer[tau] < threshold ? 1 : pyin_consts::Pa<T>;
-
 		t0_with_probability[tau] += a * pyin_consts::Beta_Distribution[n];
 	}
 
-	return t0_with_probability;
+	for (auto tau_estimate : t0_with_probability) {
+		auto f0 = (tau_estimate.first != 0)
+		              ? sample_rate / std::get<0>(parabolic_interpolation(
+		                                  yin_buffer, tau_estimate.first))
+		              : -1.0;
+
+		if (f0 != -1.0) {
+			f0_with_probability.push_back(
+			    std::make_pair(f0, tau_estimate.second));
+		}
+	}
+
+	return f0_with_probability;
 }
 
 template <typename T>
 T
 pitch_alloc::pyin(const std::vector<T> &audio_buffer, int sample_rate,
-    pitch_alloc::Yin<T> *ya)
+    pitch_alloc::PYin<T> *pya)
 {
-	difference(audio_buffer, ya);
-
-	cumulative_mean_normalized_difference(ya->yin_buffer);
-
-	auto tau_estimates = probabilistic_threshold(ya->yin_buffer);
-
-	T ret;
-
-	for (auto tau_estimate : tau_estimates) {
-		ret = (tau_estimate.first != 0)
-		          ? sample_rate / std::get<0>(parabolic_interpolation(
-		                              ya->yin_buffer, tau_estimate.first))
-		          : -1;
-
-		std::cout << "pitch: " << ret << "\tprob: " << tau_estimate.second
-		          << std::endl;
+	if (!pya->hmm.has_value()) {
+		init_hmm(pya);
 	}
 
-	ya->clear();
+	difference(audio_buffer, pya);
+
+	cumulative_mean_normalized_difference(pya->yin_buffer);
+
+	auto f0_estimates = probabilistic_threshold(pya->yin_buffer, sample_rate);
+
+	// run the pitch/probability pairs through the HMM and get the most likely
+	// path with mlpack's viterbi Predict() method
+	auto obs_prob = pya->calculate_obs_prob(f0_estimates);
+
+	T ret = f0_estimates[0].first;
+
+	pya->clear();
 	return ret;
 }
 
@@ -96,8 +107,8 @@ T
 pitch::pyin(const std::vector<T> &audio_buffer, int sample_rate)
 {
 
-	pitch_alloc::Yin<T> ya(audio_buffer.size());
-	return pitch_alloc::pyin(audio_buffer, sample_rate, &ya);
+	pitch_alloc::PYin<T> pya(audio_buffer.size());
+	return pitch_alloc::pyin(audio_buffer, sample_rate, &pya);
 }
 
 template double
@@ -107,13 +118,15 @@ pitch::pyin<float>(const std::vector<float> &audio_buffer, int sample_rate);
 
 template double
 pitch_alloc::pyin<double>(const std::vector<double> &audio_buffer,
-    int sample_rate, pitch_alloc::Yin<double> *ya);
+    int sample_rate, pitch_alloc::PYin<double> *pya);
 template float
 pitch_alloc::pyin<float>(const std::vector<float> &audio_buffer,
-    int sample_rate, pitch_alloc::Yin<float> *ya);
+    int sample_rate, pitch_alloc::PYin<float> *pya);
 
-template static std::map<int, double>
-probabilistic_threshold<double>(const std::vector<double> &yin_buffer);
+template static std::vector<std::pair<double, double>>
+probabilistic_threshold<double>(
+    const std::vector<double> &yin_buffer, int sample_rate);
 
-template static std::map<int, float>
-probabilistic_threshold<float>(const std::vector<float> &yin_buffer);
+template static std::vector<std::pair<float, float>>
+probabilistic_threshold<float>(
+    const std::vector<float> &yin_buffer, int sample_rate);

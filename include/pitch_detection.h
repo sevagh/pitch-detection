@@ -1,6 +1,7 @@
 #ifndef PITCH_DETECTION_H
 #define PITCH_DETECTION_H
 
+#include <any>
 #include <complex>
 #include <ffts/ffts.h>
 #include <stdexcept>
@@ -84,7 +85,7 @@ template <typename T> class Mpm
 	void
 	clear()
 	{
-		std::fill(out_im.begin(), out_im.end(), std::complex<double>(0.0, 0.0));
+		std::fill(out_im.begin(), out_im.end(), std::complex<T>(0.0, 0.0));
 	}
 };
 
@@ -99,16 +100,30 @@ template <typename T> class Mpm
 template <typename T> class Yin : public Mpm<T>
 {
   public:
-	std::vector<double> yin_buffer;
+	std::vector<T> yin_buffer;
 
 	Yin(long audio_buffer_size)
 	    : Mpm<T>(audio_buffer_size),
-	      yin_buffer(std::vector<double>(audio_buffer_size / 2))
+	      yin_buffer(std::vector<T>(audio_buffer_size / 2))
 	{
 		if (audio_buffer_size / 2 == 0) {
 			throw std::bad_alloc();
 		}
 	}
+};
+
+/*
+ * PYin is the same as Yin, + instantiating an HMM
+ */
+template <typename T> class PYin : public Yin<T>
+{
+  public:
+	std::any hmm;
+
+	PYin(long audio_buffer_size) : Yin<T>(audio_buffer_size){};
+
+	const std::vector<size_t>
+	calculate_obs_prob(const std::vector<std::pair<T, T>>);
 };
 
 template <typename T>
@@ -117,7 +132,7 @@ yin(const std::vector<T> &, int, Yin<T> *);
 
 template <typename T>
 T
-pyin(const std::vector<T> &, int, Yin<T> *);
+pyin(const std::vector<T> &, int, PYin<T> *);
 
 template <typename T>
 T
