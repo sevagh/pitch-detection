@@ -8,6 +8,8 @@ In short, I have a recording of a guitar note, and I want to recognize what the 
 
 Musical notes map to frequency in Hz. Integer multiples of a frequency are known as octaves - e.g., E is 20.6, 41.2, 82.4 (open low E on guitar), 164.8, 329.6 (open high E on guitar), ...
 
+Surprise tidbit: https://dsp.stackexchange.com/questions/19379/improving-an-auto-correlation-based-guitar-pitch-detector
+
 # The McLeod Pitch Method
 
 The McLeod Pitch Method is a method for pitch detection for musical instruments and voices. Naive autocorrelation may be tripped up by overtones:
