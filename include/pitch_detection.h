@@ -1,7 +1,6 @@
 #ifndef PITCH_DETECTION_H
 #define PITCH_DETECTION_H
 
-#include <any>
 #include <complex>
 #include <ffts/ffts.h>
 #include <stdexcept>

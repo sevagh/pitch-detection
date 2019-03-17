@@ -21,8 +21,4 @@ template <typename T>
 void
 difference(const std::vector<T> &, pitch_alloc::Yin<T> *);
 
-template <typename T>
-void
-init_hmm(pitch_alloc::Yin<T> *);
-
-#endif /* PITCH_DETECTION__PRIV_H */
+#endif /* PITCH_DETECTION_PRIV_H */
