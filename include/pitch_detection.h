@@ -23,8 +23,9 @@ template <typename T>
 T
 yin(const std::vector<T> &, int);
 
+// pyin emits pairs of pitch/probability
 template <typename T>
-T
+std::vector<std::pair<T, T>>
 pyin(const std::vector<T> &, int);
 
 template <typename T>
@@ -112,27 +113,13 @@ template <typename T> class Yin : public Mpm<T>
 	}
 };
 
-/*
- * PYin is the same as Yin, + instantiating an HMM
- */
-template <typename T> class PYin : public Yin<T>
-{
-  public:
-	std::any hmm;
-
-	PYin(long audio_buffer_size) : Yin<T>(audio_buffer_size){};
-
-	const std::vector<size_t>
-	calculate_obs_prob(const std::vector<std::pair<T, T>>);
-};
-
 template <typename T>
 T
 yin(const std::vector<T> &, int, Yin<T> *);
 
 template <typename T>
-T
-pyin(const std::vector<T> &, int, PYin<T> *);
+std::vector<std::pair<T, T>>
+pyin(const std::vector<T> &, int, Yin<T> *);
 
 template <typename T>
 T
