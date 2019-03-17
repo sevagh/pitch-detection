@@ -31,7 +31,7 @@ double pitch_yin = pitch::yin<double>(audio_buffer, 48000);
 double pitch_mpm = pitch::mpm<double>(audio_buffer, 48000);
 
 //pyin emits a vector of (pitch, probability) pairs
-std::vector<double, double> pitches_pyin = pitch::pyin<double>(audio_buffer, 48000);
+std::vector<std::pair<double, double>> pitches_pyin = pitch::pyin<double>(audio_buffer, 48000);
 ```
 
 If you want to detect pitch for multiple audio buffers of a uniform size, you can do more manual memory control with the `pitch_alloc` namespace:
