@@ -8,6 +8,7 @@ lib:
 	$(CXX) $(CXX_FLAGS) -o lib/libpitch_detection.so \
 		src/pyin.cpp \
 		src/yin.cpp \
+		src/pmpm.cpp \
 		src/mpm.cpp \
 		src/autocorrelation.cpp \
 		src/parabolic_interpolation.cpp

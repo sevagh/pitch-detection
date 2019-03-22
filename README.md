@@ -5,8 +5,11 @@ Autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running t
 * McLeod pitch method - [2005 paper](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf) - [visualization](./misc/mcleod)
 * YIN(-FFT) - [2002 paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
 * Probabilistic YIN - [2014 paper](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf) - *partial implementation*\*
+* Probabilistic MPM - my own invention\*\*
 
 \*: The second part of the PYIN paper uses an HMM to introduce temporal tracking. I've chosen not to implement it in this codebase, because that's more in the realm of a _transcriber_, while I'm choosing to limit this project to pitch tracking for single frames of data.
+
+\*\*: Probabilistic McLeod is inspired by PYIN. Initial code and rationale can be found [here](https://github.com/sevagh/probabilistic-mcleod), wherein I take the parameter `k ∈ [0.8, 1.0]` (fixed at `0.93` in the regular MPM) and distribute it uniformly to discover multiple pitch candidates along with their probabilities.
 
 ### Build and install
 
@@ -30,8 +33,9 @@ The `pitch` namespace functions are for automatic buffer allocation:
 double pitch_yin = pitch::yin<double>(audio_buffer, 48000);
 double pitch_mpm = pitch::mpm<double>(audio_buffer, 48000);
 
-//pyin emits a vector of (pitch, probability) pairs
+//pyin and pmpm emit a vector of (pitch, probability) pairs
 std::vector<std::pair<double, double>> pitches_pyin = pitch::pyin<double>(audio_buffer, 48000);
+std::vector<std::pair<double, double>> pitches_pmpm = pitch::pmpm<double>(audio_buffer, 48000);
 ```
 
 If you want to detect pitch for multiple audio buffers of a uniform size, you can do more manual memory control with the `pitch_alloc` namespace:
@@ -50,7 +54,8 @@ for (int i = 0; i < 10000; ++i) {
         auto pitch_yin = pitch_alloc::yin(audio_buffer, 48000, &ya);
         auto pitch_mpm = pitch_alloc::mpm(audio_buffer, 48000, &ma);
 
-        auto pitch_pyin = pitch_alloc::yin(audio_buffer, 48000, &ya);
+        auto pitches_pyin = pitch_alloc::pyin(audio_buffer, 48000, &ya);
+        auto pitches_pmpm = pitch_alloc::pmpm(audio_buffer, 48000, &ma);
 }
 ```
 
@@ -58,11 +63,10 @@ for (int i = 0; i < 10000; ++i) {
 
 I recently standardized my treatment of magic constants. They now go into the anonymous private namespaces `pyin_consts`, `yin_consts`, `mpm_consts`.
 
-#### McLeod magic constants
+#### MPM
 
 ```c++
-// anonymous namespace mpm_consts in src/mpm.cpp
-
+// src/mpm.cpp
 Cutoff = 0.93
 Small_Cutoff = 0.5
 Lower_Pitch_Cutoff = 80.0
@@ -70,22 +74,20 @@ Lower_Pitch_Cutoff = 80.0
 
 Source: https://github.com/JorenSix/TarsosDSP
 
-#### YIN magic constants
+#### YIN
 
 ```c++
-// anonymous namespace yin_consts in src/yin.cpp
-
+// src/yin.cpp
 Threshold = 0.20
 ```
 
 Source: https://github.com/JorenSix/TarsosDSP
 
-#### PYIN magic constants
+#### PYIN
 
 
 ```c++
-// anonymous namespace pyin_consts in src/pyin.cpp
-
+// src/pyin.cpp
 Pa = 0.01
 N_Thresholds = 100
 ```
@@ -111,3 +113,25 @@ Beta_Distribution[100] = {0.012614, 0.022715, 0.030646,
 ```
 
 Source: [vamp plugin source code that accompanies the paper](https://code.soundsoftware.ac.uk/projects/pyin) and [Essentia](https://github.com/MTG/essentia/pull/809/files)
+
+#### PMPM
+
+```c++
+// src/pmpm.cpp
+
+// probability that any pitch candidate computed with k between 0.8 and 1.0, distributed into 20 increments of 0.01, is the right answer
+Probability_Distribution = 0.20
+
+// we start from 0.8 and add increments of 0.01
+Cutoff_Begin = 0.8
+Cutoff_Step = 0.01
+
+// initial probability, borrowed from PYin
+Pa = 0.01
+
+// same as regular mpm
+Small_Cutoff = 0.5
+Lower_Pitch_Cutoff = 80.0
+```
+
+Source: https://github.com/sevagh/probabilistic-mcleod
