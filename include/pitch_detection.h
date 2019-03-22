@@ -22,14 +22,20 @@ template <typename T>
 T
 yin(const std::vector<T> &, int);
 
-// pyin emits pairs of pitch/probability
+template <typename T>
+T
+mpm(const std::vector<T> &, int);
+
+/*
+ * pyin and pmpm emit pairs of pitch/probability
+ */
 template <typename T>
 std::vector<std::pair<T, T>>
 pyin(const std::vector<T> &, int);
 
 template <typename T>
-T
-mpm(const std::vector<T> &, int);
+std::vector<std::pair<T, T>>
+pmpm(const std::vector<T> &, int);
 
 } // namespace pitch
 
@@ -123,6 +129,11 @@ pyin(const std::vector<T> &, int, Yin<T> *);
 template <typename T>
 T
 mpm(const std::vector<T> &, int, Mpm<T> *);
+
+template <typename T>
+std::vector<std::pair<T, T>>
+pmpm(const std::vector<T> &, int, Mpm<T> *);
+
 } // namespace pitch_alloc
 
 #endif /* PITCH_DETECTION_H */
