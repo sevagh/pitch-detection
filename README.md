@@ -1,15 +1,13 @@
 ### Pitch detection algorithms
 
-Autocorrelation-based C++ (with C API) pitch detection algorithms with **O(nlogn)** running time:
+Autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running time and a C API:
 
 * McLeod pitch method - [2005 paper](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf) - [visualization](./misc/mcleod)
 * YIN(-FFT) - [2002 paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
 * Probabilistic YIN - [2014 paper](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf) - *partial implementation*\*
-* Probabilistic MPM - my own invention\*\*
+* Probabilistic MPM - [my own invention](https://github.com/sevagh/probabilistic-mcleod)
 
 \*: The second part of the PYIN paper uses an HMM to introduce temporal tracking. I've chosen not to implement it in this codebase, because that's more in the realm of a _transcriber_, while I'm choosing to limit this project to pitch tracking for single frames of data.
-
-\*\*: Probabilistic McLeod is inspired by PYIN. Initial code and rationale can be found [here](https://github.com/sevagh/probabilistic-mcleod), wherein I take the parameter `k ∈ [0.8, 1.0]` (fixed at `0.93` in the regular MPM) and distribute it uniformly to discover multiple pitch candidates along with their probabilities.
 
 ### Build and install
 
@@ -51,34 +49,23 @@ Read the [C++ header](./include/pitch_detection/pitch_detection.h) and [C++ exam
 
 The namespaces are `pitch` and `pitch_alloc`. The functions and classes are templated for `<double>` and `<float>` support.
 
-The `pitch` namespace functions are for automatic buffer allocation:
+The `pitch` namespace functions perform automatic buffer allocation, while `pitch_alloc::{Yin, Mpm}` give you a reusable object (useful for computing pitch for multiple uniformly-sized buffers):
 
 ```c++
 #include <pitch_detection.h>
 
-//std::vector<double> audio_buffer with sample rate e.g. 48000
+std::vector<double> audio_buffer(8092);
 
 double pitch_yin = pitch::yin<double>(audio_buffer, 48000);
 double pitch_mpm = pitch::mpm<double>(audio_buffer, 48000);
 
-//pyin and pmpm emit a vector of (pitch, probability) pairs
 std::vector<std::pair<double, double>> pitches_pyin = pitch::pyin<double>(audio_buffer, 48000);
 std::vector<std::pair<double, double>> pitches_pmpm = pitch::pmpm<double>(audio_buffer, 48000);
-```
 
-If you want to detect pitch for multiple audio buffers of a uniform size, you can do more manual memory control with the `pitch_alloc` namespace:
-
-```c++
-#include <pitch_detection.h>
-
-//buffers have fixed length e.g. 48000, same as sample rate
-
-pitch_alloc::Mpm<double> ma(48000);
-pitch_alloc::Yin<double> ya(48000);
+pitch_alloc::Mpm<double> ma(8092);
+pitch_alloc::Yin<double> ya(8092);
 
 for (int i = 0; i < 10000; ++i) {
-        //std::vector<double> audio_buffer size 48000 sample rate 48000
-
         auto pitch_yin = ya.pitch(audio_buffer, 48000);
         auto pitch_mpm = ma.pitch(audio_buffer, 48000);
 
@@ -112,7 +99,7 @@ Here are the above C++ examples, transliterated using the C API:
 ```c
 #include <cpitch_detection.h>
 
-//double audio_buffer[8092] with sample rate e.g. 48000
+double audio_buffer[8092];
 
 double pitch_yin = pitch_yin_d(audio_buffer, 8092, 48000);
 double pitch_mpm = pitch_mpm_d(audio_buffer, 8092, 48000);
@@ -120,21 +107,11 @@ double pitch_mpm = pitch_mpm_d(audio_buffer, 8092, 48000);
 //pyin and pmpm emit struct
 struct pitch_candidates_d_t * pitches_pmpm = pitch_pmpm_d(audio_buffer, 8092, 48000);
 struct pitch_candidates_d_t * pitches_pyin = pitch_pyin_d(audio_buffer, 8092, 48000);
-```
 
-Single alloc for multiple audio buffers of a uniform size:
-
-```c
-#include <cpitch_detection.h>
-
-//buffers have fixed length e.g. 48000, same as sample rate
-
-struct Mpm_d_t ma = NewMpmD(48000);
-struct Yin_d_t ya = NewYinD(48000);
+struct Mpm_d_t ma = NewMpmD(8092);
+struct Yin_d_t ya = NewYinD(8092);
 
 for (int i = 0; i < 10000; ++i) {
-        //double audio_buffer[48000], size 48000 sample rate 48000
-
         double pitch_yin = ya.pitch(audio_buffer, 48000);
         double pitch_mpm = ma.pitch(audio_buffer, 48000);
 
