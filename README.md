@@ -1,6 +1,6 @@
 ### Pitch detection algorithms
 
-Autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running time:
+Autocorrelation-based C++ (with C API) pitch detection algorithms with **O(nlogn)** running time:
 
 * McLeod pitch method - [2005 paper](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf) - [visualization](./misc/mcleod)
 * YIN(-FFT) - [2002 paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
@@ -17,9 +17,37 @@ Using this project should be as easy as `make && sudo make install` on Linux wit
 
 This project depends on [ffts](https://github.com/anthonix/ffts). To run the tests, you need [googletest](https://github.com/google/googletest), and run `make -C test/ && ./test/test`. To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make -C test/ bench && ./test/bench`.
 
+Build and install pitch_detection, run the tests, and build the examples:
+
+```
+# build libpitch_detection.so
+make clean all
+
+# build tests and benches
+make -C test clean all
+
+# run tests and benches 
+./test/test
+./test/bench
+./test/benchmem
+
+# install the library and headers to `/usr/local/lib` and `/usr/local/include`
+sudo make install
+
+# build and run C++ example
+make -C examples/cpp clean all
+./examples/cpp/example
+
+# build and run C example
+make -C examples/c clean all
+./examples/c/example
+```
+
 ### Usage
 
-The code is lightly documented in the [public header file](./include/pitch_detection.h). Compile your code with `-lpitch_detection`.
+#### C++
+
+Read the [C++ header](./include/pitch_detection/pitch_detection.h) and [C++ example](./examples/cpp).
 
 The namespaces are `pitch` and `pitch_alloc`. The functions and classes are templated for `<double>` and `<float>` support.
 
@@ -51,11 +79,67 @@ pitch_alloc::Yin<double> ya(48000);
 for (int i = 0; i < 10000; ++i) {
         //std::vector<double> audio_buffer size 48000 sample rate 48000
 
-        auto pitch_yin = pitch_alloc::yin(audio_buffer, 48000, &ya);
-        auto pitch_mpm = pitch_alloc::mpm(audio_buffer, 48000, &ma);
+        auto pitch_yin = ya.pitch(audio_buffer, 48000);
+        auto pitch_mpm = ma.pitch(audio_buffer, 48000);
 
-        auto pitches_pyin = pitch_alloc::pyin(audio_buffer, 48000, &ya);
-        auto pitches_pmpm = pitch_alloc::pmpm(audio_buffer, 48000, &ma);
+        auto pitches_pyin = ya.probabilistic_pitches(audio_buffer, 48000);
+        auto pitches_pmpm = ma.probabilistic_pitches(audio_buffer, 48000);
+}
+```
+
+#### C
+
+Read the [C header](./include/pitch_detection/cpitch_detection.h) and [C example](./examples/c).
+
+In C, the `pitch` and `pitch_alloc` namespaces becomes `pitch_` and `pitch_alloc_` prefixes. `double` and `float` templates are now explicit structs and functions with `d/D` and `f/F` in the name.
+
+Also, to represent `std::vector<std::pair<T, T>>` pitch candidates, there are some custom structs:
+
+```c
+struct pitch_candidates_d_t {
+        long n_candidates;
+        struct pitch_probability_pair_d_t *candidates;
+};
+
+struct pitch_probability_pair_d_t {
+        double pitch;
+        double probability;
+};
+```
+
+Here are the above C++ examples, transliterated using the C API:
+
+```c
+#include <cpitch_detection.h>
+
+//double audio_buffer[8092] with sample rate e.g. 48000
+
+double pitch_yin = pitch_yin_d(audio_buffer, 8092, 48000);
+double pitch_mpm = pitch_mpm_d(audio_buffer, 8092, 48000);
+
+//pyin and pmpm emit struct
+struct pitch_candidates_d_t * pitches_pmpm = pitch_pmpm_d(audio_buffer, 8092, 48000);
+struct pitch_candidates_d_t * pitches_pyin = pitch_pyin_d(audio_buffer, 8092, 48000);
+```
+
+Single alloc for multiple audio buffers of a uniform size:
+
+```c
+#include <cpitch_detection.h>
+
+//buffers have fixed length e.g. 48000, same as sample rate
+
+struct Mpm_d_t ma = NewMpmD(48000);
+struct Yin_d_t ya = NewYinD(48000);
+
+for (int i = 0; i < 10000; ++i) {
+        //double audio_buffer[48000], size 48000 sample rate 48000
+
+        double pitch_yin = ya.pitch(audio_buffer, 48000);
+        double pitch_mpm = ma.pitch(audio_buffer, 48000);
+
+        struct pitch_candidates_d_t * pitches_pmpm = pitch_alloc_pmpm_d(ma, audio_buffer, 48000);
+        struct pitch_candidates_d_t * pitches_pyin = pitch_alloc_pyin_d(ya, audio_buffer, 48000);
 }
 ```
 

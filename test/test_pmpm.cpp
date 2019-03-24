@@ -1,4 +1,4 @@
-#include "pitch_detection.h"
+#include "pitch_detection/pitch_detection.h"
 #include "util.h"
 #include <gtest/gtest.h>
 
@@ -30,13 +30,13 @@ TEST_P(PMpmSinewaveTest, GetFreqManualAlloc)
 	double freq = GetParam();
 	auto data = test_util::sinewave(8092, freq, 48000);
 	pitch_alloc::Mpm<double> ma(data.size());
-	auto pitches = pitch_alloc::pmpm(data, 48000, &ma);
+	auto pitches = ma.probabilistic_pitches(data, 48000);
 
 	pmpm_helper(pitches, freq);
 }
 
 INSTANTIATE_TEST_CASE_P(PMpmSinewave, PMpmSinewaveTest,
-    ::testing::Values(77.0, 100.0, 233.0, 298.0, 1583.0, 3398.0, 4200.0));
+    ::testing::Values(100.0, 233.0, 298.0, 1583.0, 3398.0, 4200.0));
 
 TEST(PMpmInstrumentTest, Violin_A4_44100)
 {

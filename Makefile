@@ -1,21 +1,20 @@
 CXX		?= gcc
-CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fPIC -fext-numeric-literals -ffast-math -flto -shared -lffts -Iinclude
+CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++2a -fPIC -fext-numeric-literals -ffast-math -flto -shared -lffts -Iinclude
 
 all: lib
 
 lib:
 	@mkdir -p lib
 	$(CXX) $(CXX_FLAGS) -o lib/libpitch_detection.so \
-		src/pyin.cpp \
 		src/yin.cpp \
-		src/pmpm.cpp \
 		src/mpm.cpp \
 		src/autocorrelation.cpp \
-		src/parabolic_interpolation.cpp
+		src/parabolic_interpolation.cpp \
+		src/capi.cpp
 
 install: lib
-	cp include/pitch_detection.h /usr/include
-	cp lib/libpitch_detection.so /usr/lib
+	cp -r include/pitch_detection /usr/local/include
+	cp lib/libpitch_detection.so /usr/local/lib
 
 fmt:
 	find . -regex '.*\.\(cpp\|h\)' -exec clang-format -style=file -i {} \;
