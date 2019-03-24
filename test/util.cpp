@@ -1,5 +1,5 @@
 #include "util.h"
-#include "pitch_detection.h"
+#include "pitch_detection/pitch_detection.h"
 #include <cmath>
 #include <float.h>
 #include <fstream>

@@ -1,4 +1,4 @@
-#include "pitch_detection.h"
+#include "pitch_detection/pitch_detection.h"
 #include "util.h"
 #include <gtest/gtest.h>
 
@@ -31,7 +31,7 @@ TEST_P(MpmSinewaveTest, GetFreqManualAlloc)
 	double freq = GetParam();
 	auto data = test_util::sinewave(8092, freq, 48000);
 	pitch_alloc::Mpm<double> ma(data.size());
-	double pitch = pitch_alloc::mpm(data, 48000, &ma);
+	double pitch = ma.pitch(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
@@ -40,7 +40,7 @@ TEST_P(YinSinewaveTest, GetFreqManualAlloc)
 	double freq = GetParam();
 	auto data = test_util::sinewave(8092, freq, 48000);
 	pitch_alloc::Yin<double> ya(data.size());
-	double pitch = pitch_alloc::yin(data, 48000, &ya);
+	double pitch = ya.pitch(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
@@ -52,9 +52,9 @@ TEST(MpmSinewaveTestManualAlloc, OneAllocMultipleFreq)
 
 	pitch_alloc::Mpm<double> ma(data1.size());
 
-	double pitch1 = pitch_alloc::mpm(data1, 48000, &ma);
-	double pitch2 = pitch_alloc::mpm(data2, 48000, &ma);
-	double pitch3 = pitch_alloc::mpm(data3, 48000, &ma);
+	double pitch1 = ma.pitch(data1, 48000);
+	double pitch2 = ma.pitch(data2, 48000);
+	double pitch3 = ma.pitch(data3, 48000);
 
 	EXPECT_NEAR(150.0, pitch1, 0.01 * 150.0);
 	EXPECT_NEAR(250.0, pitch2, 0.01 * 250.0);
@@ -69,9 +69,9 @@ TEST(YinSinewaveTestManualAlloc, OneAllocMultipleFreq)
 
 	pitch_alloc::Yin<double> ya(data1.size());
 
-	double pitch1 = pitch_alloc::yin(data1, 48000, &ya);
-	double pitch2 = pitch_alloc::yin(data2, 48000, &ya);
-	double pitch3 = pitch_alloc::yin(data3, 48000, &ya);
+	double pitch1 = ya.pitch(data1, 48000);
+	double pitch2 = ya.pitch(data2, 48000);
+	double pitch3 = ya.pitch(data3, 48000);
 
 	EXPECT_NEAR(150.0, pitch1, 0.01 * 150.0);
 	EXPECT_NEAR(250.0, pitch2, 0.01 * 250.0);

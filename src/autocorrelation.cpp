@@ -1,4 +1,4 @@
-#include "pitch_detection.h"
+#include "pitch_detection/pitch_detection.h"
 #include <algorithm>
 #include <complex>
 #include <ffts/ffts.h>
@@ -7,7 +7,7 @@
 
 template <typename T>
 void
-acorr_r(const std::vector<T> &audio_buffer, pitch_alloc::Mpm<T> *ma)
+acorr_r(const std::vector<T> &audio_buffer, pitch_alloc::BaseAlloc<T> *ma)
 {
 	if (audio_buffer.size() == 0)
 		throw std::invalid_argument("audio_buffer shouldn't be empty");
@@ -32,8 +32,8 @@ acorr_r(const std::vector<T> &audio_buffer, pitch_alloc::Mpm<T> *ma)
 }
 
 template void
-acorr_r<double>(
-    const std::vector<double> &audio_buffer, pitch_alloc::Mpm<double> *ma);
+acorr_r<double>(const std::vector<double> &audio_buffer,
+    pitch_alloc::BaseAlloc<double> *ma);
 template void
 acorr_r<float>(
-    const std::vector<float> &audio_buffer, pitch_alloc::Mpm<float> *ma);
+    const std::vector<float> &audio_buffer, pitch_alloc::BaseAlloc<float> *ma);

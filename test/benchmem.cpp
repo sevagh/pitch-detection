@@ -1,4 +1,4 @@
-#include "pitch_detection.h"
+#include "pitch_detection/pitch_detection.h"
 #include "util.h"
 #include <gflags/gflags.h>
 #include <iostream>

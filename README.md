@@ -1,15 +1,13 @@
 ### Pitch detection algorithms
 
-Autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running time:
+Autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running time and a C API:
 
 * McLeod pitch method - [2005 paper](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf) - [visualization](./misc/mcleod)
 * YIN(-FFT) - [2002 paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
 * Probabilistic YIN - [2014 paper](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf) - *partial implementation*\*
-* Probabilistic MPM - my own invention\*\*
+* Probabilistic MPM - [my own invention](https://github.com/sevagh/probabilistic-mcleod)
 
 \*: The second part of the PYIN paper uses an HMM to introduce temporal tracking. I've chosen not to implement it in this codebase, because that's more in the realm of a _transcriber_, while I'm choosing to limit this project to pitch tracking for single frames of data.
-
-\*\*: Probabilistic McLeod is inspired by PYIN. Initial code and rationale can be found [here](https://github.com/sevagh/probabilistic-mcleod), wherein I take the parameter `k ∈ [0.8, 1.0]` (fixed at `0.93` in the regular MPM) and distribute it uniformly to discover multiple pitch candidates along with their probabilities.
 
 ### Build and install
 
@@ -17,45 +15,108 @@ Using this project should be as easy as `make && sudo make install` on Linux wit
 
 This project depends on [ffts](https://github.com/anthonix/ffts). To run the tests, you need [googletest](https://github.com/google/googletest), and run `make -C test/ && ./test/test`. To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make -C test/ bench && ./test/bench`.
 
+Build and install pitch_detection, run the tests, and build the examples:
+
+```
+# build libpitch_detection.so
+make clean all
+
+# build tests and benches
+make -C test clean all
+
+# run tests and benches 
+./test/test
+./test/bench
+./test/benchmem
+
+# install the library and headers to `/usr/local/lib` and `/usr/local/include`
+sudo make install
+
+# build and run C++ example
+make -C examples/cpp clean all
+./examples/cpp/example
+
+# build and run C example
+make -C examples/c clean all
+./examples/c/example
+```
+
 ### Usage
 
-The code is lightly documented in the [public header file](./include/pitch_detection.h). Compile your code with `-lpitch_detection`.
+#### C++
+
+Read the [C++ header](./include/pitch_detection/pitch_detection.h) and [C++ example](./examples/cpp).
 
 The namespaces are `pitch` and `pitch_alloc`. The functions and classes are templated for `<double>` and `<float>` support.
 
-The `pitch` namespace functions are for automatic buffer allocation:
+The `pitch` namespace functions perform automatic buffer allocation, while `pitch_alloc::{Yin, Mpm}` give you a reusable object (useful for computing pitch for multiple uniformly-sized buffers):
 
 ```c++
 #include <pitch_detection.h>
 
-//std::vector<double> audio_buffer with sample rate e.g. 48000
+std::vector<double> audio_buffer(8092);
 
 double pitch_yin = pitch::yin<double>(audio_buffer, 48000);
 double pitch_mpm = pitch::mpm<double>(audio_buffer, 48000);
 
-//pyin and pmpm emit a vector of (pitch, probability) pairs
 std::vector<std::pair<double, double>> pitches_pyin = pitch::pyin<double>(audio_buffer, 48000);
 std::vector<std::pair<double, double>> pitches_pmpm = pitch::pmpm<double>(audio_buffer, 48000);
-```
 
-If you want to detect pitch for multiple audio buffers of a uniform size, you can do more manual memory control with the `pitch_alloc` namespace:
-
-```c++
-#include <pitch_detection.h>
-
-//buffers have fixed length e.g. 48000, same as sample rate
-
-pitch_alloc::Mpm<double> ma(48000);
-pitch_alloc::Yin<double> ya(48000);
+pitch_alloc::Mpm<double> ma(8092);
+pitch_alloc::Yin<double> ya(8092);
 
 for (int i = 0; i < 10000; ++i) {
-        //std::vector<double> audio_buffer size 48000 sample rate 48000
+        auto pitch_yin = ya.pitch(audio_buffer, 48000);
+        auto pitch_mpm = ma.pitch(audio_buffer, 48000);
 
-        auto pitch_yin = pitch_alloc::yin(audio_buffer, 48000, &ya);
-        auto pitch_mpm = pitch_alloc::mpm(audio_buffer, 48000, &ma);
+        auto pitches_pyin = ya.probabilistic_pitches(audio_buffer, 48000);
+        auto pitches_pmpm = ma.probabilistic_pitches(audio_buffer, 48000);
+}
+```
 
-        auto pitches_pyin = pitch_alloc::pyin(audio_buffer, 48000, &ya);
-        auto pitches_pmpm = pitch_alloc::pmpm(audio_buffer, 48000, &ma);
+#### C
+
+Read the [C header](./include/pitch_detection/cpitch_detection.h) and [C example](./examples/c).
+
+In C, the `pitch` and `pitch_alloc` namespaces becomes `pitch_` and `pitch_alloc_` prefixes. `double` and `float` templates are now explicit structs and functions with `d/D` and `f/F` in the name.
+
+Also, to represent `std::vector<std::pair<T, T>>` pitch candidates, there are some custom structs:
+
+```c
+struct pitch_candidates_d_t {
+        long n_candidates;
+        struct pitch_probability_pair_d_t *candidates;
+};
+
+struct pitch_probability_pair_d_t {
+        double pitch;
+        double probability;
+};
+```
+
+Here are the above C++ examples, transliterated using the C API:
+
+```c
+#include <cpitch_detection.h>
+
+double audio_buffer[8092];
+
+double pitch_yin = pitch_yin_d(audio_buffer, 8092, 48000);
+double pitch_mpm = pitch_mpm_d(audio_buffer, 8092, 48000);
+
+//pyin and pmpm emit struct
+struct pitch_candidates_d_t * pitches_pmpm = pitch_pmpm_d(audio_buffer, 8092, 48000);
+struct pitch_candidates_d_t * pitches_pyin = pitch_pyin_d(audio_buffer, 8092, 48000);
+
+struct Mpm_d_t ma = NewMpmD(8092);
+struct Yin_d_t ya = NewYinD(8092);
+
+for (int i = 0; i < 10000; ++i) {
+        double pitch_yin = ya.pitch(audio_buffer, 48000);
+        double pitch_mpm = ma.pitch(audio_buffer, 48000);
+
+        struct pitch_candidates_d_t * pitches_pmpm = pitch_alloc_pmpm_d(ma, audio_buffer, 48000);
+        struct pitch_candidates_d_t * pitches_pyin = pitch_alloc_pyin_d(ya, audio_buffer, 48000);
 }
 ```
 
