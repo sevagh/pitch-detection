@@ -9,6 +9,27 @@ Autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running t
 
 \*: The second part of the PYIN paper uses an HMM to introduce temporal tracking. I've chosen not to implement it in this codebase, because that's more in the realm of a _transcriber_, while I'm choosing to limit this project to pitch tracking for single frames of data.
 
+### Degraded audio tests
+
+Output of the results using the [audio-degradation-toolbox](https://github.com/sevagh/audio-degradation-toolbox), and [wav_analyzer](./wav_analyzer) which uses [https://github.com/ddiakopoulos/libnyquist](libnyquist) for WAV decoding.
+
+All testing files are [here](./degraded_audio_tests). The original clip is a Viola playing E3 from the [University of Iowa MIS](http://theremin.music.uiowa.edu/MIS.html). The 4 levels of degradation are as follows:
+
+0: clean
+1: pink noise with an overall SNR of 20dB
+2: 1 + 5 passes of harmonic (quadratic) distortion
+3: 2 + mixed a clip of restaurant background noise
+4: 3 + 3 consecutive mp3 transcodings at 32kbps
+
+Results (correct pitch of an E3 is 164.81):
+
+| Algorithm  | Pitch@0 | Pitch@1 | Pitch@2 | Pitch@3 | Pitch@4 |
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| MPM  | 163.101  | 163.103 | -1 | -1 | -1 |
+| YIN  | 163.102  | 163.106 | 163.088 | 163.086 | 163.083 |
+
+YIN is more robust to audio degradation.
+
 ### Build and install
 
 Using this project should be as easy as `make && sudo make install` on Linux with a modern GCC - I don't officially support other platforms.
@@ -119,80 +140,3 @@ for (int i = 0; i < 10000; ++i) {
         struct pitch_candidates_d_t * pitches_pyin = pitch_alloc_pyin_d(ya, audio_buffer, 48000);
 }
 ```
-
-### Magic constants
-
-I recently standardized my treatment of magic constants. They now go into the anonymous private namespaces `pyin_consts`, `yin_consts`, `mpm_consts`.
-
-#### MPM
-
-```c++
-// src/mpm.cpp
-Cutoff = 0.93
-Small_Cutoff = 0.5
-Lower_Pitch_Cutoff = 80.0
-```
-
-Source: https://github.com/JorenSix/TarsosDSP
-
-#### YIN
-
-```c++
-// src/yin.cpp
-Threshold = 0.20
-```
-
-Source: https://github.com/JorenSix/TarsosDSP
-
-#### PYIN
-
-
-```c++
-// src/pyin.cpp
-Pa = 0.01
-N_Thresholds = 100
-```
-
-Source: [the paper, section 2.1, page 2](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf)
-
-```c++
-Beta_Distribution[100] = {0.012614, 0.022715, 0.030646,
-    0.036712, 0.041184, 0.044301, 0.046277, 0.047298, 0.047528, 0.047110,
-    0.046171, 0.044817, 0.043144, 0.041231, 0.039147, 0.036950, 0.034690,
-    0.032406, 0.030133, 0.027898, 0.025722, 0.023624, 0.021614, 0.019704,
-    0.017900, 0.016205, 0.014621, 0.013148, 0.011785, 0.010530, 0.009377,
-    0.008324, 0.007366, 0.006497, 0.005712, 0.005005, 0.004372, 0.003806,
-    0.003302, 0.002855, 0.002460, 0.002112, 0.001806, 0.001539, 0.001307,
-    0.001105, 0.000931, 0.000781, 0.000652, 0.000542, 0.000449, 0.000370,
-    0.000303, 0.000247, 0.000201, 0.000162, 0.000130, 0.000104, 0.000082,
-    0.000065, 0.000051, 0.000039, 0.000030, 0.000023, 0.000018, 0.000013,
-    0.000010, 0.000007, 0.000005, 0.000004, 0.000003, 0.000002, 0.000001,
-    0.000001, 0.000001, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
-    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
-    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
-    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000};
-```
-
-Source: [vamp plugin source code that accompanies the paper](https://code.soundsoftware.ac.uk/projects/pyin) and [Essentia](https://github.com/MTG/essentia/pull/809/files)
-
-#### PMPM
-
-```c++
-// src/pmpm.cpp
-
-// probability that any pitch candidate computed with k between 0.8 and 1.0, distributed into 20 increments of 0.01, is the right answer
-Probability_Distribution = 0.20
-
-// we start from 0.8 and add increments of 0.01
-Cutoff_Begin = 0.8
-Cutoff_Step = 0.01
-
-// initial probability, borrowed from PYin
-Pa = 0.01
-
-// same as regular mpm
-Small_Cutoff = 0.5
-Lower_Pitch_Cutoff = 80.0
-```
-
-Source: https://github.com/sevagh/probabilistic-mcleod
