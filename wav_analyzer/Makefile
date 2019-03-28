@@ -1,7 +1,11 @@
 CXX		?= gcc
-CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fext-numeric-literals -ffast-math -flto -L$(CURDIR)/../lib -lpitch_detection -lffts -llibnyquist -llibwavpack -llibopus -I$(CURDIR)/../include -Wl,-R$(CURDIR)/../lib
+CXX_FLAGS 	:= -ansi -pedantic -Werror -Wall -O3 -std=c++17 -fext-numeric-literals -flto -L$(CURDIR)/../lib -lpitch_detection -lffts -llibnyquist -llibwavpack -llibopus -I$(CURDIR)/../include -Wl,-R$(CURDIR)/../lib
+CXX_DEBUG_FLAGS := -std=c++17 -L$(CURDIR)/../lib -lpitch_detection -lffts -llibnyquist -llibwavpack -llibopus -I$(CURDIR)/../include -Wl,-R$(CURDIR)/../lib -ggdb -fno-omit-frame-pointer
 
 all: wav_analyzer
+
+debug: CXX_FLAGS=$(CXX_DEBUG_FLAGS)
+debug: wav_analyzer
 
 wav_analyzer:
 	$(CXX) ./*.cpp -o $@ $(CXX_FLAGS)

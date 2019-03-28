@@ -10,6 +10,14 @@ TEST(CAPITest, MpmNoStruct)
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
+TEST(DISABLED_CAPITest, SwipeNoStruct)
+{
+	double freq = 1337.0;
+	auto data = test_util::sinewave(8092, freq, 48000);
+	double pitch = pitch_swipe_d(data.data(), data.size(), 48000);
+	EXPECT_NEAR(freq, pitch, 0.01 * freq);
+}
+
 TEST(CAPITest, YinNoStruct)
 {
 	double freq = 1337.0;
