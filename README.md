@@ -11,15 +11,15 @@ Autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running t
 
 ### Degraded audio tests
 
-Output of the results using the [audio-degradation-toolbox](https://github.com/sevagh/audio-degradation-toolbox), and [wav_analyzer](./wav_analyzer) which uses [https://github.com/ddiakopoulos/libnyquist](libnyquist) for WAV decoding.
+Output of the results using the [audio-degradation-toolbox](https://github.com/sevagh/audio-degradation-toolbox), and [wav_analyzer](./wav_analyzer) which uses [libnyquist](https://github.com/ddiakopoulos/libnyquist) for WAV decoding.
 
 All testing files are [here](./degraded_audio_tests). The original clip is a Viola playing E3 from the [University of Iowa MIS](http://theremin.music.uiowa.edu/MIS.html). The 4 levels of degradation are as follows:
 
-0: clean
-1: pink noise with an overall SNR of 20dB
-2: 1 + 5 passes of harmonic (quadratic) distortion
-3: 2 + mixed a clip of restaurant background noise
-4: 3 + 3 consecutive mp3 transcodings at 32kbps
+- 0: clean
+- 1: pink noise with an overall SNR of 20dB
+- 2: 1 + 5 passes of harmonic (quadratic) distortion
+- 3: 2 + mixed a clip of restaurant background noise
+- 4: 3 + 3 consecutive mp3 transcodings at 32kbps
 
 Results (correct pitch of an E3 is 164.81):
 
