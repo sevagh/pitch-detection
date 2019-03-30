@@ -26,6 +26,10 @@ template <typename T>
 T
 mpm(const std::vector<T> &, int);
 
+template <typename T>
+T
+swipe(const std::vector<T> &, int);
+
 /*
  * pyin and pmpm emit pairs of pitch/probability
  */

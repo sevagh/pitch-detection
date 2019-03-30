@@ -21,6 +21,22 @@ pitch_yin_f(const float *data, long data_size, int sample_rate)
 }
 
 double
+pitch_swipe_d(const double *data, long data_size, int sample_rate)
+{
+	std::vector<double> data_vec(data, data + data_size);
+
+	return pitch::swipe(data_vec, sample_rate);
+}
+
+float
+pitch_swipe_f(const float *data, long data_size, int sample_rate)
+{
+	std::vector<float> data_vec(data, data + data_size);
+
+	return pitch::swipe(data_vec, sample_rate);
+}
+
+double
 pitch_mpm_d(const double *data, long data_size, int sample_rate)
 {
 	std::vector<double> data_vec(data, data + data_size);

@@ -31,6 +31,11 @@ float
 pitch_yin_f(const float *, long, int);
 
 double
+pitch_swipe_d(const double *, long, int);
+float
+pitch_swipe_f(const float *, long, int);
+
+double
 pitch_mpm_d(const double *, long, int);
 float
 pitch_mpm_f(const float *, long, int);

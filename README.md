@@ -1,40 +1,47 @@
 ### Pitch detection algorithms
 
-Autocorrelation-based C++ pitch detection algorithms with **O(nlogn)** running time and a C API:
+Autocorrelation-based C++ pitch detection algorithms with **O(nlogn) or lower** running time and a C API:
 
 * McLeod pitch method - [2005 paper](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf) - [visualization](./misc/mcleod)
 * YIN(-FFT) - [2002 paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
 * Probabilistic YIN - [2014 paper](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf) - *partial implementation*\*
 * Probabilistic MPM - [my own invention](https://github.com/sevagh/probabilistic-mcleod)
+* SWIPE' - [2007 paper](https://pdfs.semanticscholar.org/0fd2/6e267cfa9b6d519967ea00db4ffeac272777.pdf) - [transliterated to C++ from kylebgorman's C implementation](https://github.com/kylebgorman/swipe)
 
 \*: The second part of the PYIN paper uses an HMM to introduce temporal tracking. I've chosen not to implement it in this codebase, because that's more in the realm of a _transcriber_, while I'm choosing to limit this project to pitch tracking for single frames of data.
+
+#### Notes on SWIPE'
+
+It appears to be O(n) but with an enormous constant factor. The implementation complexity is much higher than MPM and YIN, it brings in additional dependencies (BLAS + LAPACK), and the accuracy varies erratically.
+
+I've made some adaptations to SWIPE', for it to behave more like the other algorithms here - I only push candidates that produced a valid pitch onto a vector, whose median I return. That means that a 10-second clip that's mostly "inconclusive", but has a few strong 83Hz candidates, might have an output of 83Hz from SWIPE'. Don't pass huge buffers - slice them into time slices (e.g. 1ms, 10ms).
 
 ### Degraded audio tests
 
 Output of the results using the [audio-degradation-toolbox](https://github.com/sevagh/audio-degradation-toolbox), and [wav_analyzer](./wav_analyzer) which uses [libnyquist](https://github.com/ddiakopoulos/libnyquist) for WAV decoding.
 
-All testing files are [here](./degraded_audio_tests). The original clip is a Viola playing E3 from the [University of Iowa MIS](http://theremin.music.uiowa.edu/MIS.html). The 4 levels of degradation are as follows:
+All testing files are [here](./degraded_audio_tests). The original clip is a Viola playing E3 from the [University of Iowa MIS](http://theremin.music.uiowa.edu/MIS.html). The 5 levels of degradation are as follows:
 
 - 0: clean
 - 1: pink noise with an overall SNR of 20dB
 - 2: 1 + 5 passes of harmonic (quadratic) distortion
 - 3: 2 + mixed a clip of restaurant background noise
 - 4: 3 + 3 consecutive mp3 transcodings at 32kbps
+- 5: 4 + dynamic range compression + clipping
 
 Results (correct pitch of an E3 is 164.81):
 
-| Algorithm  | Pitch@0 | Pitch@1 | Pitch@2 | Pitch@3 | Pitch@4 |
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| MPM  | 163.101  | 163.103 | -1 | -1 | -1 |
-| YIN  | 163.102  | 163.106 | 163.088 | 163.086 | 163.083 |
-
-YIN is more robust to audio degradation.
+| Algorithm  | Pitch@0 | Pitch@1 | Pitch@2 | Pitch@3 | Pitch@4 | Pitch@5
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| MPM  | 163.101  | 163.103 | -1 | -1 | -1 | -1
+| YIN  | 163.102  | 163.106 | 163.088 | 163.086 | 163.083 | 163.094
+| SWIPE' | 163.358 | 163.063 | 163.211 | 163.358 | 163.211 | 162.917
 
 ### Build and install
 
 Using this project should be as easy as `make && sudo make install` on Linux with a modern GCC - I don't officially support other platforms.
 
-This project depends on [ffts](https://github.com/anthonix/ffts). To run the tests, you need [googletest](https://github.com/google/googletest), and run `make -C test/ && ./test/test`. To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make -C test/ bench && ./test/bench`.
+This project depends on [ffts](https://github.com/anthonix/ffts) and BLAS/LAPACK. To run the tests, you need [googletest](https://github.com/google/googletest), and run `make -C test/ && ./test/test`. To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make -C test/ bench && ./test/bench`.
 
 Build and install pitch_detection, run the tests, and build the examples:
 

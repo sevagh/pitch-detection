@@ -10,7 +10,19 @@ class YinSinewaveTest : public testing::TestWithParam<double>
 {
 };
 
+class SwipeSinewaveTest : public testing::TestWithParam<double>
+{
+};
+
 TEST_P(MpmSinewaveTest, GetFreq)
+{
+	double freq = GetParam();
+	auto data = test_util::sinewave(8092, freq, 48000);
+	double pitch = pitch::mpm<double>(data, 48000);
+	EXPECT_NEAR(freq, pitch, 0.01 * freq);
+}
+
+TEST_P(SwipeSinewaveTest, GetFreq)
 {
 	double freq = GetParam();
 	auto data = test_util::sinewave(8092, freq, 48000);
@@ -84,3 +96,6 @@ INSTANTIATE_TEST_CASE_P(MpmSinewave, MpmSinewaveTest,
 
 INSTANTIATE_TEST_CASE_P(YinSinewave, YinSinewaveTest,
     ::testing::Values(77.0, 100.0, 233.0, 298.0, 1583.0, 3398.0, 4200.0));
+
+INSTANTIATE_TEST_CASE_P(SwipeSinewave, SwipeSinewaveTest,
+    ::testing::Values(100.0, 233.0, 298.0, 1583.0, 3398.0, 4200.0));

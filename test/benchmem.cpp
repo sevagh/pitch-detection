@@ -27,7 +27,7 @@ mpm_manual(int reps)
 	pitch_alloc::Mpm<double> ma(48000);
 
 	for (int i = 0; i < reps; ++i) {
-		pitch_alloc::mpm(data, 48000, &ma);
+		ma.pitch(data, 48000);
 	}
 }
 
