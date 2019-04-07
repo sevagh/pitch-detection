@@ -6,15 +6,13 @@ Autocorrelation-based C++ pitch detection algorithms with **O(nlogn) or lower** 
 * YIN(-FFT) - [2002 paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
 * Probabilistic YIN - [2014 paper](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf) - *partial implementation*\*
 * Probabilistic MPM - [my own invention](https://github.com/sevagh/probabilistic-mcleod)
-* SWIPE' - [2007 paper](https://pdfs.semanticscholar.org/0fd2/6e267cfa9b6d519967ea00db4ffeac272777.pdf) - [transliterated to C++ from kylebgorman's C implementation](https://github.com/kylebgorman/swipe)
+* SWIPE' - [2007 paper](https://pdfs.semanticscholar.org/0fd2/6e267cfa9b6d519967ea00db4ffeac272777.pdf) - [transliterated to C++ from kylebgorman's C implementation](https://github.com/kylebgorman/swipe)\*\*
 
 \*: The second part of the PYIN paper uses an HMM to introduce temporal tracking. I've chosen not to implement it in this codebase, because that's more in the realm of a _transcriber_, while I'm choosing to limit this project to pitch tracking for single frames of data.
 
-#### Notes on SWIPE'
+\*\*: SWIPE' appears to be O(n) but with an enormous constant factor. The implementation complexity is much higher than MPM and YIN and it brings in additional dependencies (BLAS + LAPACK).
 
-It appears to be O(n) but with an enormous constant factor. The implementation complexity is much higher than MPM and YIN, it brings in additional dependencies (BLAS + LAPACK), and the accuracy varies erratically.
-
-I've made some adaptations to SWIPE', for it to behave more like the other algorithms here - I only push candidates that produced a valid pitch onto a vector, whose median I return. That means that a 10-second clip that's mostly "inconclusive", but has a few strong 83Hz candidates, might have an output of 83Hz from SWIPE'. Don't pass huge buffers - slice them into time slices (e.g. 1ms, 10ms).
+Suggested usage of this library can be seen in the utility [wav_analyzer](./wav_analyzer), which divides a wav file into chunks of 0.01s and checks the pitch of each chunk.
 
 ### Degraded audio tests
 
@@ -55,7 +53,6 @@ make -C test clean all
 # run tests and benches 
 ./test/test
 ./test/bench
-./test/benchmem
 
 # install the library and headers to `/usr/local/lib` and `/usr/local/include`
 sudo make install

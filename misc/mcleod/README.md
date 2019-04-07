@@ -182,3 +182,13 @@ The correctness of the answer is obvious when the signal is overlaid with these 
 ![lags](./.github/open_e_nsdf_peak_lags_best.png)
 
 Almost a perfect match.
+
+# Bonus - degraded Viola E3
+
+NSDF of clean viola clip (deg0):
+
+![clean_nsdf](./.github/undegraded_e3_nsdf.png)
+
+NSDF of unclean viola clip (deg4):
+
+![degraded_nsdf](./.github/degraded_e3_nsdf.png)

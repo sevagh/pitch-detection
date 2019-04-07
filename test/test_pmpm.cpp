@@ -40,7 +40,7 @@ INSTANTIATE_TEST_CASE_P(PMpmSinewave, PMpmSinewaveTest,
 
 TEST(PMpmInstrumentTest, Violin_A4_44100)
 {
-	auto data = test_util::vec_from_file("./misc/sample/A4_44100_violin.txt");
+	auto data = test_util::vec_from_file("./misc/samples/A4_44100_violin.txt");
 	auto pitches = pitch::pmpm<double>(data, 44100);
 	double expected = 440.0;
 	pmpm_helper(pitches, expected);
@@ -48,7 +48,7 @@ TEST(PMpmInstrumentTest, Violin_A4_44100)
 
 TEST(PMpmInstrumentTest, Piano_B4_44100)
 {
-	auto data = test_util::vec_from_file("./misc/sample/B4_44100_piano.txt");
+	auto data = test_util::vec_from_file("./misc/samples/B4_44100_piano.txt");
 	auto pitches = pitch::pmpm<double>(data, 44100);
 	double expected = 493.9;
 	pmpm_helper(pitches, expected);
@@ -56,7 +56,7 @@ TEST(PMpmInstrumentTest, Piano_B4_44100)
 
 TEST(PMpmInstrumentTest, Piano_D4_44100)
 {
-	auto data = test_util::vec_from_file("./misc/sample/D4_44100_piano.txt");
+	auto data = test_util::vec_from_file("./misc/samples/D4_44100_piano.txt");
 	auto pitches = pitch::pmpm<double>(data, 44100);
 	double expected = 293.7;
 	pmpm_helper(pitches, expected);
@@ -65,7 +65,7 @@ TEST(PMpmInstrumentTest, Piano_D4_44100)
 TEST(PMpmInstrumentTest, Acoustic_E2_44100)
 {
 	auto data =
-	    test_util::vec_from_file("./misc/sample/E2_44100_acousticguitar.txt");
+	    test_util::vec_from_file("./misc/samples/E2_44100_acousticguitar.txt");
 	auto pitches = pitch::pmpm<double>(data, 44100);
 	double expected = 82.41;
 	pmpm_helper(pitches, expected);
@@ -73,8 +73,8 @@ TEST(PMpmInstrumentTest, Acoustic_E2_44100)
 
 TEST(PMpmInstrumentTest, Classical_FSharp4_48000)
 {
-	auto data =
-	    test_util::vec_from_file("./misc/sample/F-4_48000_classicalguitar.txt");
+	auto data = test_util::vec_from_file(
+	    "./misc/samples/F-4_48000_classicalguitar.txt");
 	auto pitches = pitch::pmpm<double>(data, 48000);
 	double expected = 370.0;
 	pmpm_helper(pitches, expected);

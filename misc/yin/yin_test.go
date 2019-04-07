@@ -11,7 +11,7 @@ func TestACF(t *testing.T) {
 		t.Skip("skipping print test")
 	}
 
-	floats, err := FileToSlice("../sample/F-4_48000_classicalguitar.txt")
+	floats, err := FileToSlice("../samples/F-4_48000_classicalguitar.txt")
 	die(err)
 
 	acorr := ACF(&floats)
@@ -26,7 +26,7 @@ func TestDF(t *testing.T) {
 		t.Skip("skipping print test")
 	}
 
-	floats, err := FileToSlice("../sample/F-4_48000_classicalguitar.txt")
+	floats, err := FileToSlice("../samples/F-4_48000_classicalguitar.txt")
 	die(err)
 
 	df := DF(&floats)
@@ -41,7 +41,7 @@ func TestCMNDF(t *testing.T) {
 		t.Skip("skipping print test")
 	}
 
-	floats, err := FileToSlice("../sample/F-4_48000_classicalguitar.txt")
+	floats, err := FileToSlice("../samples/F-4_48000_classicalguitar.txt")
 	die(err)
 
 	df := DF(&floats)
@@ -53,7 +53,7 @@ func TestCMNDF(t *testing.T) {
 }
 
 func TestYinPitchManyWays(t *testing.T) {
-	samples, err := FileToSlice("../sample/F-4_48000_classicalguitar.txt")
+	samples, err := FileToSlice("../samples/F-4_48000_classicalguitar.txt")
 	die(err)
 
 	t.Log("Method1")
@@ -93,7 +93,7 @@ func TestYinPitchManyWays(t *testing.T) {
 }
 
 func TestACFPitch(t *testing.T) {
-	samples, err := FileToSlice("../sample/F-4_48000_classicalguitar.txt")
+	samples, err := FileToSlice("../samples/F-4_48000_classicalguitar.txt")
 	die(err)
 
 	t.Log("Method1")
@@ -108,7 +108,7 @@ func TestACFPitch(t *testing.T) {
 }
 
 func TestYinPitchManyWays82Hz(t *testing.T) {
-	samples, err := FileToSlice("../sample/E2_44100_acousticguitar.txt")
+	samples, err := FileToSlice("../samples/E2_44100_acousticguitar.txt")
 	die(err)
 
 	t.Log("Method1")
@@ -148,7 +148,7 @@ func TestYinPitchManyWays82Hz(t *testing.T) {
 }
 
 func BenchmarkYinTimeDomainHugeSamples(b *testing.B) {
-	samples, err := FileToSlice("../sample/A4_44100_violin.txt")
+	samples, err := FileToSlice("../samples/A4_44100_violin.txt")
 	die(err)
 
 	for n := 0; n < b.N; n++ {

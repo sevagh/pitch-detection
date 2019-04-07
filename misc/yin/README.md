@@ -68,7 +68,7 @@ The accuracy didn't take a huge hit.
 
 Time-domain YIN result:
 ```
-$ time ./bin/stdin --sample_rate 44100 --algo yin <./sample/F-4_48000_classicalguitar.txt
+$ time ./bin/stdin --sample_rate 44100 --algo yin <./samples/F-4_48000_classicalguitar.txt
 Size: 174759    pitch: 342.271
 closest note: F4 (349.2)
 
@@ -80,7 +80,7 @@ sys     0m0.004s
 FFT YIN result:
 
 ```
-$ time ./bin/stdin --sample_rate 44100 --algo yin <./sample/F-4_48000_classicalguitar.txt
+$ time ./bin/stdin --sample_rate 44100 --algo yin <./samples/F-4_48000_classicalguitar.txt
 Size: 174759    pitch: 342.238
 closest note: F4 (349.2)
 

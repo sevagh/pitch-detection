@@ -1,12 +1,10 @@
-#include <iostream>
-#include <vector>
-
 #include <algorithm>
 #include <climits>
 #include <cmath>
-
 #include <complex>
 #include <ffts/ffts.h>
+#include <map>
+#include <vector>
 
 #include "pitch_detection/pitch_detection.h"
 
@@ -17,7 +15,6 @@ namespace swipe_consts
 template <typename T> static const T Derbs = static_cast<T>(0.1);
 template <typename T> static const T Polyv = static_cast<T>(0.0013028);
 template <typename T> static const T Dlog2p = static_cast<T>(0.0104167);
-template <typename T> static const T Dt = static_cast<T>(0.001);
 template <typename T> static const T St = static_cast<T>(0.3);
 template <typename T> static const T Min = static_cast<T>(10.0);
 template <typename T> static const T Max = static_cast<T>(8000.0);
@@ -269,7 +266,7 @@ loudness(
 template <typename T>
 static void
 Sadd(matrix<T> &S, matrix<T> &L, std::vector<T> &fERBs, std::vector<T> &pci,
-    std::vector<T> &mu, std::vector<int> &ps, T dt, T nyquist2, int lo, int psz,
+    std::vector<T> &mu, std::vector<int> &ps, T nyquist2, int lo, int psz,
     int w2)
 {
 	size_t i, j, k;
@@ -323,7 +320,6 @@ Sadd(matrix<T> &S, matrix<T> &L, std::vector<T> &fERBs, std::vector<T> &pci,
 			        (td * (Slocal[i][k] - Slocal[i][k - 1])) / dtp) *
 			    mu[i];
 		}
-		t += dt;
 	}
 }
 
@@ -331,7 +327,7 @@ template <typename T>
 static void
 Sfirst(matrix<T> &S, const std::vector<T> &x, std::vector<T> &pc,
     std::vector<T> &fERBs, std::vector<T> &d, std::vector<int> &ws,
-    std::vector<int> &ps, T nyquist, T nyquist2, T dt, int n)
+    std::vector<int> &ps, T nyquist, T nyquist2, int n)
 {
 	int i;
 	int w2 = ws[n] / 2;
@@ -345,14 +341,14 @@ Sfirst(matrix<T> &S, const std::vector<T> &x, std::vector<T> &pc,
 		pci[i] = pc[i];
 		mu[i] = 1. - fabs(d[i] - 1.);
 	}
-	Sadd(S, L, fERBs, pci, mu, ps, dt, nyquist2, lo, psz, w2);
+	Sadd(S, L, fERBs, pci, mu, ps, nyquist2, lo, psz, w2);
 }
 
 template <typename T>
 static void
 Snth(matrix<T> &S, const std::vector<T> &x, std::vector<T> &pc,
     std::vector<T> &fERBs, std::vector<T> &d, std::vector<int> &ws,
-    std::vector<int> &ps, T nyquist, T nyquist2, T dt, int n)
+    std::vector<int> &ps, T nyquist, T nyquist2, int n)
 {
 	int i;
 	int w2 = ws[n] / 2;
@@ -368,14 +364,14 @@ Snth(matrix<T> &S, const std::vector<T> &x, std::vector<T> &pc,
 		mu[ti] = 1. - fabs(d[i] - (n + 1));
 		ti++;
 	}
-	Sadd(S, L, fERBs, pci, mu, ps, dt, nyquist2, lo, psz, w2);
+	Sadd(S, L, fERBs, pci, mu, ps, nyquist2, lo, psz, w2);
 }
 
 template <typename T>
 static void
 Slast(matrix<T> &S, const std::vector<T> &x, std::vector<T> &pc,
     std::vector<T> &fERBs, std::vector<T> &d, std::vector<int> &ws,
-    std::vector<int> &ps, T nyquist, T nyquist2, T dt, int n)
+    std::vector<int> &ps, T nyquist, T nyquist2, int n)
 {
 	int i;
 	int w2 = ws[n] / 2;
@@ -391,11 +387,11 @@ Slast(matrix<T> &S, const std::vector<T> &x, std::vector<T> &pc,
 		mu[ti] = 1. - fabs(d[i] - (n + 1));
 		ti++;
 	}
-	Sadd(S, L, fERBs, pci, mu, ps, dt, nyquist2, lo, psz, w2);
+	Sadd(S, L, fERBs, pci, mu, ps, nyquist2, lo, psz, w2);
 }
 
 template <typename T>
-static T
+T
 pitch_(matrix<T> &S, std::vector<T> &pc, T st)
 {
 	size_t i, j;
@@ -448,13 +444,7 @@ pitch_(matrix<T> &S, std::vector<T> &pc, T st)
 		}
 	}
 
-	if (p.size() > 0) {
-		size_t mean_idx = p.size() - (p.size() / 2) + (p.size() % 2);
-		std::sort(p.begin(), p.end());
-		return p[mean_idx];
-	} else {
-		return -1.0;
-	}
+	return p.size() == 1 ? p[0] : -1.0;
 }
 
 template <typename T>
@@ -491,19 +481,12 @@ pitch::swipe(const std::vector<T> &x, int samplerate)
 	std::vector<int> ps(floor(fERBs[fERBs.size() - 1] / pc[0] - .75), 1);
 	sieve(ps);
 	ps[0] = 1;
-	matrix<T> S(pc.size(),
-	    std::vector<T>(size_t(
-	        ceil(static_cast<T>(x.size()) / nyquist2 / swipe_consts::Dt<T>))));
-	Sfirst(
-	    S, x, pc, fERBs, d, ws, ps, nyquist, nyquist2, swipe_consts::Dt<T>, 0);
+	matrix<T> S(pc.size(), std::vector<T>(1));
+	Sfirst(S, x, pc, fERBs, d, ws, ps, nyquist, nyquist2, 0);
 	for (i = 1; i < ws.size() - 1; ++i)
-		Snth(S, x, pc, fERBs, d, ws, ps, nyquist, nyquist2, swipe_consts::Dt<T>,
-		    i);
-	Slast(
-	    S, x, pc, fERBs, d, ws, ps, nyquist, nyquist2, swipe_consts::Dt<T>, i);
-	auto ret = pitch_(S, pc, swipe_consts::St<T>);
-
-	return ret;
+		Snth(S, x, pc, fERBs, d, ws, ps, nyquist, nyquist2, i);
+	Slast(S, x, pc, fERBs, d, ws, ps, nyquist, nyquist2, i);
+	return pitch_(S, pc, swipe_consts::St<T>);
 }
 
 template double

@@ -1,6 +1,24 @@
 pub fn get_open_e() -> Vec<f64> {
-    let open_e_4096 = include_str!("../../sample/E2_44100_acousticguitar.txt");
-    let data: Vec<f64> = open_e_4096
+    let audio = include_str!("../../samples/E2_44100_acousticguitar.txt");
+    let data: Vec<f64> = audio
+        .lines()
+        .filter_map(|s| s.trim().parse::<f64>().ok())
+        .collect();
+    data
+}
+
+pub fn get_degraded_e3() -> Vec<f64> {
+    let audio = include_str!("../../samples/E3_44100_viola_degraded_4.txt");
+    let data: Vec<f64> = audio
+        .lines()
+        .filter_map(|s| s.trim().parse::<f64>().ok())
+        .collect();
+    data
+}
+
+pub fn get_undegraded_e3() -> Vec<f64> {
+    let audio = include_str!("../../samples/E3_44100_viola_degraded_0.txt");
+    let data: Vec<f64> = audio
         .lines()
         .filter_map(|s| s.trim().parse::<f64>().ok())
         .collect();
@@ -28,6 +46,26 @@ mod test {
     #[test]
     fn plot_open_e_nsdf() {
         let data = get_open_e();
+        let autocorrelation = nsdf(&data);
+
+        for i in 0..autocorrelation.len() {
+            println!("{:?}", autocorrelation[i]);
+        }
+    }
+
+    #[test]
+    fn plot_undegraded_e3_nsdf() {
+        let data = get_undegraded_e3();
+        let autocorrelation = nsdf(&data);
+
+        for i in 0..autocorrelation.len() {
+            println!("{:?}", autocorrelation[i]);
+        }
+    }
+
+    #[test]
+    fn plot_degraded_e3_nsdf() {
+        let data = get_degraded_e3();
         let autocorrelation = nsdf(&data);
 
         for i in 0..autocorrelation.len() {

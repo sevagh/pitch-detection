@@ -40,7 +40,6 @@ pyin(const std::vector<T> &, int);
 template <typename T>
 std::vector<std::pair<T, T>>
 pmpm(const std::vector<T> &, int);
-
 } // namespace pitch
 
 /*

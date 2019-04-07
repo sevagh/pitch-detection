@@ -10,13 +10,10 @@ test:
 bench:
 	$(CXX) ./$@.cpp ./util.cpp -o $@ $(CXX_FLAGS) -lpthread -lbenchmark
 
-benchmem:
-	$(CXX) ./$@.cpp ./util.cpp -o $@ $(CXX_FLAGS) -lgflags
-
 debug: CXX_FLAGS=$(CXX_DEBUG_FLAGS)
-debug: test bench benchmem
+debug: test bench
 
 clean:
-	-rm bench benchmem test
+	-rm bench test
 
 .PHONY: clean

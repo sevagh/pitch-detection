@@ -1,4 +1,4 @@
-Measured and graphed using https://github.com/KDE/heaptrack and [membench.cpp](../../bench/membench.cpp)
+Measured and graphed using https://github.com/KDE/heaptrack and [membench.cpp](./benchmem.cpp)
 
 #### Advantages of manual memory allocation
 

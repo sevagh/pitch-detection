@@ -39,7 +39,7 @@ INSTANTIATE_TEST_CASE_P(PYinSinewave, PYinSinewaveTest,
 
 TEST(PYinInstrumentTest, Violin_A4_44100)
 {
-	auto data = test_util::vec_from_file("./misc/sample/A4_44100_violin.txt");
+	auto data = test_util::vec_from_file("./misc/samples/A4_44100_violin.txt");
 	auto pitches = pitch::pyin<double>(data, 44100);
 	double expected = 440.0;
 	pyin_helper(pitches, expected);
@@ -47,7 +47,7 @@ TEST(PYinInstrumentTest, Violin_A4_44100)
 
 TEST(PYinInstrumentTest, Piano_B4_44100)
 {
-	auto data = test_util::vec_from_file("./misc/sample/B4_44100_piano.txt");
+	auto data = test_util::vec_from_file("./misc/samples/B4_44100_piano.txt");
 	auto pitches = pitch::pyin<double>(data, 44100);
 	double expected = 493.9;
 	pyin_helper(pitches, expected);
@@ -55,7 +55,7 @@ TEST(PYinInstrumentTest, Piano_B4_44100)
 
 TEST(DISABLED_PYinInstrumentTest, Piano_D4_44100)
 {
-	auto data = test_util::vec_from_file("./misc/sample/D4_44100_piano.txt");
+	auto data = test_util::vec_from_file("./misc/samples/D4_44100_piano.txt");
 	auto pitches = pitch::pyin<double>(data, 44100);
 	double expected = 293.7;
 	pyin_helper(pitches, expected);
@@ -64,7 +64,7 @@ TEST(DISABLED_PYinInstrumentTest, Piano_D4_44100)
 TEST(DISABLED_PYinInstrumentTest, Acoustic_E2_44100)
 {
 	auto data =
-	    test_util::vec_from_file("./misc/sample/E2_44100_acousticguitar.txt");
+	    test_util::vec_from_file("./misc/samples/E2_44100_acousticguitar.txt");
 	auto pitches = pitch::pyin<double>(data, 44100);
 	double expected = 82.41;
 	pyin_helper(pitches, expected);
@@ -72,8 +72,8 @@ TEST(DISABLED_PYinInstrumentTest, Acoustic_E2_44100)
 
 TEST(PYinInstrumentTest, Classical_FSharp4_48000)
 {
-	auto data =
-	    test_util::vec_from_file("./misc/sample/F-4_48000_classicalguitar.txt");
+	auto data = test_util::vec_from_file(
+	    "./misc/samples/F-4_48000_classicalguitar.txt");
 	auto pitches = pitch::pyin<double>(data, 48000);
 	double expected = 370.0;
 	pyin_helper(pitches, expected);
