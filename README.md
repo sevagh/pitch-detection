@@ -8,7 +8,7 @@ Autocorrelation-based C++ pitch detection algorithms with **O(nlogn) or lower** 
 * Probabilistic MPM - [my own invention](https://github.com/sevagh/probabilistic-mcleod)
 * SWIPE' - [2007 paper](https://pdfs.semanticscholar.org/0fd2/6e267cfa9b6d519967ea00db4ffeac272777.pdf) - [transliterated to C++ from kylebgorman's C implementation](https://github.com/kylebgorman/swipe)\*\*
 
-\*: The second part of the PYIN paper uses an HMM to introduce temporal tracking. I've chosen not to implement it in this codebase, because that's more in the realm of a _transcriber_, while I'm choosing to limit this project to pitch tracking for single frames of data.
+\*: The second part of the PYIN paper uses an HMM to introduce temporal tracking. I've chosen not to implement it in this codebase, because that's more in the realm of a _transcriber_, while I'm choosing to limit this project to pitch tracking for individual arrays of audio data. You can see my [attempt at HMM temporal smoothing](./misc/temporal-pitch-tracking), which I abandoned.
 
 \*\*: SWIPE' appears to be O(n) but with an enormous constant factor. The implementation complexity is much higher than MPM and YIN and it brings in additional dependencies (BLAS + LAPACK).
 
