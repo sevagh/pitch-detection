@@ -11,7 +11,7 @@ I recently implemented Probabilistic YIN as described in the paper. YIN operates
 
 I attempted to apply the same reasoning to the McLeod pitch method. One of the parameters in MPM is the constant `k`, referred to in the code as `Cutoff`:
 
->>>From the key maxima we define a threshold which is
+>From the key maxima we define a threshold which is
 equal to the value of the highest maximum, nmax, multiplied by a constant k. We then take the first key maximum
 which is above this threshold and assign its delay, τ , as
 the pitch period. The constant, k, has to be large enough
