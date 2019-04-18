@@ -16,24 +16,18 @@ Suggested usage of this library can be seen in the utility [wav_analyzer](./wav_
 
 ### Degraded audio tests
 
-Output of the results using the [audio-degradation-toolbox](https://github.com/sevagh/audio-degradation-toolbox), and [wav_analyzer](./wav_analyzer) which uses [libnyquist](https://github.com/ddiakopoulos/libnyquist) for WAV decoding.
+All testing files are [here](./degraded_audio_tests) - the progressive degradations are described by the respective numbered JSON file, generated using [audio-degradation-toolbox](https://github.com/sevagh/audio-degradation-toolbox). The original clip is a Viola playing E3 from the [University of Iowa MIS](http://theremin.music.uiowa.edu/MIS.html).
 
-All testing files are [here](./degraded_audio_tests). The original clip is a Viola playing E3 from the [University of Iowa MIS](http://theremin.music.uiowa.edu/MIS.html). The 5 levels of degradation are as follows:
+The results come from parsing the output of wav_analyzer to count how many slices of the input clip were in the ballpark of the expected value of 164.81 - I considered anything 160-169 to be acceptable:
 
-- 0: clean
-- 1: pink noise with an overall SNR of 20dB
-- 2: 1 + 5 passes of harmonic (quadratic) distortion
-- 3: 2 + mixed a clip of restaurant background noise
-- 4: 3 + 3 consecutive mp3 transcodings at 32kbps
-- 5: 4 + dynamic range compression + clipping
-
-Results (correct pitch of an E3 is 164.81):
-
-| Algorithm  | Pitch@0 | Pitch@1 | Pitch@2 | Pitch@3 | Pitch@4 | Pitch@5
-| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| MPM  | 163.101  | 163.103 | -1 | -1 | -1 | -1
-| YIN  | 163.102  | 163.106 | 163.088 | 163.086 | 163.083 | 163.094
-| SWIPE' | 163.358 | 163.063 | 163.211 | 163.358 | 163.211 | 162.917
+| Degradation level | MPM # correct | YIN # correct | SWIPE' # correct |
+| ------------- | ------------- | ------------- | ------------- |
+| 0 | 60 | 61 | 28 |
+| 1 | 59 | 54 | 25 |
+| 2 | 51 | 46 | 23 |
+| 3 | 50 | 47 | 23 |
+| 4 | 49 | 27 | 10 |
+| 5 | 49 | 28 | 14 |
 
 ### Build and install
 
