@@ -123,8 +123,8 @@ BM_Yin_Sinewave_RMS              3 %          3 %
 
 CMNDF of clean viola clip (deg0):
 
-![clean_cmndf](./.github/cmdnf-viola-clean.png)
+![clean_cmndf](./.github/cmndf-viola-clean.png)
 
 CMNDF of unclean viola clip (deg4):
 
-![degraded_cmndf](./.github/cmdnf-viola-dirty.png)
+![degraded_cmndf](./.github/cmndf-viola-dirty.png)
