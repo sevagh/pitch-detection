@@ -52,6 +52,38 @@ func TestCMNDF(t *testing.T) {
 	}
 }
 
+func TestCMNDFViolaClean(t *testing.T) {
+	if os.Getenv("PRINT_PLOTS") == "" {
+		t.Skip("skipping print test")
+	}
+
+	floats, err := FileToSlice("../samples/E3_44100_viola_degraded_0.txt")
+	die(err)
+
+	df := DF(&floats)
+	CMNDF(&df)
+
+	for _, sample := range df {
+		fmt.Printf("%v\n", sample)
+	}
+}
+
+func TestCMNDFViolaDirty(t *testing.T) {
+	if os.Getenv("PRINT_PLOTS") == "" {
+		t.Skip("skipping print test")
+	}
+
+	floats, err := FileToSlice("../samples/E3_44100_viola_degraded_4.txt")
+	die(err)
+
+	df := DF(&floats)
+	CMNDF(&df)
+
+	for _, sample := range df {
+		fmt.Printf("%v\n", sample)
+	}
+}
+
 func TestYinPitchManyWays(t *testing.T) {
 	samples, err := FileToSlice("../samples/F-4_48000_classicalguitar.txt")
 	die(err)
