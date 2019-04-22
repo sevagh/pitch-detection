@@ -118,3 +118,13 @@ BM_Yin_Sinewave/1048576   95163598 ns   93849952 ns          7
 BM_Yin_Sinewave_BigO          4.52 NlgN       4.46 NlgN
 BM_Yin_Sinewave_RMS              3 %          3 %
 ```
+
+# Bonus - degraded Viola E3
+
+CMNDF of clean viola clip (deg0):
+
+![clean_cmndf](./.github/cmdnf-viola-clean.png)
+
+CMNDF of unclean viola clip (deg4):
+
+![degraded_cmndf](./.github/cmdnf-viola-dirty.png)
