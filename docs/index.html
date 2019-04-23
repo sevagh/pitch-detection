@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <title>pitch-detection</title>
+  </head>
+  <body>
+    <h1>pitch-detection</h1>
+    <h2>0 - What is this page?</h2>
+    <p>This is the accompanying website to <a href="https://github.com/sevagh/pitch-detection">my collection of C++ pitch detection algorithms</a>.</p>
+    <h2>1 - What is pitch detection?</h2>
+    <p>A pitch detection algorithm (PDA) is an algorithm designed to estimate the pitch or fundamental frequency of a quasiperiodic or oscillating signal, usually a digital recording of speech or a musical note or tone. This can be done in the time domain, the frequency domain, or both. - <a href="https://en.wikipedia.org/wiki/Pitch_detection_algorithm">[0]</a></p>
+    <p>McLeod pitch method and YIN share some things in common. Both create a (similar-to) autocorrelation buffer, and perform parabolic interpolation to pick peaks and estimate periodicity.</p>
+    <h2>2 - How should I get started?</h2>
+    <p>Read the McLeod pitch method <a href="http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf">paper</a>, and explore autocorrelation vs. MPM visualizations and source code <a href="https://github.com/sevagh/pitch-detection/blob/master/misc/mcleod">here</a> -</p>
+    <img src="mpm.png" width="800px">
+    <p>Read the YIN <a href="http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf">paper</a>, and explore autocorrelation vs. YIN visualizations and source code <a href="https://github.com/sevagh/pitch-detection/blob/master/misc/yin">here</a> -</p>
+    <img src="yin.png" width="800px">
+    <p>Try to write your own autocorrelation-based pitch detection algorithm, e.g. with <a href="https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.signal.correlate.html">scipy</a>. Use the <a href="https://github.com/sevagh/pitch-detection/blob/master/wav_analyzer/wav_analyzer.cpp">wav_analyzer</a> utility to see what it might look like in C++ to open an audio file and send it chunk by chunk to a pitch detection algorithm. If you prefer Python, here's a tiny <a href="https://github.com/sevagh/pitch-detection/blob/master/misc/samples/get_raw_audio.py">Python snippet</a> which uses Pydub to extract audio from a file.</p>
+    <h2>3 - What's next?</h2>
+    <p>Read the <a href="https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf">Probabilistic YIN paper</a>, and the similar <a href="https://github.com/sevagh/pitch-detection/blob/master/misc/probabilistic-mcleod">Probabilistic McLeod pitch method doc</a>.</p>
+    <p>Explore my <a href="https://github.com/sevagh/hmm-pitch-smoothing">HMM pitch smoothing</a> code which demonstrates HMM-based pitch smoothing techniques -</p>
+    <img src="hmm.png" width="800px">
+  </body>
+</html>
