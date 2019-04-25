@@ -10,7 +10,18 @@ Autocorrelation-based C++ pitch detection algorithms with **O(nlogn) or lower** 
 
 \*: SWIPE' appears to be O(n) but with an enormous constant factor. The implementation complexity is much higher than MPM and YIN and it brings in additional dependencies (BLAS + LAPACK).
 
-Suggested usage of this library can be seen in the utility [wav_analyzer](./wav_analyzer), which divides a wav file into chunks of 0.01s and checks the pitch of each chunk.
+Suggested usage of this library can be seen in the utility [wav_analyzer](./wav_analyzer), which divides a wav file into chunks of 0.01s and checks the pitch of each chunk. Sample output of wav_analyzer:
+
+```
+At t: 0.5
+        mpm: 162.529
+        yin: 162.543
+        swipe: 162.183
+        pmpm: 164.814
+        pyin: 164.814
+```
+
+Note that pmpm and pyin take the original pitch value (~162) and bin it in the closest musical note (E3 = 164.81Hz).
 
 ### Degraded audio tests
 
