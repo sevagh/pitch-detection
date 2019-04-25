@@ -132,3 +132,87 @@ TEST(DISABLED_SwipeInstrumentTest, Classical_FSharp4_48000)
 	double expected = 370.0;
 	EXPECT_NEAR(expected, pitch, 0.01 * expected);
 }
+
+TEST(PYinInstrumentTest, Violin_A4_44100)
+{
+	auto data = test_util::vec_from_file("./misc/samples/A4_44100_violin.txt");
+	double pitch = pitch::pyin<double>(data, 44100);
+	double expected = 440.0;
+	EXPECT_NEAR(expected, pitch, 0.01 * expected);
+}
+
+TEST(PYinInstrumentTest, Piano_B4_44100)
+{
+	auto data = test_util::vec_from_file("./misc/samples/B4_44100_piano.txt");
+	double pitch = pitch::pyin<double>(data, 44100);
+	double expected = 493.9;
+	EXPECT_NEAR(expected, pitch, 0.01 * expected);
+}
+
+TEST(PYinInstrumentTest, Piano_D4_44100)
+{
+	auto data = test_util::vec_from_file("./misc/samples/D4_44100_piano.txt");
+	double pitch = pitch::pyin<double>(data, 44100);
+	double expected = 293.7;
+	EXPECT_NEAR(expected, pitch, 0.01 * expected);
+}
+
+TEST(PYinInstrumentTest, Acoustic_E2_44100)
+{
+	auto data =
+	    test_util::vec_from_file("./misc/samples/E2_44100_acousticguitar.txt");
+	double pitch = pitch::pyin<double>(data, 44100);
+	double expected = 82.41;
+	EXPECT_NEAR(expected, pitch, 0.01 * expected);
+}
+
+TEST(PYinInstrumentTest, Classical_FSharp4_48000)
+{
+	auto data = test_util::vec_from_file(
+	    "./misc/samples/F-4_48000_classicalguitar.txt");
+	double pitch = pitch::pyin<double>(data, 48000);
+	double expected = 370.0;
+	EXPECT_NEAR(expected, pitch, 0.01 * expected);
+}
+
+TEST(PMpmInstrumentTest, Violin_A4_44100)
+{
+	auto data = test_util::vec_from_file("./misc/samples/A4_44100_violin.txt");
+	double pitch = pitch::pmpm<double>(data, 44100);
+	double expected = 440.0;
+	EXPECT_NEAR(expected, pitch, 0.01 * expected);
+}
+
+TEST(PMpmInstrumentTest, Piano_B4_44100)
+{
+	auto data = test_util::vec_from_file("./misc/samples/B4_44100_piano.txt");
+	double pitch = pitch::pmpm<double>(data, 44100);
+	double expected = 493.9;
+	EXPECT_NEAR(expected, pitch, 0.01 * expected);
+}
+
+TEST(PMpmInstrumentTest, Piano_D4_44100)
+{
+	auto data = test_util::vec_from_file("./misc/samples/D4_44100_piano.txt");
+	double pitch = pitch::pmpm<double>(data, 44100);
+	double expected = 293.7;
+	EXPECT_NEAR(expected, pitch, 0.01 * expected);
+}
+
+TEST(PMpmInstrumentTest, Acoustic_E2_44100)
+{
+	auto data =
+	    test_util::vec_from_file("./misc/samples/E2_44100_acousticguitar.txt");
+	double pitch = pitch::pmpm<double>(data, 44100);
+	double expected = 82.41;
+	EXPECT_NEAR(expected, pitch, 0.01 * expected);
+}
+
+TEST(PMpmInstrumentTest, Classical_FSharp4_48000)
+{
+	auto data = test_util::vec_from_file(
+	    "./misc/samples/F-4_48000_classicalguitar.txt");
+	double pitch = pitch::pmpm<double>(data, 48000);
+	double expected = 370.0;
+	EXPECT_NEAR(expected, pitch, 0.01 * expected);
+}
