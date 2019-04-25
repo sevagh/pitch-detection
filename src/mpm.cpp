@@ -31,6 +31,7 @@ static const int N_Cutoffs = 20;
  * Let's also decide that each value of cutoff has an even probability of being
  * correct i.e. probabilities[20] = {1.0/20, 1.0/20, ...}
  */
+//todo: hex
 template <typename T>
 static const T Probability_Distribution = static_cast<T>(0.05);
 

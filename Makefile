@@ -14,8 +14,7 @@ lib:
 		src/mpm.cpp \
 		src/swipe.cpp \
 		src/autocorrelation.cpp \
-		src/parabolic_interpolation.cpp \
-		src/capi.cpp
+		src/parabolic_interpolation.cpp
 
 install: lib
 	cp -r include/pitch_detection /usr/local/include

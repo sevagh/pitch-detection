@@ -6,7 +6,7 @@
 #include <gflags/gflags.h>
 #include <libnyquist/Decoders.h>
 
-DEFINE_double(timeslice, 0.01, "Time slice");
+DEFINE_double(timeslice, 0.1, "Time slice");
 
 template <class T>
 std::vector<T>
@@ -76,12 +76,14 @@ main(int argc, char **argv)
 		    file_data->samples.begin(), file_data->samples.end());
 	}
 
-	auto chunk_size = size_t(double(audio.size()) * FLAGS_timeslice);
-	std::cout << "Slicing buffer size " << audio.size()
-	          << " into chunks of size " << chunk_size << std::endl;
+	auto sample_rate = file_data->sampleRate;
+
+	auto chunk_size = size_t(sample_rate * FLAGS_timeslice);
 
 	auto chunks = get_chunks(audio, chunk_size);
-	auto sample_rate = file_data->sampleRate;
+
+	std::cout << "Slicing buffer size " << audio.size() << " into "
+	          << chunks.size() << " chunks of size " << chunk_size << std::endl;
 
 	double t = 0.;
 

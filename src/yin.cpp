@@ -109,7 +109,8 @@ difference(const std::vector<T> &audio_buffer, pitch_alloc::Yin<T> *ya)
 	acorr_r(audio_buffer, ya);
 
 	for (int tau = 0; tau < ya->N / 2; tau++)
-		ya->yin_buffer[tau] = 2 * ya->out_real[0] - 2 * ya->out_real[tau];
+		ya->yin_buffer[tau] =
+		    ya->out_real[0] + ya->out_real[1] - 2 * ya->out_real[tau];
 }
 
 template <typename T>
