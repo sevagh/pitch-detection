@@ -2,7 +2,7 @@
 #include <functional>
 #include <iostream>
 
-#include "pitch_detection/pitch_detection.h"
+#include "pitch_detection.h"
 #include <gflags/gflags.h>
 #include <libnyquist/Decoders.h>
 
@@ -92,23 +92,13 @@ main(int argc, char **argv)
 
 		auto pitch_mpm = pitch::mpm<float>(chunk, sample_rate);
 		auto pitch_yin = pitch::yin<float>(chunk, sample_rate);
+		auto pitch_pmpm = pitch::pmpm<float>(chunk, sample_rate);
+		auto pitch_pyin = pitch::pyin<float>(chunk, sample_rate);
 		auto pitch_swipe = pitch::swipe<float>(chunk, sample_rate);
 
 		std::cout << "\tmpm: " << pitch_mpm << "\n\tyin: " << pitch_yin
-		          << "\n\tswipe: " << pitch_swipe << std::endl;
-
-		auto pitches_mpm = pitch::pmpm<float>(chunk, sample_rate);
-		auto pitches_yin = pitch::pyin<float>(chunk, sample_rate);
-
-		for (auto p_mpm : pitches_mpm) {
-			std::cout << "\tpmpm: f0: " << p_mpm.first
-			          << ", p: " << p_mpm.second << std::endl;
-		}
-
-		for (auto p_yin : pitches_yin) {
-			std::cout << "\tpyin: f0: " << p_yin.first
-			          << ", p: " << p_yin.second << std::endl;
-		}
+		          << "\n\tswipe: " << pitch_swipe << "\n\tpmpm: " << pitch_pmpm
+		          << "\n\tpyin: " << pitch_pyin << std::endl;
 
 		t += FLAGS_timeslice;
 	}

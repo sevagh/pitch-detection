@@ -1,5 +1,4 @@
-#include "pitch_detection/pitch_detection.h"
-#include "pitch_detection_priv.h"
+#include "pitch_detection.h"
 #include <algorithm>
 #include <complex>
 #include <float.h>
@@ -7,42 +6,14 @@
 #include <numeric>
 #include <vector>
 
-namespace
-{
-namespace mpm_consts
-{
-template <typename T> static const T Cutoff = static_cast<T>(0.93);
-template <typename T> static const T Small_Cutoff = static_cast<T>(0.5);
-template <typename T> static const T Lower_Pitch_Cutoff = static_cast<T>(80.0);
-} // namespace mpm_consts
-} // namespace
-
-namespace
-{
-namespace pmpm_consts
-{
-
-template <typename T> static const T Pa = static_cast<T>(0.01);
-static const int N_Cutoffs = 20;
-
-/*
- * Let's choose to modify Cutoff with the probabilistic model between 0.8
- * and 1.0 as suggested in the paper
- * Let's also decide that each value of cutoff has an even probability of being
- * correct i.e. probabilities[20] = {1.0/20, 1.0/20, ...}
- */
-//todo: hex
-template <typename T>
-static const T Probability_Distribution = static_cast<T>(0.05);
-
-template <typename T> static const T Cutoff_Begin = static_cast<T>(0.8);
-template <typename T> static const T Cutoff_Step = static_cast<T>(0.01);
-
-template <typename T> static const T Small_Cutoff = static_cast<T>(0.5);
-
-template <typename T> static const T Lower_Pitch_Cutoff = static_cast<T>(80.0);
-} // namespace pmpm_consts
-} // namespace
+#define MPM_CUTOFF 0.93
+#define MPM_SMALL_CUTOFF 0.5
+#define MPM_LOWER_PITCH_CUTOFF 80.0
+#define PMPM_PA 0.01
+#define PMPM_N_CUTOFFS 20
+#define PMPM_PROB_DIST 0.05
+#define PMPM_CUTOFF_BEGIN 0.8
+#define PMPM_CUTOFF_STEP 0.01
 
 template <typename T>
 static std::vector<int>
@@ -84,18 +55,18 @@ peak_picking(const std::vector<T> &nsdf)
 }
 
 template <typename T>
-std::vector<std::pair<T, T>>
-pitch_alloc::Mpm<T>::probabilistic_pitches(
+T
+pitch_alloc::Mpm<T>::probabilistic_pitch(
     const std::vector<T> &audio_buffer, int sample_rate)
 {
-	acorr_r(audio_buffer, this);
+	util::acorr_r(audio_buffer, this);
 
 	std::map<T, T> t0_with_probability;
 	std::vector<std::pair<T, T>> f0_with_probability;
 
-	T cutoff = pmpm_consts::Cutoff_Begin<T>;
+	T cutoff = PMPM_CUTOFF_BEGIN;
 
-	for (int n = 0; n < pmpm_consts::N_Cutoffs; ++n) {
+	for (int n = 0; n < PMPM_N_CUTOFFS; ++n) {
 		std::vector<int> max_positions = peak_picking(this->out_real);
 		std::vector<std::pair<T, T>> estimates;
 
@@ -103,8 +74,8 @@ pitch_alloc::Mpm<T>::probabilistic_pitches(
 
 		for (int i : max_positions) {
 			highest_amplitude = std::max(highest_amplitude, this->out_real[i]);
-			if (this->out_real[i] > pmpm_consts::Small_Cutoff<T>) {
-				auto x = parabolic_interpolation(this->out_real, i);
+			if (this->out_real[i] > MPM_SMALL_CUTOFF) {
+				auto x = util::parabolic_interpolation(this->out_real, i);
 				estimates.push_back(x);
 				highest_amplitude = std::max(highest_amplitude, std::get<1>(x));
 			}
@@ -123,12 +94,11 @@ pitch_alloc::Mpm<T>::probabilistic_pitches(
 			}
 		}
 
-		auto a = period != 0 ? 1 : pmpm_consts::Pa<T>;
+		auto a = period != 0 ? 1 : PMPM_PA;
 
-		t0_with_probability[period] +=
-		    a * pmpm_consts::Probability_Distribution<T>;
+		t0_with_probability[period] += a * PMPM_PROB_DIST;
 
-		cutoff += pmpm_consts::Cutoff_Step<T>;
+		cutoff += MPM_CUTOFF;
 	}
 
 	for (auto tau_estimate : t0_with_probability) {
@@ -137,7 +107,7 @@ pitch_alloc::Mpm<T>::probabilistic_pitches(
 		}
 		auto f0 = (sample_rate / tau_estimate.first);
 
-		f0 = (f0 > pmpm_consts::Lower_Pitch_Cutoff<T>) ? f0 : -1;
+		f0 = (f0 > MPM_LOWER_PITCH_CUTOFF) ? f0 : -1;
 
 		if (f0 != -1.0) {
 			f0_with_probability.push_back(
@@ -146,14 +116,14 @@ pitch_alloc::Mpm<T>::probabilistic_pitches(
 	}
 	this->clear();
 
-	return f0_with_probability;
+	return util::pitch_from_hmm(this->hmm, f0_with_probability);
 }
 
 template <typename T>
 T
 pitch_alloc::Mpm<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 {
-	acorr_r(audio_buffer, this);
+	util::acorr_r(audio_buffer, this);
 
 	std::vector<int> max_positions = peak_picking(this->out_real);
 	std::vector<std::pair<T, T>> estimates;
@@ -162,8 +132,8 @@ pitch_alloc::Mpm<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 
 	for (int i : max_positions) {
 		highest_amplitude = std::max(highest_amplitude, this->out_real[i]);
-		if (this->out_real[i] > mpm_consts::Small_Cutoff<T>) {
-			auto x = parabolic_interpolation(this->out_real, i);
+		if (this->out_real[i] > MPM_SMALL_CUTOFF) {
+			auto x = util::parabolic_interpolation(this->out_real, i);
 			estimates.push_back(x);
 			highest_amplitude = std::max(highest_amplitude, std::get<1>(x));
 		}
@@ -172,7 +142,7 @@ pitch_alloc::Mpm<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 	if (estimates.empty())
 		return -1;
 
-	T actual_cutoff = mpm_consts::Cutoff<T> * highest_amplitude;
+	T actual_cutoff = MPM_CUTOFF * highest_amplitude;
 	T period = 0;
 
 	for (auto i : estimates) {
@@ -186,8 +156,7 @@ pitch_alloc::Mpm<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 
 	this->clear();
 
-	return (pitch_estimate > mpm_consts::Lower_Pitch_Cutoff<T>) ? pitch_estimate
-	                                                            : -1;
+	return (pitch_estimate > MPM_LOWER_PITCH_CUTOFF) ? pitch_estimate : -1;
 }
 
 template <typename T>
@@ -199,11 +168,11 @@ pitch::mpm(const std::vector<T> &audio_buffer, int sample_rate)
 }
 
 template <typename T>
-std::vector<std::pair<T, T>>
+T
 pitch::pmpm(const std::vector<T> &audio_buffer, int sample_rate)
 {
 	pitch_alloc::Mpm<T> ma(audio_buffer.size());
-	return ma.probabilistic_pitches(audio_buffer, sample_rate);
+	return ma.probabilistic_pitch(audio_buffer, sample_rate);
 }
 
 template class pitch_alloc::Mpm<double>;
@@ -215,8 +184,8 @@ pitch::mpm<double>(const std::vector<double> &audio_buffer, int sample_rate);
 template float
 pitch::mpm<float>(const std::vector<float> &audio_buffer, int sample_rate);
 
-template std::vector<std::pair<double, double>>
+template double
 pitch::pmpm<double>(const std::vector<double> &audio_buffer, int sample_rate);
 
-template std::vector<std::pair<float, float>>
+template float
 pitch::pmpm<float>(const std::vector<float> &audio_buffer, int sample_rate);

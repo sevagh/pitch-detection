@@ -6,22 +6,16 @@
 #include <map>
 #include <vector>
 
-#include "pitch_detection/pitch_detection.h"
+#include "pitch_detection.h"
 
-namespace
-{
-namespace swipe_consts
-{
-template <typename T> static const T Derbs = static_cast<T>(0.1);
-template <typename T> static const T Polyv = static_cast<T>(0.0013028);
-template <typename T> static const T Dlog2p = static_cast<T>(0.0104167);
-template <typename T> static const T St = static_cast<T>(0.3);
-template <typename T> static const T Min = static_cast<T>(10.0);
-template <typename T> static const T Max = static_cast<T>(8000.0);
-template <typename T> static const T Yp1 = static_cast<T>(2.0);
-template <typename T> static const T Ypn = static_cast<T>(2.0);
-} // namespace swipe_consts
-} // namespace
+#define SWIPE_DERBS 0.1
+#define SWIPE_POLYV 0.0013028
+#define SWIPE_DLOG2P 0.0104167
+#define SWIPE_ST 0.3
+#define SWIPE_MIN 10.0
+#define SWIPE_MAX 8000.0
+#define SWIPE_YP1 2.0
+#define SWIPE_YPN 2.0
 
 extern "C" {
 extern int
@@ -84,8 +78,7 @@ spline(std::vector<T> &x, std::vector<T> &y, std::vector<T> &y2)
 	T p, qn, sig;
 	std::vector<T> u((unsigned)(x.size() - 1));
 	y2[0] = -.5;
-	u[0] = (3. / (x[1] - x[0])) *
-	       ((y[1] - y[0]) / (x[1] - x[0]) - swipe_consts::Yp1<T>);
+	u[0] = (3. / (x[1] - x[0])) * ((y[1] - y[0]) / (x[1] - x[0]) - SWIPE_YP1);
 	for (i = 1; i < x.size() - 1; i++) {
 		sig = (x[i] - x[i - 1]) / (x[i + 1] - x[i - 1]);
 		p = sig * y2[i - 1] + 2.;
@@ -95,12 +88,12 @@ spline(std::vector<T> &x, std::vector<T> &y, std::vector<T> &y2)
 		u[i] = (6 * u[i] / (x[i + 1] - x[i - 1]) - sig * u[i - 1]) / p;
 	}
 	qn = .5;
-	y2[y2.size() - 1] = ((3. / (x[x.size() - 1] - x[x.size() - 2])) *
-	                            (swipe_consts::Ypn<T> -
-	                                (y[y.size() - 1] - y[y.size() - 2]) /
-	                                    (x[x.size() - 1] - x[x.size() - 2])) -
-	                        qn * u[x.size() - 2]) /
-	                    (qn * y2[y2.size() - 2] + 1.);
+	y2[y2.size() - 1] =
+	    ((3. / (x[x.size() - 1] - x[x.size() - 2])) *
+	            (SWIPE_YPN - (y[y.size() - 1] - y[y.size() - 2]) /
+	                             (x[x.size() - 1] - x[x.size() - 2])) -
+	        qn * u[x.size() - 2]) /
+	    (qn * y2[y2.size() - 2] + 1.);
 	for (j = x.size() - 2; j != (size_t)-1; --j)
 		y2[j] = y2[j] * y2[j + 1] + u[j];
 	return;
@@ -392,12 +385,12 @@ Slast(matrix<T> &S, const std::vector<T> &x, std::vector<T> &pc,
 
 template <typename T>
 T
-pitch_(matrix<T> &S, std::vector<T> &pc, T st)
+pitch_(matrix<T> &S, std::vector<T> &pc)
 {
 	size_t i, j;
 	size_t maxi = (size_t)-1;
 	int search = (int)std::round(
-	    (std::log2(pc[2]) - std::log2(pc[0])) / swipe_consts::Polyv<T> + 1.);
+	    (std::log2(pc[2]) - std::log2(pc[0])) / SWIPE_POLYV + 1.);
 	T nftc, maxv, log2pc;
 	T tc2 = 1. / pc[1];
 
@@ -415,7 +408,7 @@ pitch_(matrix<T> &S, std::vector<T> &pc, T st)
 				maxi = i;
 			}
 		}
-		if (maxv > st) {
+		if (maxv > SWIPE_ST) {
 			if (!(maxi == 0 || maxi == S.size() - 1)) {
 				tc2 = 1. / pc[maxi];
 				log2pc = std::log2(pc[maxi - 1]);
@@ -429,9 +422,7 @@ pitch_(matrix<T> &S, std::vector<T> &pc, T st)
 				for (i = 0; i < (size_t)search; i++) {
 					nftc = polyval(coefs,
 					    static_cast<T>(
-					        ((1. /
-					             pow(2, i * swipe_consts::Polyv<T> + log2pc)) /
-					                tc2 -
+					        ((1. / pow(2, i * SWIPE_POLYV + log2pc)) / tc2 -
 					            1) *
 					        (2 * M_PI)));
 					if (nftc > maxv) {
@@ -439,7 +430,7 @@ pitch_(matrix<T> &S, std::vector<T> &pc, T st)
 						maxi = i;
 					}
 				}
-				p.push_back(pow(2, log2pc + (maxi * swipe_consts::Polyv<T>)));
+				p.push_back(pow(2, log2pc + (maxi * SWIPE_POLYV)));
 			}
 		}
 	}
@@ -456,28 +447,25 @@ pitch::swipe(const std::vector<T> &x, int samplerate)
 	T nyquist = samplerate / 2.;
 	T nyquist2 = samplerate;
 	T nyquist16 = samplerate * 8.;
-	std::vector<int> ws(
-	    std::round(std::log2((nyquist16) / swipe_consts::Min<T>) -
-	               std::log2((nyquist16) / swipe_consts::Max<T>)) +
-	    1);
+	std::vector<int> ws(std::round(std::log2((nyquist16) / SWIPE_MIN) -
+	                               std::log2((nyquist16) / SWIPE_MAX)) +
+	                    1);
 	for (i = 0; i < ws.size(); ++i)
 		ws[i] =
-		    pow(2, std::round(std::log2(nyquist16 / swipe_consts::Min<T>))) /
-		    pow(2, i);
-	std::vector<T> pc(ceil(
-	    (std::log2(swipe_consts::Max<T>) - std::log2(swipe_consts::Min<T>)) /
-	    swipe_consts::Dlog2p<T>));
+		    pow(2, std::round(std::log2(nyquist16 / SWIPE_MIN))) / pow(2, i);
+	std::vector<T> pc(
+	    ceil((std::log2(SWIPE_MAX) - std::log2(SWIPE_MIN)) / SWIPE_DLOG2P));
 	std::vector<T> d(pc.size());
 	for (i = pc.size() - 1; i != (size_t)-1; i--) {
-		td = std::log2(swipe_consts::Min<T>) + (i * swipe_consts::Dlog2p<T>);
+		td = std::log2(SWIPE_MIN) + (i * SWIPE_DLOG2P);
 		pc[i] = pow(2, td);
 		d[i] = 1. + td - std::log2(nyquist16 / ws[0]);
 	}
-	std::vector<T> fERBs(ceil(
-	    (hz2erb(nyquist) - hz2erb(pow(2, td) / 4)) / swipe_consts::Derbs<T>));
-	td = hz2erb(swipe_consts::Min<T> / 4.);
+	std::vector<T> fERBs(
+	    ceil((hz2erb(nyquist) - hz2erb(pow(2, td) / 4)) / SWIPE_DERBS));
+	td = hz2erb(SWIPE_MIN / 4.);
 	for (i = 0; i < fERBs.size(); i++)
-		fERBs[i] = erb2hz(td + (i * swipe_consts::Derbs<T>));
+		fERBs[i] = erb2hz(td + (i * SWIPE_DERBS));
 	std::vector<int> ps(floor(fERBs[fERBs.size() - 1] / pc[0] - .75), 1);
 	sieve(ps);
 	ps[0] = 1;
@@ -486,7 +474,7 @@ pitch::swipe(const std::vector<T> &x, int samplerate)
 	for (i = 1; i < ws.size() - 1; ++i)
 		Snth(S, x, pc, fERBs, d, ws, ps, nyquist, nyquist2, i);
 	Slast(S, x, pc, fERBs, d, ws, ps, nyquist, nyquist2, i);
-	return pitch_(S, pc, swipe_consts::St<T>);
+	return pitch_(S, pc);
 }
 
 template double

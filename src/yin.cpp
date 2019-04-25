@@ -1,23 +1,14 @@
-#include "pitch_detection/pitch_detection.h"
-#include "pitch_detection_priv.h"
+#include "pitch_detection.h"
 #include <algorithm>
 #include <complex>
 #include <map>
 #include <tuple>
 #include <vector>
 
-namespace
-{
-namespace yin_consts
-{
-template <typename T> static const T Threshold = static_cast<T>(0.20);
-}
-} // namespace
-
-namespace
-{
-namespace pyin_consts
-{
+#define YIN_THRESHOLD 0.20
+#define PYIN_PA 0.01
+#define PYIN_N_THRESHOLDS 100
+#define PYIN_MIN_THRESHOLD 0.01
 
 static const float Beta_Distribution[100] = {0.012614, 0.022715, 0.030646,
     0.036712, 0.041184, 0.044301, 0.046277, 0.047298, 0.047528, 0.047110,
@@ -34,12 +25,6 @@ static const float Beta_Distribution[100] = {0.012614, 0.022715, 0.030646,
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000};
-template <typename T> static const T Pa = static_cast<T>(0.01);
-static const int N_Thresholds = 100;
-
-template <typename T> static const T Min_Threshold = 0.01;
-} // namespace pyin_consts
-} // namespace
 
 template <typename T>
 static int
@@ -48,15 +33,14 @@ absolute_threshold(const std::vector<T> &yin_buffer)
 	ssize_t size = yin_buffer.size();
 	int tau;
 	for (tau = 2; tau < size; tau++) {
-		if (yin_buffer[tau] < yin_consts::Threshold<T>) {
+		if (yin_buffer[tau] < YIN_THRESHOLD) {
 			while (tau + 1 < size && yin_buffer[tau + 1] < yin_buffer[tau]) {
 				tau++;
 			}
 			break;
 		}
 	}
-	return (tau == size || yin_buffer[tau] >= yin_consts::Threshold<T>) ? -1
-	                                                                    : tau;
+	return (tau == size || yin_buffer[tau] >= YIN_THRESHOLD) ? -1 : tau;
 }
 
 // pairs of (f0, probability)
@@ -70,10 +54,10 @@ probabilistic_threshold(const std::vector<T> &yin_buffer, int sample_rate)
 	std::map<int, T> t0_with_probability;
 	std::vector<std::pair<T, T>> f0_with_probability;
 
-	T threshold = pyin_consts::Min_Threshold<T>;
+	T threshold = PYIN_MIN_THRESHOLD;
 
-	for (int n = 0; n < pyin_consts::N_Thresholds; ++n) {
-		threshold += n * pyin_consts::Min_Threshold<T>;
+	for (int n = 0; n < PYIN_N_THRESHOLDS; ++n) {
+		threshold += n * PYIN_MIN_THRESHOLD;
 		for (tau = 2; tau < size; tau++) {
 			if (yin_buffer[tau] < threshold) {
 				while (
@@ -83,13 +67,13 @@ probabilistic_threshold(const std::vector<T> &yin_buffer, int sample_rate)
 				break;
 			}
 		}
-		auto a = yin_buffer[tau] < threshold ? 1 : pyin_consts::Pa<T>;
-		t0_with_probability[tau] += a * pyin_consts::Beta_Distribution[n];
+		auto a = yin_buffer[tau] < threshold ? 1 : PYIN_PA;
+		t0_with_probability[tau] += a * Beta_Distribution[n];
 	}
 
 	for (auto tau_estimate : t0_with_probability) {
 		auto f0 = (tau_estimate.first != 0)
-		              ? sample_rate / std::get<0>(parabolic_interpolation(
+		              ? sample_rate / std::get<0>(util::parabolic_interpolation(
 		                                  yin_buffer, tau_estimate.first))
 		              : -1.0;
 
@@ -106,7 +90,7 @@ template <typename T>
 static void
 difference(const std::vector<T> &audio_buffer, pitch_alloc::Yin<T> *ya)
 {
-	acorr_r(audio_buffer, ya);
+	util::acorr_r(audio_buffer, ya);
 
 	for (int tau = 0; tau < ya->N / 2; tau++)
 		ya->yin_buffer[tau] =
@@ -139,7 +123,7 @@ pitch_alloc::Yin<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 	tau_estimate = absolute_threshold(this->yin_buffer);
 
 	auto ret = (tau_estimate != -1)
-	               ? sample_rate / std::get<0>(parabolic_interpolation(
+	               ? sample_rate / std::get<0>(util::parabolic_interpolation(
 	                                   this->yin_buffer, tau_estimate))
 	               : -1;
 
@@ -148,8 +132,8 @@ pitch_alloc::Yin<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 }
 
 template <typename T>
-std::vector<std::pair<T, T>>
-pitch_alloc::Yin<T>::probabilistic_pitches(
+T
+pitch_alloc::Yin<T>::probabilistic_pitch(
     const std::vector<T> &audio_buffer, int sample_rate)
 {
 	difference(audio_buffer, this);
@@ -159,7 +143,7 @@ pitch_alloc::Yin<T>::probabilistic_pitches(
 	auto f0_estimates = probabilistic_threshold(this->yin_buffer, sample_rate);
 
 	this->clear();
-	return f0_estimates;
+	return util::pitch_from_hmm(this->hmm, f0_estimates);
 }
 
 template <typename T>
@@ -172,12 +156,12 @@ pitch::yin(const std::vector<T> &audio_buffer, int sample_rate)
 }
 
 template <typename T>
-std::vector<std::pair<T, T>>
+T
 pitch::pyin(const std::vector<T> &audio_buffer, int sample_rate)
 {
 
 	pitch_alloc::Yin<T> ya(audio_buffer.size());
-	return ya.probabilistic_pitches(audio_buffer, sample_rate);
+	return ya.probabilistic_pitch(audio_buffer, sample_rate);
 }
 
 template class pitch_alloc::Yin<double>;
@@ -189,8 +173,8 @@ pitch::yin<double>(const std::vector<double> &audio_buffer, int sample_rate);
 template float
 pitch::yin<float>(const std::vector<float> &audio_buffer, int sample_rate);
 
-template std::vector<std::pair<double, double>>
+template double
 pitch::pyin<double>(const std::vector<double> &audio_buffer, int sample_rate);
 
-template std::vector<std::pair<float, float>>
+template float
 pitch::pyin<float>(const std::vector<float> &audio_buffer, int sample_rate);

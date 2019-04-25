@@ -1,4 +1,4 @@
-#include "pitch_detection/pitch_detection.h"
+#include "pitch_detection.h"
 #include <gtest/gtest.h>
 
 TEST(MpmEdgeCase, EmptyData)
