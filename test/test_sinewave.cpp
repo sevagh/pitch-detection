@@ -1,4 +1,4 @@
-#include "pitch_detection/pitch_detection.h"
+#include "pitch_detection.h"
 #include "util.h"
 #include <gtest/gtest.h>
 
@@ -13,6 +13,38 @@ class YinSinewaveTest : public testing::TestWithParam<double>
 class SwipeSinewaveTest : public testing::TestWithParam<double>
 {
 };
+
+class PMpmSinewaveTest : public testing::TestWithParam<double>
+{
+};
+
+class PYinSinewaveTest : public testing::TestWithParam<double>
+{
+};
+
+TEST_P(PYinSinewaveTest, GetFreqManualAlloc)
+{
+	double freq = GetParam();
+	auto data = test_util::sinewave(8092, freq, 48000);
+	pitch_alloc::Yin<double> pya(data.size());
+	double pitch = pya.probabilistic_pitch(data, 48000);
+	EXPECT_NEAR(freq, pitch, 0.01 * freq);
+}
+
+INSTANTIATE_TEST_CASE_P(PYinSinewave, PYinSinewaveTest,
+    ::testing::Values(77.0, 100.0, 233.0, 298.0, 1583.0, 3398.0, 4200.0));
+
+TEST_P(PMpmSinewaveTest, GetFreqManualAlloc)
+{
+	double freq = GetParam();
+	auto data = test_util::sinewave(8092, freq, 48000);
+	pitch_alloc::Mpm<double> pma(data.size());
+	double pitch = pma.probabilistic_pitch(data, 48000);
+	EXPECT_NEAR(freq, pitch, 0.01 * freq);
+}
+
+INSTANTIATE_TEST_CASE_P(PMpmSinewave, PMpmSinewaveTest,
+    ::testing::Values(100.0, 233.0, 298.0, 1583.0, 3398.0, 4200.0));
 
 TEST_P(MpmSinewaveTest, GetFreq)
 {

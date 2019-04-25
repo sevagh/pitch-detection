@@ -1,41 +1,50 @@
 ### Pitch detection algorithms
 
-Autocorrelation-based C++ pitch detection algorithms with **O(nlogn) or lower** running time and a C API:
+Autocorrelation-based C++ pitch detection algorithms with **O(nlogn) or lower** running time:
 
 * McLeod pitch method - [2005 paper](http://miracle.otago.ac.nz/tartini/papers/A_Smarter_Way_to_Find_Pitch.pdf) - [visualization](./misc/mcleod)
 * YIN(-FFT) - [2002 paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
-* Probabilistic YIN - [2014 paper](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf) - *partial implementation*\*
+* Probabilistic YIN - [2014 paper](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf)
 * Probabilistic MPM - [my own invention](./misc/probabilistic-mcleod)
-* SWIPE' - [2007 paper](https://pdfs.semanticscholar.org/0fd2/6e267cfa9b6d519967ea00db4ffeac272777.pdf) - [transliterated to C++ from kylebgorman's C implementation](https://github.com/kylebgorman/swipe)\*\*
+* SWIPE' - [2007 paper](https://pdfs.semanticscholar.org/0fd2/6e267cfa9b6d519967ea00db4ffeac272777.pdf) - [transliterated to C++ from kylebgorman's C implementation](https://github.com/kylebgorman/swipe)\*
 
-\*: The second part of the PYIN paper uses an HMM to introduce temporal tracking. I've chosen not to implement it in this codebase, because that's more in the realm of a _transcriber_, while this project is for pitch tracking for individual arrays of audio data. I wrote a [prototype](https://github.com/sevagh/hmm-pitch-smoothing).
+\*: SWIPE' appears to be O(n) but with an enormous constant factor. The implementation complexity is much higher than MPM and YIN and it brings in additional dependencies (BLAS + LAPACK).
 
-\*\*: SWIPE' appears to be O(n) but with an enormous constant factor. The implementation complexity is much higher than MPM and YIN and it brings in additional dependencies (BLAS + LAPACK).
+Suggested usage of this library can be seen in the utility [wav_analyzer](./wav_analyzer), which divides a wav file into chunks of 0.01s and checks the pitch of each chunk. Sample output of wav_analyzer:
 
-Suggested usage of this library can be seen in the utility [wav_analyzer](./wav_analyzer), which divides a wav file into chunks of 0.01s and checks the pitch of each chunk.
+```
+At t: 0.5
+        mpm: 162.529
+        yin: 162.543
+        swipe: 162.183
+        pmpm: 164.814
+        pyin: 164.814
+```
+
+Note that pmpm and pyin take the original pitch value (~162) and bin it in the closest musical note (E3 = 164.81Hz).
 
 ### Degraded audio tests
 
 All testing files are [here](./degraded_audio_tests) - the progressive degradations are described by the respective numbered JSON file, generated using [audio-degradation-toolbox](https://github.com/sevagh/audio-degradation-toolbox). The original clip is a Viola playing E3 from the [University of Iowa MIS](http://theremin.music.uiowa.edu/MIS.html).
 
-The results come from parsing the output of wav_analyzer to count how many slices of the input clip were in the ballpark of the expected value of 164.81 - I considered anything 160-169 to be acceptable:
+The results come from parsing the output of wav_analyzer to count how many 0.1s slices of the input clip were in the ballpark of the expected value of 164.81 - I considered anything 160-169 to be acceptable:
 
 | Degradation level | MPM # correct | YIN # correct | SWIPE' # correct |
 | ------------- | ------------- | ------------- | ------------- |
-| 0 | 60 | 61 | 28 |
-| 1 | 59 | 54 | 25 |
-| 2 | 51 | 46 | 23 |
-| 3 | 50 | 47 | 23 |
-| 4 | 49 | 27 | 10 |
-| 5 | 49 | 28 | 14 |
+| 0 | 26 | 22 | 5 |
+| 1 | 23 | 21 | 13 |
+| 2 | 19 | 21 | 9 |
+| 3 | 18 | 19 | 7 |
+| 4 | 19 | 19 | 6 |
+| 5 | 18 | 19 | 5 |
 
 ### Build and install
 
 Using this project should be as easy as `make && sudo make install` on Linux with a modern GCC - I don't officially support other platforms.
 
-This project depends on [ffts](https://github.com/anthonix/ffts) and BLAS/LAPACK. To run the tests, you need [googletest](https://github.com/google/googletest), and run `make -C test/ && ./test/test`. To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make -C test/ bench && ./test/bench`.
+This project depends on [ffts](https://github.com/anthonix/ffts), BLAS/LAPACK, and mlpack. To run the tests, you need [googletest](https://github.com/google/googletest), and run `make -C test/ && ./test/test`. To run the bench, you need [google benchmark](https://github.com/google/benchmark), and run `make -C test/ bench && ./test/bench`.
 
-Build and install pitch_detection, run the tests, and build the examples:
+Build and install pitch_detection, run the tests, and build the sample application, wav_analyzer:
 
 ```
 # build libpitch_detection.so
@@ -51,20 +60,14 @@ make -C test clean all
 # install the library and headers to `/usr/local/lib` and `/usr/local/include`
 sudo make install
 
-# build and run C++ example
-make -C examples/cpp clean all
-./examples/cpp/example
-
-# build and run C example
-make -C examples/c clean all
-./examples/c/example
+# build and run C++ sample
+make -C wav_analyzer clean all
+./wav_analyzer/wav_analyzer
 ```
 
 ### Usage
 
-#### C++
-
-Read the [C++ header](./include/pitch_detection/pitch_detection.h) and [C++ example](./examples/cpp).
+Read the [header](./include/pitch_detection/pitch_detection.h) and [sample wav_analyzer](./wav_analyzer).
 
 The namespaces are `pitch` and `pitch_alloc`. The functions and classes are templated for `<double>` and `<float>` support.
 
@@ -77,9 +80,9 @@ std::vector<double> audio_buffer(8092);
 
 double pitch_yin = pitch::yin<double>(audio_buffer, 48000);
 double pitch_mpm = pitch::mpm<double>(audio_buffer, 48000);
-
-std::vector<std::pair<double, double>> pitches_pyin = pitch::pyin<double>(audio_buffer, 48000);
-std::vector<std::pair<double, double>> pitches_pmpm = pitch::pmpm<double>(audio_buffer, 48000);
+double pitch_pyin = pitch::pyin<double>(audio_buffer, 48000);
+double pitch_pmpm = pitch::pmpm<double>(audio_buffer, 48000);
+double pitch_swipe = pitch::swipe<double>(audio_buffer, 48000);
 
 pitch_alloc::Mpm<double> ma(8092);
 pitch_alloc::Yin<double> ya(8092);
@@ -87,54 +90,7 @@ pitch_alloc::Yin<double> ya(8092);
 for (int i = 0; i < 10000; ++i) {
         auto pitch_yin = ya.pitch(audio_buffer, 48000);
         auto pitch_mpm = ma.pitch(audio_buffer, 48000);
-
-        auto pitches_pyin = ya.probabilistic_pitches(audio_buffer, 48000);
-        auto pitches_pmpm = ma.probabilistic_pitches(audio_buffer, 48000);
-}
-```
-
-#### C
-
-Read the [C header](./include/pitch_detection/cpitch_detection.h) and [C example](./examples/c).
-
-In C, the `pitch` and `pitch_alloc` namespaces becomes `pitch_` and `pitch_alloc_` prefixes. `double` and `float` templates are now explicit structs and functions with `d/D` and `f/F` in the name.
-
-Also, to represent `std::vector<std::pair<T, T>>` pitch candidates, there are some custom structs:
-
-```c
-struct pitch_candidates_d_t {
-        long n_candidates;
-        struct pitch_probability_pair_d_t *candidates;
-};
-
-struct pitch_probability_pair_d_t {
-        double pitch;
-        double probability;
-};
-```
-
-Here are the above C++ examples, transliterated using the C API:
-
-```c
-#include <cpitch_detection.h>
-
-double audio_buffer[8092];
-
-double pitch_yin = pitch_yin_d(audio_buffer, 8092, 48000);
-double pitch_mpm = pitch_mpm_d(audio_buffer, 8092, 48000);
-
-//pyin and pmpm emit struct
-struct pitch_candidates_d_t * pitches_pmpm = pitch_pmpm_d(audio_buffer, 8092, 48000);
-struct pitch_candidates_d_t * pitches_pyin = pitch_pyin_d(audio_buffer, 8092, 48000);
-
-struct Mpm_d_t ma = NewMpmD(8092);
-struct Yin_d_t ya = NewYinD(8092);
-
-for (int i = 0; i < 10000; ++i) {
-        double pitch_yin = ya.pitch(audio_buffer, 48000);
-        double pitch_mpm = ma.pitch(audio_buffer, 48000);
-
-        struct pitch_candidates_d_t * pitches_pmpm = pitch_alloc_pmpm_d(ma, audio_buffer, 48000);
-        struct pitch_candidates_d_t * pitches_pyin = pitch_alloc_pyin_d(ya, audio_buffer, 48000);
+        auto pitch_pyin = ya.probabilistic_pitch(audio_buffer, 48000);
+        auto pitch_pmpm = ma.probabilistic_pitch(audio_buffer, 48000);
 }
 ```

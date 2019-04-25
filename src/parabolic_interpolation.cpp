@@ -1,8 +1,9 @@
+#include "pitch_detection.h"
 #include <vector>
 
 template <typename T>
 std::pair<T, T>
-parabolic_interpolation(const std::vector<T> &array, int x_)
+util::parabolic_interpolation(const std::vector<T> &array, int x_)
 {
 	int x_adjusted;
 	T x = (T)x_;
@@ -22,6 +23,6 @@ parabolic_interpolation(const std::vector<T> &array, int x_)
 }
 
 template std::pair<double, double>
-parabolic_interpolation<double>(const std::vector<double> &array, int x);
+util::parabolic_interpolation<double>(const std::vector<double> &array, int x);
 template std::pair<float, float>
-parabolic_interpolation<float>(const std::vector<float> &array, int x);
+util::parabolic_interpolation<float>(const std::vector<float> &array, int x);
