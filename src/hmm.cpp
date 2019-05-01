@@ -21,6 +21,7 @@
 #define SELF_TRANS 0.99
 
 std::vector<double> PITCH_BINS(N_BINS);
+std::vector<double> REAL_PITCHES(N_BINS);
 
 const double A = std::pow(2.0, 1.0 / 12.0);
 
@@ -52,6 +53,7 @@ detail::bin_pitches(const std::vector<std::pair<T, T>> pitch_candidates)
 			if (prev_delta < delta) {
 				pitch_probs[i - 1] = pitch_candidate.second;
 				prob_pitched += pitch_probs[i - 1];
+				REAL_PITCHES[i - 1] = pitch_candidate.first;
 				break;
 			}
 			prev_delta = delta;
@@ -178,7 +180,7 @@ util::pitch_from_hmm(
 		}
 	}
 
-	return PITCH_BINS[most_frequent];
+	return REAL_PITCHES[most_frequent];
 }
 
 template double

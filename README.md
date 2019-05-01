@@ -17,11 +17,9 @@ At t: 0.5
         mpm: 162.529
         yin: 162.543
         swipe: 162.183
-        pmpm: 164.814
-        pyin: 164.814
+        pmpm: 162.529
+        pyin: 162.543
 ```
-
-Note that pmpm and pyin take the original pitch value (~162) and bin it in the closest musical note (E3 = 164.81Hz).
 
 ### Degraded audio tests
 
