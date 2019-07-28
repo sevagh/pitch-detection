@@ -6,9 +6,11 @@ Autocorrelation-based C++ pitch detection algorithms with **O(nlogn) or lower** 
 * YIN(-FFT) - [2002 paper](http://audition.ens.fr/adc/pdf/2002_JASA_YIN.pdf) - [visualization](./misc/yin)
 * Probabilistic YIN - [2014 paper](https://www.eecs.qmul.ac.uk/~simond/pub/2014/MauchDixon-PYIN-ICASSP2014.pdf)
 * Probabilistic MPM - [my own invention](./misc/probabilistic-mcleod)
-* SWIPE' - [2007 paper](https://pdfs.semanticscholar.org/0fd2/6e267cfa9b6d519967ea00db4ffeac272777.pdf) - [transliterated to C++ from kylebgorman's C implementation](https://github.com/kylebgorman/swipe)\*
+* SWIPE' - [2007 paper](https://pdfs.semanticscholar.org/0fd2/6e267cfa9b6d519967ea00db4ffeac272777.pdf) - [transliterated to C++ from kylebgorman's C implementation](https://github.com/kylebgorman/swipe)\*, \*\*
 
 \*: SWIPE' appears to be O(n) but with an enormous constant factor. The implementation complexity is much higher than MPM and YIN and it brings in additional dependencies (BLAS + LAPACK).
+
+\*\*: There's a parallel version of SWIPE, [Aud-SWIPE-P](https://github.com/saul-calderonramirez/Aud-SWIPE-P). The paper is unavailable and until that changes, I won't be adding it.
 
 Suggested usage of this library can be seen in the utility [wav_analyzer](./wav_analyzer), which divides a wav file into chunks of 0.01s and checks the pitch of each chunk. Sample output of wav_analyzer:
 
