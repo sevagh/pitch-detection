@@ -46,7 +46,7 @@ This project depends on [ffts](https://github.com/anthonix/ffts), BLAS/LAPACK, a
 
 Build and install pitch_detection, run the tests, and build the sample application, wav_analyzer:
 
-```
+```bash
 # build libpitch_detection.so
 make clean all
 
@@ -63,6 +63,42 @@ sudo make install
 # build and run C++ sample
 make -C wav_analyzer clean all
 ./wav_analyzer/wav_analyzer
+```
+
+#### Docker image
+
+To allow running and prototyping on unsupported operating systems, there's a [Dockerfile](./Dockerfile) that sets up a Linux container with all the dependencies for compiling the library and running the included tests and benchmarks.
+
+To build the image, make sure you have installed and setup [Docker](https://docs.docker.com/get-started/) on your computer. After following the setup instructions, run the following command from the cloned repository root: 
+
+```bash
+docker build --rm --pull -f "Dockerfile" -t pitchdetection:latest "."
+```
+
+The `--rm` flag specifies that the intermediate containers will be removed after the build is complete. This just cleans up space on your system. The `--pull` flag specifies that the base image ([ubuntu](https://hub.docker.com/_/ubuntu/?tab=description):latest) will be pulled from Docker Hub if it is available.
+
+Once you've built your image (which should take about 20 minutes), you can run the image in a new container using the following command:
+
+```bash
+docker run --rm --init -it pitchdetection:latest
+```
+
+The `--rm` flag here specifies that Docker should remove the container after you exit the shell. If this is not desired you can remove this. The `--init` flag solves a common problem with Docker containers that you can read more about [here](https://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/). The `-it` flags specify that Docker should create the Container with a shell and enter into it, allowing you to start sending commands to the container right away.
+
+Your container is now set up. You can run the following commands to to confirm that everything is working properly:
+
+```bash
+./test/test
+./test/bench
+```
+
+A pre-compiled image can be found at [esimkowitz/pitchdetection](https://hub.docker.com/repository/docker/esimkowitz/pitchdetection).
+
+To use this, rather than building and running the image as described above, run the following commands:
+
+```bash
+docker pull esimkowitz/pitchdetection:latest
+docker run --rm --init -it esimkowitz/pitchdetection:latest
 ```
 
 ### Usage
