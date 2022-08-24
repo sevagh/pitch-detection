@@ -88,7 +88,7 @@ Once you're in the container, run the tests and benches:
 
 ### Usage
 
-Read the [header](./include/pitch_detection/pitch_detection.h) and [sample wav_analyzer](./wav_analyzer).
+Read the [header](./include/pitch_detection.h) and [sample wav_analyzer](./wav_analyzer).
 
 The namespaces are `pitch` and `pitch_alloc`. The functions and classes are templated for `<double>` and `<float>` support.
 
@@ -97,7 +97,7 @@ The `pitch` namespace functions perform automatic buffer allocation, while `pitc
 ```c++
 #include <pitch_detection.h>
 
-std::vector<double> audio_buffer(8092);
+std::vector<double> audio_buffer(8192);
 
 double pitch_yin = pitch::yin<double>(audio_buffer, 48000);
 double pitch_mpm = pitch::mpm<double>(audio_buffer, 48000);
@@ -105,8 +105,8 @@ double pitch_pyin = pitch::pyin<double>(audio_buffer, 48000);
 double pitch_pmpm = pitch::pmpm<double>(audio_buffer, 48000);
 double pitch_swipe = pitch::swipe<double>(audio_buffer, 48000);
 
-pitch_alloc::Mpm<double> ma(8092);
-pitch_alloc::Yin<double> ya(8092);
+pitch_alloc::Mpm<double> ma(8192);
+pitch_alloc::Yin<double> ya(8192);
 
 for (int i = 0; i < 10000; ++i) {
         auto pitch_yin = ya.pitch(audio_buffer, 48000);
