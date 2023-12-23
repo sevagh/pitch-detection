@@ -15,7 +15,7 @@ TEST(MpmEdgeCase, SmallData)
 
 TEST(MpmEdgeCase, InvalidAlloc)
 {
-	EXPECT_THROW(pitch_alloc::Mpm<double> ma(-1), std::bad_alloc);
+	EXPECT_THROW(pitch_alloc::Mpm<double> ma(-1), std::length_error);
 }
 
 TEST(MpmEdgeCase, EmptyAlloc)
@@ -42,7 +42,7 @@ TEST(YinEdgeCase, SmallData)
 
 TEST(YinEdgeCase, InvalidAlloc)
 {
-	EXPECT_THROW(pitch_alloc::Yin<double> ya(-1), std::bad_alloc);
+	EXPECT_THROW(pitch_alloc::Yin<double> ya(-1), std::length_error);
 }
 
 TEST(YinEdgeCase, EmptyAlloc)
