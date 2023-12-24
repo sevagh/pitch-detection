@@ -3,6 +3,8 @@
 
 #include <string>
 #include <vector>
+#include <cmath>
+#include <complex>
 
 namespace test_util
 {

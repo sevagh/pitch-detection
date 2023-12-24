@@ -2,6 +2,8 @@
 #include "util.h"
 #include <gtest/gtest.h>
 
+#define SINEWAVE_SIZE 8192
+
 class MpmSinewaveTest : public testing::TestWithParam<double>
 {
 };
@@ -25,7 +27,7 @@ class PYinSinewaveTest : public testing::TestWithParam<double>
 TEST_P(PYinSinewaveTest, GetFreqManualAlloc)
 {
 	double freq = GetParam();
-	auto data = test_util::sinewave(8192, freq, 48000);
+	auto data = test_util::sinewave(SINEWAVE_SIZE, freq, 48000);
 	pitch_alloc::Yin<double> pya(data.size());
 	double pitch = pya.probabilistic_pitch(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
@@ -37,7 +39,7 @@ INSTANTIATE_TEST_CASE_P(PYinSinewave, PYinSinewaveTest,
 TEST_P(PMpmSinewaveTest, GetFreqManualAlloc)
 {
 	double freq = GetParam();
-	auto data = test_util::sinewave(8192, freq, 48000);
+	auto data = test_util::sinewave(SINEWAVE_SIZE, freq, 48000);
 	pitch_alloc::Mpm<double> pma(data.size());
 	double pitch = pma.probabilistic_pitch(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
@@ -49,7 +51,7 @@ INSTANTIATE_TEST_CASE_P(PMpmSinewave, PMpmSinewaveTest,
 TEST_P(MpmSinewaveTest, GetFreq)
 {
 	double freq = GetParam();
-	auto data = test_util::sinewave(8192, freq, 48000);
+	auto data = test_util::sinewave(SINEWAVE_SIZE, freq, 48000);
 	double pitch = pitch::mpm<double>(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
@@ -57,7 +59,7 @@ TEST_P(MpmSinewaveTest, GetFreq)
 TEST_P(SwipeSinewaveTest, GetFreq)
 {
 	double freq = GetParam();
-	auto data = test_util::sinewave(8192, freq, 48000);
+	auto data = test_util::sinewave(SINEWAVE_SIZE, freq, 48000);
 	double pitch = pitch::mpm<double>(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
@@ -65,7 +67,7 @@ TEST_P(SwipeSinewaveTest, GetFreq)
 TEST_P(YinSinewaveTest, GetFreq)
 {
 	double freq = GetParam();
-	auto data = test_util::sinewave(8192, freq, 48000);
+	auto data = test_util::sinewave(SINEWAVE_SIZE, freq, 48000);
 	double pitch = pitch::yin<double>(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
@@ -73,7 +75,7 @@ TEST_P(YinSinewaveTest, GetFreq)
 TEST_P(MpmSinewaveTest, GetFreqManualAlloc)
 {
 	double freq = GetParam();
-	auto data = test_util::sinewave(8192, freq, 48000);
+	auto data = test_util::sinewave(SINEWAVE_SIZE, freq, 48000);
 	pitch_alloc::Mpm<double> ma(data.size());
 	double pitch = ma.pitch(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
@@ -82,7 +84,7 @@ TEST_P(MpmSinewaveTest, GetFreqManualAlloc)
 TEST_P(YinSinewaveTest, GetFreqManualAlloc)
 {
 	double freq = GetParam();
-	auto data = test_util::sinewave(8192, freq, 48000);
+	auto data = test_util::sinewave(SINEWAVE_SIZE, freq, 48000);
 	pitch_alloc::Yin<double> ya(data.size());
 	double pitch = ya.pitch(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
@@ -90,9 +92,9 @@ TEST_P(YinSinewaveTest, GetFreqManualAlloc)
 
 TEST(MpmSinewaveTestManualAlloc, OneAllocMultipleFreq)
 {
-	auto data1 = test_util::sinewave(8192, 150.0, 48000);
-	auto data2 = test_util::sinewave(8192, 250.0, 48000);
-	auto data3 = test_util::sinewave(8192, 350.0, 48000);
+	auto data1 = test_util::sinewave(SINEWAVE_SIZE, 150.0, 48000);
+	auto data2 = test_util::sinewave(SINEWAVE_SIZE, 250.0, 48000);
+	auto data3 = test_util::sinewave(SINEWAVE_SIZE, 350.0, 48000);
 
         std::cout << "data1 size: " << data1.size() << std::endl;
 
@@ -111,9 +113,9 @@ TEST(MpmSinewaveTestManualAlloc, OneAllocMultipleFreq)
 
 TEST(YinSinewaveTestManualAlloc, OneAllocMultipleFreq)
 {
-	auto data1 = test_util::sinewave(8192, 150.0, 48000);
-	auto data2 = test_util::sinewave(8192, 250.0, 48000);
-	auto data3 = test_util::sinewave(8192, 350.0, 48000);
+	auto data1 = test_util::sinewave(SINEWAVE_SIZE, 150.0, 48000);
+	auto data2 = test_util::sinewave(SINEWAVE_SIZE, 250.0, 48000);
+	auto data3 = test_util::sinewave(SINEWAVE_SIZE, 350.0, 48000);
 
 	pitch_alloc::Yin<double> ya(data1.size());
 
