@@ -11,9 +11,8 @@
 /* ignore me plz */
 namespace detail
 {
-template <typename T>
 std::vector<size_t>
-bin_pitches(const std::vector<std::pair<T, T>>);
+bin_pitches(const std::vector<std::pair<float, float>>);
 
 mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution>
 build_hmm();
@@ -35,28 +34,23 @@ init_pitch_bins();
 namespace pitch
 {
 
-template <typename T>
-T
-yin(const std::vector<T> &, int);
+float
+yin(const std::vector<float> &, int);
 
-template <typename T>
-T
-mpm(const std::vector<T> &, int);
+float
+mpm(const std::vector<float> &, int);
 
-template <typename T>
-T
-swipe(const std::vector<T> &, int);
+float
+swipe(const std::vector<float> &, int);
 
 /*
  * pyin and pmpm emit pairs of pitch/probability
  */
-template <typename T>
-T
-pyin(const std::vector<T> &, int);
+float
+pyin(const std::vector<float> &, int);
 
-template <typename T>
-T
-pmpm(const std::vector<T> &, int);
+float
+pmpm(const std::vector<float> &, int);
 } // namespace pitch
 
 /*
@@ -70,19 +64,19 @@ pmpm(const std::vector<T> &, int);
 namespace pitch_alloc
 {
 
-template <typename T> class BaseAlloc
+class BaseAlloc
 {
   public:
 	long nfft;
-	std::vector<std::complex<T>> out_im;
-	std::vector<T> out_real;
+	std::vector<std::complex<float>> out_im;
+	std::vector<float> out_real;
 	ffts_plan_t *fft_forward;
 	ffts_plan_t *fft_backward;
 	mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution> hmm;
 
 	BaseAlloc(long nfft)
-	    : nfft(nfft), out_im(std::vector<std::complex<T>>(nfft)),
-	      out_real(std::vector<T>(nfft))
+	    : nfft(nfft), out_im(std::vector<std::complex<float>>(nfft)),
+	      out_real(std::vector<float>(nfft))
 	{
 		if (nfft == 0) {
 			throw std::bad_alloc();
@@ -104,7 +98,7 @@ template <typename T> class BaseAlloc
 	void
 	clear()
 	{
-		std::fill(out_im.begin(), out_im.end(), std::complex<T>(0.0, 0.0));
+		std::fill(out_im.begin(), out_im.end(), std::complex<float>(0.0, 0.0));
 	}
 };
 
@@ -116,16 +110,16 @@ template <typename T> class BaseAlloc
  *
  * It will throw std::bad_alloc for invalid sizes (<1)
  */
-template <typename T> class Mpm : public BaseAlloc<T>
+class Mpm : public BaseAlloc
 {
   public:
-	Mpm(long nfft) : BaseAlloc<T>(nfft){};
+	Mpm(long nfft) : BaseAlloc(nfft){};
 
-	T
-	pitch(const std::vector<T> &, int);
+	float
+	pitch(const std::vector<float> &, int);
 
-	T
-	probabilistic_pitch(const std::vector<T> &, int);
+	float
+	probabilistic_pitch(const std::vector<float> &, int);
 };
 
 /*
@@ -136,44 +130,41 @@ template <typename T> class Mpm : public BaseAlloc<T>
  *
  * It will throw std::bad_alloc for invalid sizes (<2)
  */
-template <typename T> class Yin : public BaseAlloc<T>
+class Yin : public BaseAlloc
 {
   public:
 	int yin_buffer_size;
-	std::vector<T> yin_buffer;
+	std::vector<float> yin_buffer;
 
 	Yin(long nfft)
-	    : BaseAlloc<T>(nfft),
+	    : BaseAlloc(nfft),
 		  yin_buffer_size(nfft / 2),
-	      yin_buffer(std::vector<T>(nfft))
+	      yin_buffer(std::vector<float>(yin_buffer_size))
 	{
 		if (yin_buffer_size == 0) {
 			throw std::bad_alloc();
 		}
 	}
 
-	T
-	pitch(const std::vector<T> &, int);
+	float
+	pitch(const std::vector<float> &, int);
 
-	T
-	probabilistic_pitch(const std::vector<T> &, int);
+	float
+	probabilistic_pitch(const std::vector<float> &, int);
 };
 } // namespace pitch_alloc
 
 namespace util
 {
-template <typename T>
-std::pair<T, T>
-parabolic_interpolation(const std::vector<T> &, int);
+std::pair<float, float>
+parabolic_interpolation(const std::vector<float> &, int);
 
-template <typename T>
 void
-acorr_r(const std::vector<T> &, pitch_alloc::BaseAlloc<T> *);
+acorr_r(const std::vector<float> &, pitch_alloc::BaseAlloc *);
 
-template <typename T>
-T
+float
 pitch_from_hmm(mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution>,
-    const std::vector<std::pair<T, T>>);
+    const std::vector<std::pair<float, float>>);
 } // namespace util
 
 #endif /* PITCH_DETECTION_H */

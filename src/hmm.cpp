@@ -20,10 +20,10 @@
 #define TRANSITION_WIDTH 13
 #define SELF_TRANS 0.99
 
-std::vector<double> PITCH_BINS(N_BINS);
-std::vector<double> REAL_PITCHES(N_BINS);
+std::vector<float> PITCH_BINS(N_BINS);
+std::vector<float> REAL_PITCHES(N_BINS);
 
-const double A = std::pow(2.0, 1.0 / 12.0);
+const float A = std::pow(2.0, 1.0 / 12.0);
 
 // 108 bins - C0 -> B8
 void
@@ -35,19 +35,18 @@ detail::init_pitch_bins()
 	}
 }
 
-template <typename T>
 std::vector<size_t>
-detail::bin_pitches(const std::vector<std::pair<T, T>> pitch_candidates)
+detail::bin_pitches(const std::vector<std::pair<float, float>> pitch_candidates)
 {
 	arma::vec pitch_probs(2 * N_BINS + 1, arma::fill::zeros);
 	std::vector<size_t> possible_bins;
 
-	T prob_pitched = 0.0;
+	float prob_pitched = 0.0;
 
 	for (auto pitch_candidate : pitch_candidates) {
 		// find the most appropriate bin
-		T delta = DBL_MAX;
-		T prev_delta = DBL_MAX;
+		float delta = DBL_MAX;
+		float prev_delta = DBL_MAX;
 		for (int i = 0; i < N_BINS; ++i) {
 			delta = std::abs(pitch_candidate.first - PITCH_BINS[i]);
 			if (prev_delta < delta) {
@@ -60,7 +59,7 @@ detail::bin_pitches(const std::vector<std::pair<T, T>> pitch_candidates)
 		}
 	}
 
-	T prob_really_pitched = YIN_TRUST * prob_pitched;
+	float prob_really_pitched = YIN_TRUST * prob_pitched;
 
 	for (int i = 0; i < N_BINS; ++i) {
 		if (prob_pitched > 0) {
@@ -84,7 +83,7 @@ detail::build_hmm()
 	size_t hmm_size = 2 * N_BINS + 1;
 	// initial
 	arma::vec initial(hmm_size);
-	initial.fill(1.0 / double(hmm_size));
+	initial.fill(1.0 / float(hmm_size));
 
 	arma::mat transition(hmm_size, hmm_size, arma::fill::zeros);
 
@@ -96,8 +95,8 @@ detail::build_hmm()
 		int max_next_pitch =
 		    i < N_BINS - half_transition ? i + half_transition : N_BINS - 1;
 
-		double weight_sum = 0.0;
-		std::vector<double> weights;
+		float weight_sum = 0.0;
+		std::vector<float> weights;
 
 		for (int j = min_next_pitch; j <= max_next_pitch; ++j) {
 			if (j <= i) {
@@ -134,17 +133,16 @@ detail::build_hmm()
 	return hmm;
 }
 
-template <typename T>
-T
+float
 util::pitch_from_hmm(
     mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution> hmm,
-    const std::vector<std::pair<T, T>> pitch_candidates)
+    const std::vector<std::pair<float, float>> pitch_candidates)
 {
 	if (pitch_candidates.size() == 0) {
 		return -1.0;
 	}
 
-	std::vector<T> observation_;
+	std::vector<float> observation_;
 
 	for (auto obs_to_add : detail::bin_pitches(pitch_candidates)) {
 		observation_.push_back(obs_to_add);
@@ -182,13 +180,3 @@ util::pitch_from_hmm(
 
 	return REAL_PITCHES[most_frequent];
 }
-
-template double
-util::pitch_from_hmm<double>(
-    mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution> hmm,
-    const std::vector<std::pair<double, double>> pitch_candidates);
-
-template float
-util::pitch_from_hmm<float>(
-    mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution> hmm,
-    const std::vector<std::pair<float, float>> pitch_candidates);

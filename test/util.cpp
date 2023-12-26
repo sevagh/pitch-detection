@@ -10,13 +10,13 @@
 #include <string>
 #include <vector>
 
-std::vector<double>
-test_util::sinewave(size_t size, double frequency, int sample_rate)
+std::vector<float>
+test_util::sinewave(size_t size, float frequency, int sample_rate)
 {
-    std::vector<double> tone_single_channel(size / 2);
+    std::vector<float> tone_single_channel(size / 2);
 
-    double delta_phi = 2.0 * M_PI * frequency / sample_rate;
-    double phase = 0.0;
+    float delta_phi = 2.0 * M_PI * frequency / sample_rate;
+    float phase = 0.0;
 
     for (size_t i = 0; i < size / 2; ++i) {
         tone_single_channel[i] = sin(phase);
@@ -26,10 +26,10 @@ test_util::sinewave(size_t size, double frequency, int sample_rate)
     return tone_single_channel;
 }
 
-std::vector<double>
+std::vector<float>
 test_util::vec_from_file(std::string path)
 {
-	std::vector<double> data;
+	std::vector<float> data;
 	std::ifstream infile(path);
 
 	if (infile.fail()) {
@@ -38,7 +38,7 @@ test_util::vec_from_file(std::string path)
 		exit(1);
 	}
 
-	double val;
+	float val;
 	while (infile >> val)
 		data.push_back(val);
 

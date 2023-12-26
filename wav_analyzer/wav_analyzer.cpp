@@ -90,11 +90,11 @@ main(int argc, char **argv)
 	for (auto chunk : chunks) {
 		std::cout << "At t: " << t << std::endl;
 
-		auto pitch_mpm = pitch::mpm<float>(chunk, sample_rate);
-		auto pitch_yin = pitch::yin<float>(chunk, sample_rate);
-		auto pitch_pmpm = pitch::pmpm<float>(chunk, sample_rate);
-		auto pitch_pyin = pitch::pyin<float>(chunk, sample_rate);
-		auto pitch_swipe = pitch::swipe<float>(chunk, sample_rate);
+		auto pitch_mpm = pitch::mpm(chunk, sample_rate);
+		auto pitch_yin = pitch::yin(chunk, sample_rate);
+		auto pitch_pmpm = pitch::pmpm(chunk, sample_rate);
+		auto pitch_pyin = pitch::pyin(chunk, sample_rate);
+		auto pitch_swipe = pitch::swipe(chunk, sample_rate);
 
 		std::cout << "\tmpm: " << pitch_mpm << "\n\tyin: " << pitch_yin
 		          << "\n\tswipe: " << pitch_swipe << "\n\tpmpm: " << pitch_pmpm

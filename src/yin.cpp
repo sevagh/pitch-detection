@@ -28,9 +28,8 @@ static const float Beta_Distribution_0[100] = {0.000000, 0.029069, 0.048836,
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000};
 
-template <typename T>
 static int
-absolute_threshold(const std::vector<T> &yin_buffer)
+absolute_threshold(const std::vector<float> &yin_buffer)
 {
 	ssize_t size = yin_buffer.size();
 	int tau;
@@ -46,17 +45,16 @@ absolute_threshold(const std::vector<T> &yin_buffer)
 }
 
 // pairs of (f0, probability)
-template <typename T>
-static std::vector<std::pair<T, T>>
-probabilistic_threshold(const std::vector<T> &yin_buffer, int sample_rate)
+static std::vector<std::pair<float, float>>
+probabilistic_threshold(const std::vector<float> &yin_buffer, int sample_rate)
 {
 	ssize_t size = yin_buffer.size();
 	int tau;
 
-	std::map<int, T> t0_with_probability;
-	std::vector<std::pair<T, T>> f0_with_probability;
+	std::map<int, float> t0_with_probability;
+	std::vector<std::pair<float, float>> f0_with_probability;
 
-	T threshold = 0.0f;
+	float threshold = 0.0f;
 
 	for (int n = 0; n < PYIN_N_THRESHOLDS; ++n) {
 		threshold = (n + 1) * PYIN_MIN_THRESHOLD;
@@ -88,9 +86,8 @@ probabilistic_threshold(const std::vector<T> &yin_buffer, int sample_rate)
 	return f0_with_probability;
 }
 
-template <typename T>
 static void
-difference(const std::vector<T> &audio_buffer, pitch_alloc::Yin<T> *ya)
+difference(const std::vector<float> &audio_buffer, pitch_alloc::Yin *ya)
 {
 	util::acorr_r(audio_buffer, ya);
 
@@ -99,11 +96,10 @@ difference(const std::vector<T> &audio_buffer, pitch_alloc::Yin<T> *ya)
 		    ya->out_real[0] + ya->out_real[1] - 2 * ya->out_real[tau];
 }
 
-template <typename T>
 static void
-cumulative_mean_normalized_difference(std::vector<T> &yin_buffer)
+cumulative_mean_normalized_difference(std::vector<float> &yin_buffer)
 {
-	double running_sum = 0.0f;
+	float running_sum = 0.0f;
 
 	yin_buffer[0] = 1;
 
@@ -113,9 +109,8 @@ cumulative_mean_normalized_difference(std::vector<T> &yin_buffer)
 	}
 }
 
-template <typename T>
-T
-pitch_alloc::Yin<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
+float
+pitch_alloc::Yin::pitch(const std::vector<float> &audio_buffer, int sample_rate)
 {
 	int tau_estimate;
 
@@ -133,10 +128,9 @@ pitch_alloc::Yin<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 	return ret;
 }
 
-template <typename T>
-T
-pitch_alloc::Yin<T>::probabilistic_pitch(
-    const std::vector<T> &audio_buffer, int sample_rate)
+float
+pitch_alloc::Yin::probabilistic_pitch(
+    const std::vector<float> &audio_buffer, int sample_rate)
 {
 	difference(audio_buffer, this);
 
@@ -148,35 +142,18 @@ pitch_alloc::Yin<T>::probabilistic_pitch(
 	return util::pitch_from_hmm(this->hmm, f0_estimates);
 }
 
-template <typename T>
-T
-pitch::yin(const std::vector<T> &audio_buffer, int sample_rate)
+float
+pitch::yin(const std::vector<float> &audio_buffer, int sample_rate)
 {
 
-	pitch_alloc::Yin<T> ya(audio_buffer.size());
+	pitch_alloc::Yin ya(audio_buffer.size());
 	return ya.pitch(audio_buffer, sample_rate);
 }
 
-template <typename T>
-T
-pitch::pyin(const std::vector<T> &audio_buffer, int sample_rate)
+float
+pitch::pyin(const std::vector<float> &audio_buffer, int sample_rate)
 {
 
-	pitch_alloc::Yin<T> ya(audio_buffer.size());
+	pitch_alloc::Yin ya(audio_buffer.size());
 	return ya.probabilistic_pitch(audio_buffer, sample_rate);
 }
-
-template class pitch_alloc::Yin<double>;
-template class pitch_alloc::Yin<float>;
-
-template double
-pitch::yin<double>(const std::vector<double> &audio_buffer, int sample_rate);
-
-template float
-pitch::yin<float>(const std::vector<float> &audio_buffer, int sample_rate);
-
-template double
-pitch::pyin<double>(const std::vector<double> &audio_buffer, int sample_rate);
-
-template float
-pitch::pyin<float>(const std::vector<float> &audio_buffer, int sample_rate);

@@ -5,22 +5,21 @@
 #include <numeric>
 #include <vector>
 
-template <typename T>
 void
-util::acorr_r(const std::vector<T> &audio_buffer, pitch_alloc::BaseAlloc<T> *ba)
+util::acorr_r(const std::vector<float> &audio_buffer, pitch_alloc::BaseAlloc *ba)
 {
 	if (audio_buffer.size() == 0)
 		throw std::invalid_argument("audio_buffer shouldn't be empty");
 
 	std::transform(audio_buffer.begin(), audio_buffer.begin() + ba->nfft,
-	    ba->out_im.begin(), [](T x) -> std::complex<T> {
-		    return std::complex(x, static_cast<T>(0.0));
+	    ba->out_im.begin(), [](float x) -> std::complex<float> {
+		    return std::complex(x, static_cast<float>(0.0));
 	    });
 
 	ffts_execute(ba->fft_forward, ba->out_im.data(), ba->out_im.data());
 
-	std::complex<T> scale = {
-	    1.0f / static_cast<T>(ba->nfft), static_cast<T>(0.0)};
+	std::complex<float> scale = {
+	    static_cast<float>(1.0f) / static_cast<float>(ba->nfft), static_cast<float>(0.0)};
 	for (int i = 0; i < ba->nfft; ++i)
 		ba->out_im[i] *= std::conj(ba->out_im[i]) * scale;
 
@@ -28,13 +27,5 @@ util::acorr_r(const std::vector<T> &audio_buffer, pitch_alloc::BaseAlloc<T> *ba)
 
 	std::transform(ba->out_im.begin(), ba->out_im.begin() + ba->nfft,
 	    ba->out_real.begin(),
-	    [](std::complex<T> cplx) -> T { return std::real(cplx); });
+	    [](std::complex<float> cplx) -> float { return std::real(cplx); });
 }
-
-template void
-util::acorr_r<double>(const std::vector<double> &audio_buffer,
-    pitch_alloc::BaseAlloc<double> *ba);
-
-template void
-util::acorr_r<float>(
-    const std::vector<float> &audio_buffer, pitch_alloc::BaseAlloc<float> *ba);

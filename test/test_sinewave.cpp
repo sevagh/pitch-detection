@@ -32,19 +32,19 @@ TEST_P(PYinSinewaveTest, GetFreqManualAlloc)
 	// yin must be initialized with 8092
 	// 8192 or anything else = incorrect!
 	int pya_size = 8092;
-	pitch_alloc::Yin<double> pya(pya_size);
-	pitch_alloc::Yin<double> pya2(8192);
-	pitch_alloc::Yin<double> pya3(4096);
+	pitch_alloc::Yin pya(pya_size);
+	pitch_alloc::Yin pya2(8192);
+	pitch_alloc::Yin pya3(4096);
 
-	double pitch1 = pya.probabilistic_pitch(data1, 48000);
-	double pitch2 = pya.probabilistic_pitch(data2, 48000);
-	double pitch3 = pya.probabilistic_pitch(data3, 48000);
-	double pitch4 = pya2.probabilistic_pitch(data1, 48000);
-	double pitch5 = pya2.probabilistic_pitch(data2, 48000);
-	double pitch6 = pya2.probabilistic_pitch(data3, 48000);
-	double pitch7 = pya3.probabilistic_pitch(data1, 48000);
-	double pitch8 = pya3.probabilistic_pitch(data2, 48000);
-	double pitch9 = pya3.probabilistic_pitch(data3, 48000);
+	float pitch1 = pya.probabilistic_pitch(data1, 48000);
+	float pitch2 = pya.probabilistic_pitch(data2, 48000);
+	float pitch3 = pya.probabilistic_pitch(data3, 48000);
+	float pitch4 = pya2.probabilistic_pitch(data1, 48000);
+	float pitch5 = pya2.probabilistic_pitch(data2, 48000);
+	float pitch6 = pya2.probabilistic_pitch(data3, 48000);
+	float pitch7 = pya3.probabilistic_pitch(data1, 48000);
+	float pitch8 = pya3.probabilistic_pitch(data2, 48000);
+	float pitch9 = pya3.probabilistic_pitch(data3, 48000);
 
 	std::cout << "pitch1: " << pitch1 << ", should be: " << freq << std::endl;
 	std::cout << "pitch2: " << pitch2 << ", should be: " << freq << std::endl;
@@ -66,8 +66,8 @@ TEST_P(PMpmSinewaveTest, GetFreqManualAlloc)
 {
 	int freq = GetParam();
 	auto data = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_8092_0.txt");
-	pitch_alloc::Mpm<double> pma(data.size());
-	double pitch = pma.probabilistic_pitch(data, 48000);
+	pitch_alloc::Mpm pma(data.size());
+	float pitch = pma.probabilistic_pitch(data, 48000);
 	std::cout << "pitch: " << pitch << ", should be: " << freq << std::endl;
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
@@ -81,7 +81,7 @@ TEST_P(MpmSinewaveTest, GetFreq)
 {
 	int freq = GetParam();
 	auto data = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_0.txt");
-	double pitch = pitch::mpm<double>(data, 48000);
+	float pitch = pitch::mpm(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
@@ -89,7 +89,7 @@ TEST_P(SwipeSinewaveTest, GetFreq)
 {
 	int freq = GetParam();
 	auto data = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_0.txt");
-	double pitch = pitch::mpm<double>(data, 48000);
+	float pitch = pitch::mpm(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
@@ -97,7 +97,7 @@ TEST_P(YinSinewaveTest, GetFreq)
 {
 	int freq = GetParam();
 	auto data = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_0.txt");
-	double pitch = pitch::yin<double>(data, 48000);
+	float pitch = pitch::yin(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
@@ -105,8 +105,8 @@ TEST_P(MpmSinewaveTest, GetFreqManualAlloc)
 {
 	int freq = GetParam();
 	auto data = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_0.txt");
-	pitch_alloc::Mpm<double> ma(data.size());
-	double pitch = ma.pitch(data, 48000);
+	pitch_alloc::Mpm ma(data.size());
+	float pitch = ma.pitch(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
@@ -114,8 +114,8 @@ TEST_P(YinSinewaveTest, GetFreqManualAlloc)
 {
 	int freq = GetParam();
 	auto data = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_0.txt");
-	pitch_alloc::Yin<double> ya(data.size());
-	double pitch = ya.pitch(data, 48000);
+	pitch_alloc::Yin ya(data.size());
+	float pitch = ya.pitch(data, 48000);
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
@@ -127,11 +127,11 @@ TEST(MpmSinewaveTestManualAlloc, OneAllocMultipleFreq)
 
         std::cout << "data1 size: " << data1.size() << std::endl;
 
-	pitch_alloc::Mpm<double> ma(data1.size());
+	pitch_alloc::Mpm ma(data1.size());
 
-	double pitch1 = ma.pitch(data1, 48000);
-	double pitch2 = ma.pitch(data2, 48000);
-	double pitch3 = ma.pitch(data3, 48000);
+	float pitch1 = ma.pitch(data1, 48000);
+	float pitch2 = ma.pitch(data2, 48000);
+	float pitch3 = ma.pitch(data3, 48000);
 
 	EXPECT_NEAR(150.0, pitch1, 0.01 * 150.0);
 	EXPECT_NEAR(250.0, pitch2, 0.01 * 250.0);
@@ -144,11 +144,11 @@ TEST(YinSinewaveTestManualAlloc, OneAllocMultipleFreq)
 	auto data2 = test_util::vec_from_file("./misc/samples/sine_250_0.txt");
 	auto data3 = test_util::vec_from_file("./misc/samples/sine_350_0.txt");
 
-	pitch_alloc::Yin<double> ya(data1.size());
+	pitch_alloc::Yin ya(data1.size());
 
-	double pitch1 = ya.pitch(data1, 48000);
-	double pitch2 = ya.pitch(data2, 48000);
-	double pitch3 = ya.pitch(data3, 48000);
+	float pitch1 = ya.pitch(data1, 48000);
+	float pitch2 = ya.pitch(data2, 48000);
+	float pitch3 = ya.pitch(data3, 48000);
 
 	EXPECT_NEAR(150.0, pitch1, 0.01 * 150.0);
 	EXPECT_NEAR(250.0, pitch2, 0.01 * 250.0);

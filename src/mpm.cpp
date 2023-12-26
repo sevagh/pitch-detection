@@ -15,9 +15,8 @@
 #define PMPM_CUTOFF_BEGIN 0.8
 #define PMPM_CUTOFF_STEP 0.01
 
-template <typename T>
 static std::vector<int>
-peak_picking(const std::vector<T> &nsdf)
+peak_picking(const std::vector<float> &nsdf)
 {
 	std::vector<int> max_positions{};
 	int pos = 0;
@@ -54,23 +53,22 @@ peak_picking(const std::vector<T> &nsdf)
 	return max_positions;
 }
 
-template <typename T>
-T
-pitch_alloc::Mpm<T>::probabilistic_pitch(
-    const std::vector<T> &audio_buffer, int sample_rate)
+float
+pitch_alloc::Mpm::probabilistic_pitch(
+    const std::vector<float> &audio_buffer, int sample_rate)
 {
 	util::acorr_r(audio_buffer, this);
 
-	std::map<T, T> t0_with_probability;
-	std::vector<std::pair<T, T>> f0_with_probability;
+	std::map<float, float> t0_with_probability;
+	std::vector<std::pair<float, float>> f0_with_probability;
 
-	T cutoff = PMPM_CUTOFF_BEGIN;
+	float cutoff = PMPM_CUTOFF_BEGIN;
 
 	for (int n = 0; n < PMPM_N_CUTOFFS; ++n) {
 		std::vector<int> max_positions = peak_picking(this->out_real);
-		std::vector<std::pair<T, T>> estimates;
+		std::vector<std::pair<float, float>> estimates;
 
-		T highest_amplitude = -DBL_MAX;
+		float highest_amplitude = -DBL_MAX;
 
 		for (int i : max_positions) {
 			highest_amplitude = std::max(highest_amplitude, this->out_real[i]);
@@ -84,8 +82,8 @@ pitch_alloc::Mpm<T>::probabilistic_pitch(
 		if (estimates.empty())
 			continue;
 
-		T actual_cutoff = cutoff * highest_amplitude;
-		T period = 0;
+		float actual_cutoff = cutoff * highest_amplitude;
+		float period = 0;
 
 		for (auto i : estimates) {
 			if (std::get<1>(i) >= actual_cutoff) {
@@ -119,16 +117,15 @@ pitch_alloc::Mpm<T>::probabilistic_pitch(
 	return util::pitch_from_hmm(this->hmm, f0_with_probability);
 }
 
-template <typename T>
-T
-pitch_alloc::Mpm<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
+float
+pitch_alloc::Mpm::pitch(const std::vector<float> &audio_buffer, int sample_rate)
 {
 	util::acorr_r(audio_buffer, this);
 
 	std::vector<int> max_positions = peak_picking(this->out_real);
-	std::vector<std::pair<T, T>> estimates;
+	std::vector<std::pair<float, float>> estimates;
 
-	T highest_amplitude = -DBL_MAX;
+	float highest_amplitude = -DBL_MAX;
 
 	for (int i : max_positions) {
 		highest_amplitude = std::max(highest_amplitude, this->out_real[i]);
@@ -142,8 +139,8 @@ pitch_alloc::Mpm<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 	if (estimates.empty())
 		return -1;
 
-	T actual_cutoff = MPM_CUTOFF * highest_amplitude;
-	T period = 0;
+	float actual_cutoff = MPM_CUTOFF * highest_amplitude;
+	float period = 0;
 
 	for (auto i : estimates) {
 		if (std::get<1>(i) >= actual_cutoff) {
@@ -152,40 +149,23 @@ pitch_alloc::Mpm<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 		}
 	}
 
-	T pitch_estimate = (sample_rate / period);
+	float pitch_estimate = (sample_rate / period);
 
 	this->clear();
 
 	return (pitch_estimate > MPM_LOWER_PITCH_CUTOFF) ? pitch_estimate : -1;
 }
 
-template <typename T>
-T
-pitch::mpm(const std::vector<T> &audio_buffer, int sample_rate)
+float
+pitch::mpm(const std::vector<float> &audio_buffer, int sample_rate)
 {
-	pitch_alloc::Mpm<T> ma(audio_buffer.size());
+	pitch_alloc::Mpm ma(audio_buffer.size());
 	return ma.pitch(audio_buffer, sample_rate);
 }
 
-template <typename T>
-T
-pitch::pmpm(const std::vector<T> &audio_buffer, int sample_rate)
+float
+pitch::pmpm(const std::vector<float> &audio_buffer, int sample_rate)
 {
-	pitch_alloc::Mpm<T> ma(audio_buffer.size());
+	pitch_alloc::Mpm ma(audio_buffer.size());
 	return ma.probabilistic_pitch(audio_buffer, sample_rate);
 }
-
-template class pitch_alloc::Mpm<double>;
-template class pitch_alloc::Mpm<float>;
-
-template double
-pitch::mpm<double>(const std::vector<double> &audio_buffer, int sample_rate);
-
-template float
-pitch::mpm<float>(const std::vector<float> &audio_buffer, int sample_rate);
-
-template double
-pitch::pmpm<double>(const std::vector<double> &audio_buffer, int sample_rate);
-
-template float
-pitch::pmpm<float>(const std::vector<float> &audio_buffer, int sample_rate);
