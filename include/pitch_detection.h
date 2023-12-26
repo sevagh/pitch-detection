@@ -40,9 +40,6 @@ yin(const std::vector<float> &, int);
 float
 mpm(const std::vector<float> &, int);
 
-float
-swipe(const std::vector<float> &, int);
-
 /*
  * pyin and pmpm emit pairs of pitch/probability
  */
@@ -67,39 +64,46 @@ namespace pitch_alloc
 class BaseAlloc
 {
   public:
-	long nfft;
-	std::vector<std::complex<float>> out_im;
-	std::vector<float> out_real;
-	ffts_plan_t *fft_forward;
-	ffts_plan_t *fft_backward;
-	mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution> hmm;
+    long audio_buffer_size;
+    long nfft;
+    std::vector<float> out_real;
+    std::vector<float> out_im;
+    ffts_plan_t *fft_forward;
+    ffts_plan_t *fft_backward;
+    mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution> hmm;
 
-	BaseAlloc(long nfft)
-	    : nfft(nfft), out_im(std::vector<std::complex<float>>(nfft)),
-	      out_real(std::vector<float>(nfft))
-	{
-		if (nfft == 0) {
-			throw std::bad_alloc();
-		}
+    BaseAlloc(long audio_buffer_size)
+        : audio_buffer_size(audio_buffer_size),
+		  nfft(std::pow(2, std::ceil(std::log2(audio_buffer_size)))),
+		  out_real(std::vector<float>(nfft)),
+          out_im(std::vector<float>(nfft + 2)) // for real-to-complex FFT, output has nfft/2+1 complex numbers
+    {
+        if (nfft == 0) {
+            throw std::bad_alloc();
+        }
 
-		fft_forward = ffts_init_1d(nfft, FFTS_FORWARD);
-		fft_backward = ffts_init_1d(nfft, FFTS_BACKWARD);
-		detail::init_pitch_bins();
-		hmm = detail::build_hmm();
-	}
+        fft_forward = ffts_init_1d_real(nfft, FFTS_FORWARD);
+        fft_backward = ffts_init_1d_real(nfft, FFTS_BACKWARD);
+        detail::init_pitch_bins();
+        hmm = detail::build_hmm();
 
-	~BaseAlloc()
-	{
-		ffts_free(fft_forward);
-		ffts_free(fft_backward);
-	}
+		// set all buffers to 0 to begin
+		clear();
+    }
+
+    ~BaseAlloc()
+    {
+        ffts_free(fft_forward);
+        ffts_free(fft_backward);
+    }
 
   protected:
-	void
-	clear()
-	{
-		std::fill(out_im.begin(), out_im.end(), std::complex<float>(0.0, 0.0));
-	}
+    void
+    clear()
+    {
+        std::fill(out_im.begin(), out_im.end(), 0.0f);
+        std::fill(out_real.begin(), out_real.end(), 0.0f);
+    }
 };
 
 /*
@@ -113,7 +117,7 @@ class BaseAlloc
 class Mpm : public BaseAlloc
 {
   public:
-	Mpm(long nfft) : BaseAlloc(nfft){};
+	Mpm(long audio_buffer_size) : BaseAlloc(audio_buffer_size){};
 
 	float
 	pitch(const std::vector<float> &, int);
@@ -136,8 +140,8 @@ class Yin : public BaseAlloc
 	int yin_buffer_size;
 	std::vector<float> yin_buffer;
 
-	Yin(long nfft)
-	    : BaseAlloc(nfft),
+	Yin(long audio_buffer_size)
+	    : BaseAlloc(audio_buffer_size),
 		  yin_buffer_size(nfft / 2),
 	      yin_buffer(std::vector<float>(yin_buffer_size))
 	{

@@ -14,8 +14,6 @@ include_directories(include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 find_package(OpenMP REQUIRED)
-find_package(BLAS REQUIRED)
-find_package(LAPACK REQUIRED)
 find_package(Armadillo REQUIRED)
 find_package(mlpack REQUIRED)
 find_package(FFTS REQUIRED)
@@ -27,8 +25,6 @@ file(GLOB_RECURSE LIB_SOURCES "src/*.cpp")
 add_library(pitch_detection SHARED ${LIB_SOURCES})
 target_link_libraries(pitch_detection PUBLIC
     OpenMP::OpenMP_CXX
-    ${BLAS_LIBRARIES}
-    ${LAPACK_LIBRARIES}
     ${ARMADILLO_LIBRARIES}
     ${MLPACK_LIBRARIES}
     ${FFTS_LIBRARIES})

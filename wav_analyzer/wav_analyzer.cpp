@@ -94,10 +94,10 @@ main(int argc, char **argv)
 		auto pitch_yin = pitch::yin(chunk, sample_rate);
 		auto pitch_pmpm = pitch::pmpm(chunk, sample_rate);
 		auto pitch_pyin = pitch::pyin(chunk, sample_rate);
-		auto pitch_swipe = pitch::swipe(chunk, sample_rate);
 
-		std::cout << "\tmpm: " << pitch_mpm << "\n\tyin: " << pitch_yin
-		          << "\n\tswipe: " << pitch_swipe << "\n\tpmpm: " << pitch_pmpm
+		std::cout << "\tmpm: " << pitch_mpm
+				  << "\n\tyin: " << pitch_yin
+		          << "\n\tpmpm: " << pitch_pmpm
 		          << "\n\tpyin: " << pitch_pyin << std::endl;
 
 		t += FLAGS_timeslice;

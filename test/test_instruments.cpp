@@ -86,53 +86,6 @@ TEST(MpmInstrumentTest, Classical_FSharp4_48000)
 	EXPECT_NEAR(expected, pitch, 0.01 * expected);
 }
 
-TEST(DISABLED_SwipeInstrumentTest, Violin_A4_44100)
-{
-	auto data = test_util::vec_from_file("./misc/samples/A4_44100_violin.txt");
-
-	float pitch = pitch::swipe(data, 48000);
-	float expected = 440.0;
-	EXPECT_NEAR(expected, pitch, 0.01 * expected);
-}
-
-TEST(DISABLED_SwipeInstrumentTest, Piano_B4_44100)
-{
-	auto data = test_util::vec_from_file("./misc/samples/B4_44100_piano.txt");
-
-	float pitch = pitch::swipe(data, 44100);
-	float expected = 493.9;
-	EXPECT_NEAR(expected, pitch, 0.01 * expected);
-}
-
-TEST(DISABLED_SwipeInstrumentTest, Piano_D4_44100)
-{
-	auto data = test_util::vec_from_file("./misc/samples/D4_44100_piano.txt");
-
-	float pitch = pitch::swipe(data, 44100);
-	float expected = 293.7;
-	EXPECT_NEAR(expected, pitch, 0.01 * expected);
-}
-
-TEST(DISABLED_SwipeInstrumentTest, Acoustic_E2_44100)
-{
-	auto data =
-	    test_util::vec_from_file("./misc/samples/E2_44100_acousticguitar.txt");
-
-	float pitch = pitch::swipe(data, 44100);
-	float expected = 82.41;
-	EXPECT_NEAR(expected, pitch, 0.01 * expected);
-}
-
-TEST(DISABLED_SwipeInstrumentTest, Classical_FSharp4_48000)
-{
-	auto data = test_util::vec_from_file(
-	    "./misc/samples/F-4_48000_classicalguitar.txt");
-
-	float pitch = pitch::swipe(data, 48000);
-	float expected = 370.0;
-	EXPECT_NEAR(expected, pitch, 0.01 * expected);
-}
-
 TEST(PYinInstrumentTest, Violin_A4_44100)
 {
 	auto data = test_util::vec_from_file("./misc/samples/A4_44100_violin.txt");

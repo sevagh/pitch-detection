@@ -10,10 +10,6 @@ class YinSinewaveTest : public testing::TestWithParam<int>
 {
 };
 
-class SwipeSinewaveTest : public testing::TestWithParam<int>
-{
-};
-
 class PMpmSinewaveTest : public testing::TestWithParam<int>
 {
 };
@@ -25,38 +21,14 @@ class PYinSinewaveTest : public testing::TestWithParam<int>
 TEST_P(PYinSinewaveTest, GetFreqManualAlloc)
 {
 	int freq = GetParam();
-	auto data1 = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_0.txt");
-	auto data2 = test_util::sinewave(8192, freq, 48000);
-	auto data3 = test_util::sinewave(8092, freq, 48000);
+	auto data = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_0.txt");
 
 	// yin must be initialized with 8092
 	// 8192 or anything else = incorrect!
-	int pya_size = 8092;
-	pitch_alloc::Yin pya(pya_size);
-	pitch_alloc::Yin pya2(8192);
-	pitch_alloc::Yin pya3(4096);
+	pitch_alloc::Yin pya(data.size());
 
-	float pitch1 = pya.probabilistic_pitch(data1, 48000);
-	float pitch2 = pya.probabilistic_pitch(data2, 48000);
-	float pitch3 = pya.probabilistic_pitch(data3, 48000);
-	float pitch4 = pya2.probabilistic_pitch(data1, 48000);
-	float pitch5 = pya2.probabilistic_pitch(data2, 48000);
-	float pitch6 = pya2.probabilistic_pitch(data3, 48000);
-	float pitch7 = pya3.probabilistic_pitch(data1, 48000);
-	float pitch8 = pya3.probabilistic_pitch(data2, 48000);
-	float pitch9 = pya3.probabilistic_pitch(data3, 48000);
-
-	std::cout << "pitch1: " << pitch1 << ", should be: " << freq << std::endl;
-	std::cout << "pitch2: " << pitch2 << ", should be: " << freq << std::endl;
-	std::cout << "pitch3: " << pitch3 << ", should be: " << freq << std::endl;
-	std::cout << "pitch4: " << pitch4 << ", should be: " << freq << std::endl;
-	std::cout << "pitch5: " << pitch5 << ", should be: " << freq << std::endl;
-	std::cout << "pitch6: " << pitch6 << ", should be: " << freq << std::endl;
-	std::cout << "pitch7: " << pitch7 << ", should be: " << freq << std::endl;
-	std::cout << "pitch8: " << pitch8 << ", should be: " << freq << std::endl;
-	std::cout << "pitch9: " << pitch9 << ", should be: " << freq << std::endl;
-
-	EXPECT_NEAR(freq, pitch1, 0.01 * freq);
+	float pitch = pya.probabilistic_pitch(data, 48000);
+	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
 INSTANTIATE_TEST_CASE_P(PYinSinewave, PYinSinewaveTest,
@@ -65,27 +37,16 @@ INSTANTIATE_TEST_CASE_P(PYinSinewave, PYinSinewaveTest,
 TEST_P(PMpmSinewaveTest, GetFreqManualAlloc)
 {
 	int freq = GetParam();
-	auto data = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_8092_0.txt");
+	auto data = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_0.txt");
 	pitch_alloc::Mpm pma(data.size());
 	float pitch = pma.probabilistic_pitch(data, 48000);
-	std::cout << "pitch: " << pitch << ", should be: " << freq << std::endl;
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
-//INSTANTIATE_TEST_CASE_P(PMpmSinewave, PMpmSinewaveTest,
-//    ::testing::Values(100, 233, 298, 1583, 3398, 4200));
 INSTANTIATE_TEST_CASE_P(PMpmSinewave, PMpmSinewaveTest,
-    ::testing::Values(233));
+    ::testing::Values(100, 233, 298, 1583, 3398, 4200));
 
 TEST_P(MpmSinewaveTest, GetFreq)
-{
-	int freq = GetParam();
-	auto data = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_0.txt");
-	float pitch = pitch::mpm(data, 48000);
-	EXPECT_NEAR(freq, pitch, 0.01 * freq);
-}
-
-TEST_P(SwipeSinewaveTest, GetFreq)
 {
 	int freq = GetParam();
 	auto data = test_util::vec_from_file("./misc/samples/sine_"+std::to_string(freq)+"_0.txt");
@@ -161,6 +122,3 @@ INSTANTIATE_TEST_CASE_P(MpmSinewave, MpmSinewaveTest,
 
 INSTANTIATE_TEST_CASE_P(YinSinewave, YinSinewaveTest,
     ::testing::Values(77, 100, 233, 298, 1583, 3398, 4200));
-
-INSTANTIATE_TEST_CASE_P(SwipeSinewave, SwipeSinewaveTest,
-    ::testing::Values(100, 233, 298, 1583, 3398, 4200));
