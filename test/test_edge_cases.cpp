@@ -9,7 +9,7 @@ TEST(MpmEdgeCase, EmptyData)
 
 TEST(MpmEdgeCase, SmallData)
 {
-	auto pitch = pitch::mpm<double>(std::vector<double>(1), 44100);
+	auto pitch = pitch::mpm<double>(std::vector<double>(2), 44100);
 	ASSERT_EQ(-1.0, pitch);
 }
 
