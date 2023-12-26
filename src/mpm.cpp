@@ -16,12 +16,12 @@
 #define PMPM_CUTOFF_STEP 0.01
 
 static std::vector<int>
-peak_picking(const std::vector<float> &nsdf, int max_size)
+peak_picking(const std::vector<float> &nsdf)
 {
 	std::vector<int> max_positions{};
 	int pos = 0;
 	int cur_max_pos = 0;
-	ssize_t size = max_size;//nsdf.size();
+	ssize_t size = nsdf.size();
 
 	while (pos < (size - 1) / 3 && nsdf[pos] > 0)
 		pos++;
@@ -65,7 +65,7 @@ pitch_alloc::Mpm::probabilistic_pitch(
 	float cutoff = PMPM_CUTOFF_BEGIN;
 
 	for (int n = 0; n < PMPM_N_CUTOFFS; ++n) {
-		std::vector<int> max_positions = peak_picking(this->out_real, this->audio_buffer_size);
+		std::vector<int> max_positions = peak_picking(this->out_real);
 		std::vector<std::pair<float, float>> estimates;
 
 		float highest_amplitude = -DBL_MAX;
@@ -122,7 +122,7 @@ pitch_alloc::Mpm::pitch(const std::vector<float> &audio_buffer, int sample_rate)
 {
 	util::acorr_r(audio_buffer, this);
 
-	std::vector<int> max_positions = peak_picking(this->out_real, this->audio_buffer_size);
+	std::vector<int> max_positions = peak_picking(this->out_real);
 	std::vector<std::pair<float, float>> estimates;
 
 	float highest_amplitude = -DBL_MAX;

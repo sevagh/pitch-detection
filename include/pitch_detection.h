@@ -64,26 +64,24 @@ namespace pitch_alloc
 class BaseAlloc
 {
   public:
-    long audio_buffer_size;
     long nfft;
     std::vector<float> out_real;
-    std::vector<float> out_im;
+    std::vector<std::complex<float>> out_im;
     ffts_plan_t *fft_forward;
     ffts_plan_t *fft_backward;
     mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution> hmm;
 
     BaseAlloc(long audio_buffer_size)
-        : audio_buffer_size(audio_buffer_size),
-		  nfft(std::pow(2, std::ceil(std::log2(audio_buffer_size)))),
+        : nfft(audio_buffer_size),
 		  out_real(std::vector<float>(nfft)),
-          out_im(std::vector<float>(nfft + 2)) // for real-to-complex FFT, output has nfft/2+1 complex numbers
+          out_im(std::vector<std::complex<float>>(nfft))
     {
         if (nfft == 0) {
             throw std::bad_alloc();
         }
 
-        fft_forward = ffts_init_1d_real(nfft, FFTS_FORWARD);
-        fft_backward = ffts_init_1d_real(nfft, FFTS_BACKWARD);
+        fft_forward = ffts_init_1d(nfft, FFTS_FORWARD);
+        fft_backward = ffts_init_1d(nfft, FFTS_BACKWARD);
         detail::init_pitch_bins();
         hmm = detail::build_hmm();
 
@@ -101,7 +99,7 @@ class BaseAlloc
     void
     clear()
     {
-        std::fill(out_im.begin(), out_im.end(), 0.0f);
+        std::fill(out_im.begin(), out_im.end(), std::complex<float>{0.0f, 0.0f});
         std::fill(out_real.begin(), out_real.end(), 0.0f);
     }
 };
