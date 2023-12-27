@@ -95,10 +95,9 @@ main(int argc, char **argv)
 		auto pitch_pmpm = pitch::pmpm(chunk, sample_rate);
 		auto pitch_pyin = pitch::pyin(chunk, sample_rate);
 
-		std::cout << "\tmpm: " << pitch_mpm
-				  << "\n\tyin: " << pitch_yin
-		          << "\n\tpmpm: " << pitch_pmpm
-		          << "\n\tpyin: " << pitch_pyin << std::endl;
+		std::cout << "\tmpm: " << pitch_mpm << "\n\tyin: " << pitch_yin
+		          << "\n\tpmpm: " << pitch_pmpm << "\n\tpyin: " << pitch_pyin
+		          << std::endl;
 
 		t += FLAGS_timeslice;
 	}
