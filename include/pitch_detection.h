@@ -64,44 +64,66 @@ namespace pitch_alloc
 class BaseAlloc
 {
   public:
-    long nfft;
-    std::vector<float> out_real;
-    std::vector<std::complex<float>> out_im;
-    ffts_plan_t *fft_forward;
-    ffts_plan_t *fft_backward;
-    mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution> hmm;
+	enum FFTType { REAL_TO_COMPLEX, COMPLEX_TO_COMPLEX };
 
-    BaseAlloc(long audio_buffer_size)
-        : nfft(audio_buffer_size),
-		  out_real(std::vector<float>(nfft)),
-          out_im(std::vector<std::complex<float>>(nfft))
-    {
-        if (nfft == 0) {
-            throw std::bad_alloc();
-        }
+	long nfft;
+	FFTType fft_type;
+	std::vector<float> out_real;
+	std::vector<std::complex<float>> out_im;
+	ffts_plan_t *fft_forward;
+	ffts_plan_t *fft_backward;
+	mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution> hmm;
 
-        fft_forward = ffts_init_1d(nfft, FFTS_FORWARD);
-        fft_backward = ffts_init_1d(nfft, FFTS_BACKWARD);
-        detail::init_pitch_bins();
-        hmm = detail::build_hmm();
+	BaseAlloc(long audio_buffer_size)
+	    : nfft(audio_buffer_size),
+	      fft_type(
+	          is_power_of_two(nfft) ? REAL_TO_COMPLEX : COMPLEX_TO_COMPLEX),
+	      out_real(std::vector<float>(nfft)),
+	      out_im((fft_type == REAL_TO_COMPLEX) ? (nfft / 2 + 1) : nfft)
+	{
+		if (nfft == 0) {
+			throw std::bad_alloc();
+		}
 
-		// set all buffers to 0 to begin
+		if (fft_type == REAL_TO_COMPLEX) {
+			// For real-to-complex, output size is nfft/2 + 1
+			out_im.resize(nfft / 2 + 1);
+			fft_forward = ffts_init_1d_real(nfft, FFTS_FORWARD);
+			fft_backward = ffts_init_1d_real(nfft, FFTS_BACKWARD);
+		} else {
+			// For complex-to-complex, output size is nfft
+			out_im.resize(nfft);
+			fft_forward = ffts_init_1d(nfft, FFTS_FORWARD);
+			fft_backward = ffts_init_1d(nfft, FFTS_BACKWARD);
+		}
+
+		detail::init_pitch_bins();
+		hmm = detail::build_hmm();
+
 		clear();
-    }
+	}
 
-    ~BaseAlloc()
-    {
-        ffts_free(fft_forward);
-        ffts_free(fft_backward);
-    }
+	~BaseAlloc()
+	{
+		ffts_free(fft_forward);
+		ffts_free(fft_backward);
+	}
 
   protected:
-    void
-    clear()
-    {
-        std::fill(out_im.begin(), out_im.end(), std::complex<float>{0.0f, 0.0f});
-        std::fill(out_real.begin(), out_real.end(), 0.0f);
-    }
+	void
+	clear()
+	{
+		std::fill(
+		    out_im.begin(), out_im.end(), std::complex<float>{0.0f, 0.0f});
+	}
+
+  private:
+	// Utility function to check if a number is a power of two
+	static bool
+	is_power_of_two(long x)
+	{
+		return x && !(x & (x - 1));
+	}
 };
 
 /*
@@ -139,8 +161,7 @@ class Yin : public BaseAlloc
 	std::vector<float> yin_buffer;
 
 	Yin(long audio_buffer_size)
-	    : BaseAlloc(audio_buffer_size),
-		  yin_buffer_size(nfft / 4),
+	    : BaseAlloc(audio_buffer_size), yin_buffer_size(nfft / 4),
 	      yin_buffer(std::vector<float>(yin_buffer_size))
 	{
 		if (yin_buffer_size == 0) {
