@@ -3,15 +3,14 @@
 
 TEST(MpmEdgeCase, EmptyData)
 {
-	EXPECT_THROW(
-	    pitch::mpm(std::vector<float>(), 44100), std::bad_alloc);
+	EXPECT_THROW(pitch::mpm(std::vector<float>(), 44100), std::bad_alloc);
 }
 
-//TEST(MpmEdgeCase, SmallData)
+// TEST(MpmEdgeCase, SmallData)
 //{
 //	auto pitch = pitch::mpm(std::vector<float>(2), 44100);
 //	ASSERT_EQ(-1.0, pitch);
-//}
+// }
 
 TEST(MpmEdgeCase, InvalidAlloc)
 {
@@ -25,20 +24,19 @@ TEST(MpmEdgeCase, EmptyAlloc)
 
 TEST(YinEdgeCase, EmptyData)
 {
-	EXPECT_THROW(
-	    pitch::mpm(std::vector<float>(), 44100), std::bad_alloc);
+	EXPECT_THROW(pitch::mpm(std::vector<float>(), 44100), std::bad_alloc);
 }
 
-//TEST(YinEdgeCase, TooSmallData)
+// TEST(YinEdgeCase, TooSmallData)
 //{
 //	EXPECT_THROW(
 //	    pitch::yin(std::vector<float>(1), 44100), std::bad_alloc);
-//}
+// }
 //
-//TEST(YinEdgeCase, SmallData)
+// TEST(YinEdgeCase, SmallData)
 //{
 //	EXPECT_NO_THROW(pitch::yin(std::vector<float>(2), 44100));
-//}
+// }
 
 TEST(YinEdgeCase, InvalidAlloc)
 {

@@ -13,17 +13,17 @@
 std::vector<float>
 test_util::sinewave(size_t size, float frequency, int sample_rate)
 {
-    std::vector<float> tone_single_channel(size / 2);
+	std::vector<float> tone_single_channel(size / 2);
 
-    float delta_phi = 2.0 * M_PI * frequency / sample_rate;
-    float phase = 0.0;
+	float delta_phi = 2.0 * M_PI * frequency / sample_rate;
+	float phase = 0.0;
 
-    for (size_t i = 0; i < size / 2; ++i) {
-        tone_single_channel[i] = sin(phase);
-        phase += delta_phi;
-    }
+	for (size_t i = 0; i < size / 2; ++i) {
+		tone_single_channel[i] = sin(phase);
+		phase += delta_phi;
+	}
 
-    return tone_single_channel;
+	return tone_single_channel;
 }
 
 std::vector<float>
