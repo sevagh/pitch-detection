@@ -9,17 +9,16 @@ Autocorrelation-based C++ pitch detection algorithms with **O(nlogn) or lower** 
 
 The size of the FFT used is the same as the size of the input waveform, such that the output is a single pitch for the entire waveform.
 
-Librosa (among other libraries) uses the STFT to create _frames_ of the input waveform, and applies pitch tracking to each frame with a fixed FFT size (typically 2048 or some other power of two). If you want to track the temporal evolution of pitches in sub-sections of the waveform, you have to handle the waveform splitting yourself (look at [wav_analyzer](./wav_analyzer.cpp) for more details).
+Librosa (among other libraries) uses the STFT to create _frames_ of the input waveform, and applies pitch tracking to each frame with a fixed FFT size (typically 2048 or some other power of two). If you want to track the temporal evolution of pitches in sub-sections of the waveform, you have to handle the waveform splitting yourself (look at [wav_analyzer](./wav_analyzer/wav_analyzer.cpp) for more details).
 
 ## :postal_horn: Latest news :newspaper: 
 
 Dec 27, 2023 :santa: release:
 * Removed SWIPE' algorithm
     * It is not based on autocorrelation, I skipped it in all of the tests, and my implementation was basically copy-pasted from [kylebgorman/swipe](https://github.com/kylebgorman/swipe): just use their code instead!
-* Fix autocorrelation (in YIN and MPM) for power-of-two sizes in FFTS (see [ffts issue #65](https://github.com/anthonix/ffts/issues/65)) by using r2c/c2r transforms (addresses [bug #72](https://github.com/sevagh/pitch-detection/issues/72) reported by @jeychenne)
-* Fix PYIN bugs to pass all test cases (addresses @jansommer's comments in 
-    [pull-request #84](https://github.com/sevagh/pitch-detection/pull/84#issuecomment-1843623594)
-* Added many more unit tests, all passing (228/288)
+* Fix autocorrelation (in YIN and MPM) for power-of-two sizes in FFTS (see [ffts issue #65](https://github.com/anthonix/ffts/issues/65)) by using r2c/c2r transforms (addresses [bug #72](https://github.com/sevagh/pitch-detection/issues/72) reported by jeychenne)
+* Fix PYIN bugs to pass all test cases (addresses jansommer's comments in [pull-request #84](https://github.com/sevagh/pitch-detection/pull/84#issuecomment-1843623594))
+* Added many more unit tests, all passing (228/228)
 
 ## Other programming languages
 
