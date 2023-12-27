@@ -5,18 +5,6 @@ import librosa
 import sys
 
 
-def generate_tone(frequency, duration_samples, sample_rate):
-    # Generate a sine wave tone
-    t = np.linspace(0, duration_samples / sample_rate, duration_samples, endpoint=False)
-    tone = np.sin(2 * np.pi * frequency * t)
-
-    # Apply a window function (e.g., Hanning) to smooth the start and end of the tone
-    window = np.hanning(duration_samples)
-    windowed_tone = tone * window
-
-    return windowed_tone
-
-
 if __name__ == '__main__':
     try:
         frequency = float(sys.argv[1])
@@ -26,13 +14,12 @@ if __name__ == '__main__':
     except IndexError:
         print('usage: generate_tone.py frequency duration_samples sample_rate outfile', file=sys.stderr)
         sys.exit(1)
-
-    tone = generate_tone(frequency, duration_samples, sample_rate)
+    tone = librosa.tone(frequency, sr=sample_rate, length=duration_samples)
 
     with open(outputfile, 'w') as fwrite:
         for sample in tone:
             fwrite.write('{0}\n'.format(sample))
 
     # Pitch detection for sanity check
-    f0 = librosa.yin(y=tone, sr=sample_rate, fmin=65, fmax=2093, frame_length=8192, hop_length=8192)
+    f0 = librosa.yin(y=tone, sr=sample_rate, fmin=65, fmax=2093, frame_length=8192, hop_length=4096)
     print("Estimated Pitch:", f0)
