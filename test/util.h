@@ -9,10 +9,12 @@
 namespace test_util
 {
 
-std::vector<float>
-sinewave(size_t, float, int);
+template <typename T>
+std::vector<T>
+sinewave(size_t, T, int);
 
-std::vector<float> vec_from_file(std::string);
+template <typename T>
+std::vector<T> vec_from_file(std::string);
 
 } // namespace test_util
 

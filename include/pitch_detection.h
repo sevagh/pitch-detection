@@ -11,8 +11,9 @@
 /* ignore me plz */
 namespace detail
 {
+template <typename T>
 std::vector<size_t>
-bin_pitches(const std::vector<std::pair<float, float>>);
+bin_pitches(const std::vector<std::pair<T, T>>);
 
 mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution>
 build_hmm();
@@ -34,20 +35,24 @@ init_pitch_bins();
 namespace pitch
 {
 
-float
-yin(const std::vector<float> &, int);
+template <typename T>
+T
+yin(const std::vector<T> &, int);
 
-float
-mpm(const std::vector<float> &, int);
+template <typename T>
+T
+mpm(const std::vector<T> &, int);
 
 /*
  * pyin and pmpm emit pairs of pitch/probability
  */
-float
-pyin(const std::vector<float> &, int);
+template <typename T>
+T
+pyin(const std::vector<T> &, int);
 
-float
-pmpm(const std::vector<float> &, int);
+template <typename T>
+T
+pmpm(const std::vector<T> &, int);
 } // namespace pitch
 
 /*
@@ -61,13 +66,14 @@ pmpm(const std::vector<float> &, int);
 namespace pitch_alloc
 {
 
+enum FFTType { REAL_TO_COMPLEX, COMPLEX_TO_COMPLEX };
+
 class BaseAlloc
 {
   public:
-	enum FFTType { REAL_TO_COMPLEX, COMPLEX_TO_COMPLEX };
-
 	long nfft;
 	FFTType fft_type;
+	// ffts is better with floats, not doubles
 	std::vector<float> out_real;
 	std::vector<std::complex<float>> out_im;
 	ffts_plan_t *fft_forward;
@@ -81,10 +87,6 @@ class BaseAlloc
 	      out_real(std::vector<float>(nfft)),
 	      out_im((fft_type == REAL_TO_COMPLEX) ? (nfft / 2 + 1) : nfft)
 	{
-		if (nfft == 0) {
-			throw std::bad_alloc();
-		}
-
 		if (fft_type == REAL_TO_COMPLEX) {
 			// For real-to-complex, output size is nfft/2 + 1
 			out_im.resize(nfft / 2 + 1);
@@ -131,19 +133,17 @@ class BaseAlloc
  * Intended for multiple consistently-sized audio buffers.
  *
  * Usage: pitch_alloc::Mpm ma(1024)
- *
- * It will throw std::bad_alloc for invalid sizes (<1)
  */
-class Mpm : public BaseAlloc
+template <typename T> class Mpm : public BaseAlloc
 {
   public:
 	Mpm(long audio_buffer_size) : BaseAlloc(audio_buffer_size){};
 
-	float
-	pitch(const std::vector<float> &, int);
+	T
+	pitch(const std::vector<T> &, int);
 
-	float
-	probabilistic_pitch(const std::vector<float> &, int);
+	T
+	probabilistic_pitch(const std::vector<T> &, int);
 };
 
 /*
@@ -151,43 +151,41 @@ class Mpm : public BaseAlloc
  * Intended for multiple consistently-sized audio buffers.
  *
  * Usage: pitch_alloc::Yin ya(1024)
- *
- * It will throw std::bad_alloc for invalid sizes (<2)
  */
-class Yin : public BaseAlloc
+template <typename T> class Yin : public BaseAlloc
 {
   public:
-	int yin_buffer_size;
+  int yin_buffer_size;
 	std::vector<float> yin_buffer;
 
 	Yin(long audio_buffer_size)
-	    : BaseAlloc(audio_buffer_size), yin_buffer_size(nfft / 4),
+	    : BaseAlloc(audio_buffer_size),
+        yin_buffer_size(audio_buffer_size / 2),
 	      yin_buffer(std::vector<float>(yin_buffer_size))
-	{
-		if (yin_buffer_size == 0) {
-			throw std::bad_alloc();
-		}
-	}
+	{}
 
-	float
-	pitch(const std::vector<float> &, int);
+	T
+	pitch(const std::vector<T> &, int);
 
-	float
-	probabilistic_pitch(const std::vector<float> &, int);
+	T
+	probabilistic_pitch(const std::vector<T> &, int);
 };
 } // namespace pitch_alloc
 
 namespace util
 {
-std::pair<float, float>
+template <typename T>
+std::pair<T, T> // the input is a float, output of FFTS
 parabolic_interpolation(const std::vector<float> &, int);
 
+template <typename T>
 void
-acorr_r(const std::vector<float> &, pitch_alloc::BaseAlloc *);
+acorr_r(const std::vector<T> &, pitch_alloc::BaseAlloc *);
 
-float
+template <typename T>
+T
 pitch_from_hmm(mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution>,
-    const std::vector<std::pair<float, float>>);
+    const std::vector<std::pair<T, T>>);
 } // namespace util
 
 #endif /* PITCH_DETECTION_H */

@@ -10,13 +10,14 @@
 #include <string>
 #include <vector>
 
-std::vector<float>
-test_util::sinewave(size_t size, float frequency, int sample_rate)
+template <typename T>
+std::vector<T>
+test_util::sinewave(size_t size, T frequency, int sample_rate)
 {
-	std::vector<float> tone_single_channel(size / 2);
+	std::vector<T> tone_single_channel(size / 2);
 
-	float delta_phi = 2.0 * M_PI * frequency / sample_rate;
-	float phase = 0.0;
+	T delta_phi = 2.0 * M_PI * frequency / sample_rate;
+	T phase = 0.0;
 
 	for (size_t i = 0; i < size / 2; ++i) {
 		tone_single_channel[i] = sin(phase);
@@ -26,10 +27,11 @@ test_util::sinewave(size_t size, float frequency, int sample_rate)
 	return tone_single_channel;
 }
 
-std::vector<float>
+template <typename T>
+std::vector<T>
 test_util::vec_from_file(std::string path)
 {
-	std::vector<float> data;
+	std::vector<T> data;
 	std::ifstream infile(path);
 
 	if (infile.fail()) {
@@ -38,9 +40,22 @@ test_util::vec_from_file(std::string path)
 		exit(1);
 	}
 
-	float val;
+	T val;
 	while (infile >> val)
 		data.push_back(val);
 
 	return data;
 }
+
+// create float, double template specializations
+template std::vector<float>
+test_util::sinewave<float>(size_t size, float frequency, int sample_rate);
+
+template std::vector<double>
+test_util::sinewave<double>(size_t size, double frequency, int sample_rate);
+
+template std::vector<float>
+test_util::vec_from_file<float>(std::string path);
+
+template std::vector<double>
+test_util::vec_from_file<double>(std::string path);
