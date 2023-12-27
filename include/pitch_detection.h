@@ -155,14 +155,14 @@ template <typename T> class Mpm : public BaseAlloc
 template <typename T> class Yin : public BaseAlloc
 {
   public:
-  int yin_buffer_size;
+	int yin_buffer_size;
 	std::vector<float> yin_buffer;
 
 	Yin(long audio_buffer_size)
-	    : BaseAlloc(audio_buffer_size),
-        yin_buffer_size(audio_buffer_size / 2),
+	    : BaseAlloc(audio_buffer_size), yin_buffer_size(audio_buffer_size / 2),
 	      yin_buffer(std::vector<float>(yin_buffer_size))
-	{}
+	{
+	}
 
 	T
 	pitch(const std::vector<T> &, int);

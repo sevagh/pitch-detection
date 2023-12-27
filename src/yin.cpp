@@ -74,10 +74,11 @@ probabilistic_threshold(const std::vector<T> &yin_buffer, int sample_rate)
 	}
 
 	for (auto tau_estimate : t0_with_probability) {
-		auto f0 = (tau_estimate.first != 0)
-		              ? sample_rate / std::get<0>(util::parabolic_interpolation<T>(
-		                                  yin_buffer, tau_estimate.first))
-		              : -1.0;
+		auto f0 =
+		    (tau_estimate.first != 0)
+		        ? sample_rate / std::get<0>(util::parabolic_interpolation<T>(
+		                            yin_buffer, tau_estimate.first))
+		        : -1.0;
 
 		if (f0 != -1.0) {
 			f0_with_probability.push_back(

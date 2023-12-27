@@ -41,7 +41,6 @@ TEST_P(PMpmSinewaveTestFloat, GetFreqManualAllocFromFile)
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
-
 TEST_P(MpmSinewaveTestFloat, GetFreqFromFile)
 {
 	int freq = GetParam();
@@ -88,9 +87,12 @@ TEST_P(YinSinewaveTestFloat, GetFreqManualAllocFromFile)
 
 TEST(MpmSinewaveTestManualAllocFloat, OneAllocMultipleFreqFromFile)
 {
-	auto data1 = test_util::vec_from_file<float>("./misc/samples/sine_150_0.txt");
-	auto data2 = test_util::vec_from_file<float>("./misc/samples/sine_250_0.txt");
-	auto data3 = test_util::vec_from_file<float>("./misc/samples/sine_350_0.txt");
+	auto data1 =
+	    test_util::vec_from_file<float>("./misc/samples/sine_150_0.txt");
+	auto data2 =
+	    test_util::vec_from_file<float>("./misc/samples/sine_250_0.txt");
+	auto data3 =
+	    test_util::vec_from_file<float>("./misc/samples/sine_350_0.txt");
 
 	pitch_alloc::Mpm<float> ma(data1.size());
 
@@ -105,9 +107,12 @@ TEST(MpmSinewaveTestManualAllocFloat, OneAllocMultipleFreqFromFile)
 
 TEST(YinSinewaveTestManualAllocFloat, OneAllocMultipleFreqFromFile)
 {
-	auto data1 = test_util::vec_from_file<float>("./misc/samples/sine_150_0.txt");
-	auto data2 = test_util::vec_from_file<float>("./misc/samples/sine_250_0.txt");
-	auto data3 = test_util::vec_from_file<float>("./misc/samples/sine_350_0.txt");
+	auto data1 =
+	    test_util::vec_from_file<float>("./misc/samples/sine_150_0.txt");
+	auto data2 =
+	    test_util::vec_from_file<float>("./misc/samples/sine_250_0.txt");
+	auto data3 =
+	    test_util::vec_from_file<float>("./misc/samples/sine_350_0.txt");
 
 	pitch_alloc::Yin<float> ya(data1.size());
 
@@ -317,7 +322,8 @@ TEST(YinSinewaveTestManualAllocFloat, OneAllocMultipleFreqGeneratedPowerOfTwo)
 	EXPECT_NEAR(350.0, pitch3, 0.025 * 350.0);
 }
 
-TEST(YinSinewaveTestManualAllocFloat, OneAllocMultipleFreqGeneratedNonPowerOfTwo)
+TEST(
+    YinSinewaveTestManualAllocFloat, OneAllocMultipleFreqGeneratedNonPowerOfTwo)
 {
 	auto data1 = test_util::sinewave<float>(8092, 150, 48000);
 	auto data2 = test_util::sinewave<float>(8092, 250, 48000);
@@ -386,7 +392,6 @@ TEST_P(PMpmSinewaveTestDouble, GetFreqManualAllocFromFile)
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
-
 TEST_P(MpmSinewaveTestDouble, GetFreqFromFile)
 {
 	int freq = GetParam();
@@ -433,9 +438,12 @@ TEST_P(YinSinewaveTestDouble, GetFreqManualAllocFromFile)
 
 TEST(MpmSinewaveTestManualAllocDouble, OneAllocMultipleFreqFromFile)
 {
-	auto data1 = test_util::vec_from_file<double>("./misc/samples/sine_150_0.txt");
-	auto data2 = test_util::vec_from_file<double>("./misc/samples/sine_250_0.txt");
-	auto data3 = test_util::vec_from_file<double>("./misc/samples/sine_350_0.txt");
+	auto data1 =
+	    test_util::vec_from_file<double>("./misc/samples/sine_150_0.txt");
+	auto data2 =
+	    test_util::vec_from_file<double>("./misc/samples/sine_250_0.txt");
+	auto data3 =
+	    test_util::vec_from_file<double>("./misc/samples/sine_350_0.txt");
 
 	pitch_alloc::Mpm<double> ma(data1.size());
 
@@ -450,9 +458,12 @@ TEST(MpmSinewaveTestManualAllocDouble, OneAllocMultipleFreqFromFile)
 
 TEST(YinSinewaveTestManualAllocDouble, OneAllocMultipleFreqFromFile)
 {
-	auto data1 = test_util::vec_from_file<double>("./misc/samples/sine_150_0.txt");
-	auto data2 = test_util::vec_from_file<double>("./misc/samples/sine_250_0.txt");
-	auto data3 = test_util::vec_from_file<double>("./misc/samples/sine_350_0.txt");
+	auto data1 =
+	    test_util::vec_from_file<double>("./misc/samples/sine_150_0.txt");
+	auto data2 =
+	    test_util::vec_from_file<double>("./misc/samples/sine_250_0.txt");
+	auto data3 =
+	    test_util::vec_from_file<double>("./misc/samples/sine_350_0.txt");
 
 	pitch_alloc::Yin<double> ya(data1.size());
 
@@ -662,7 +673,8 @@ TEST(YinSinewaveTestManualAllocDouble, OneAllocMultipleFreqGeneratedPowerOfTwo)
 	EXPECT_NEAR(350.0, pitch3, 0.025 * 350.0);
 }
 
-TEST(YinSinewaveTestManualAllocDouble, OneAllocMultipleFreqGeneratedNonPowerOfTwo)
+TEST(YinSinewaveTestManualAllocDouble,
+    OneAllocMultipleFreqGeneratedNonPowerOfTwo)
 {
 	auto data1 = test_util::sinewave<double>(8092, 150, 48000);
 	auto data2 = test_util::sinewave<double>(8092, 250, 48000);

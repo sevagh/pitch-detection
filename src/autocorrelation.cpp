@@ -15,9 +15,8 @@ util::acorr_r(const std::vector<T> &audio_buffer, pitch_alloc::BaseAlloc *ba)
 		ffts_execute(ba->fft_forward, ba->out_real.data(), ba->out_im.data());
 	} else {
 		std::transform(audio_buffer.begin(), audio_buffer.begin() + ba->nfft,
-		    ba->out_im.begin(), [](T x) -> std::complex<T> {
-			    return std::complex<T>(x, 0.0f);
-		    });
+		    ba->out_im.begin(),
+		    [](T x) -> std::complex<T> { return std::complex<T>(x, 0.0f); });
 		ffts_execute(ba->fft_forward, ba->out_im.data(), ba->out_im.data());
 	}
 
@@ -43,8 +42,8 @@ util::acorr_r(const std::vector<T> &audio_buffer, pitch_alloc::BaseAlloc *ba)
 }
 
 template void
-util::acorr_r<double>(const std::vector<double> &audio_buffer,
-    pitch_alloc::BaseAlloc *ba);
+util::acorr_r<double>(
+    const std::vector<double> &audio_buffer, pitch_alloc::BaseAlloc *ba);
 
 template void
 util::acorr_r<float>(

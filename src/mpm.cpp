@@ -73,7 +73,8 @@ pitch_alloc::Mpm<T>::probabilistic_pitch(
 		T highest_amplitude = -FLT_MAX;
 
 		for (int i : max_positions) {
-			highest_amplitude = std::max(highest_amplitude, static_cast<T>(this->out_real[i]));
+			highest_amplitude =
+			    std::max(highest_amplitude, static_cast<T>(this->out_real[i]));
 			if (this->out_real[i] > MPM_SMALL_CUTOFF) {
 				auto x = util::parabolic_interpolation<T>(this->out_real, i);
 				estimates.push_back(x);
@@ -131,7 +132,8 @@ pitch_alloc::Mpm<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 	T highest_amplitude = -FLT_MAX;
 
 	for (int i : max_positions) {
-		highest_amplitude = std::max(highest_amplitude, static_cast<T>(this->out_real[i]));
+		highest_amplitude =
+		    std::max(highest_amplitude, static_cast<T>(this->out_real[i]));
 		if (this->out_real[i] > MPM_SMALL_CUTOFF) {
 			auto x = util::parabolic_interpolation<T>(this->out_real, i);
 			estimates.push_back(x);
