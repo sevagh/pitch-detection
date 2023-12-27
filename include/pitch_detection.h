@@ -140,7 +140,7 @@ class Yin : public BaseAlloc
 
 	Yin(long audio_buffer_size)
 	    : BaseAlloc(audio_buffer_size),
-		  yin_buffer_size(nfft / 2),
+		  yin_buffer_size(nfft / 4),
 	      yin_buffer(std::vector<float>(yin_buffer_size))
 	{
 		if (yin_buffer_size == 0) {

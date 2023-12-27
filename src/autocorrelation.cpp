@@ -20,7 +20,7 @@ util::acorr_r(const std::vector<float> &audio_buffer, pitch_alloc::BaseAlloc *ba
 
 	std::complex<float> scale = {
 	    1.0f / (float)(ba->nfft), static_cast<float>(0.0)};
-	for (int i = 0; i < ba->nfft; ++i)
+	for (int i = 0; i < ba->nfft/2+1; ++i)
 		ba->out_im[i] *= std::conj(ba->out_im[i]) * scale;
 
 	ffts_execute(ba->fft_backward, ba->out_im.data(), ba->out_im.data());

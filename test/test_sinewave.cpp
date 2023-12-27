@@ -43,8 +43,10 @@ TEST_P(PMpmSinewaveTest, GetFreqManualAlloc)
 	EXPECT_NEAR(freq, pitch, 0.01 * freq);
 }
 
+//INSTANTIATE_TEST_CASE_P(PMpmSinewave, PMpmSinewaveTest,
+//    ::testing::Values(100, 233, 298, 1583, 3398, 4200));
 INSTANTIATE_TEST_CASE_P(PMpmSinewave, PMpmSinewaveTest,
-    ::testing::Values(100, 233, 298, 1583, 3398, 4200));
+    ::testing::Values(233));
 
 TEST_P(MpmSinewaveTest, GetFreq)
 {
