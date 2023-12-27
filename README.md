@@ -74,7 +74,7 @@ Running main() from ./googletest/src/gtest_main.cc
 
 ### Degraded audio tests
 
-All testing files are [here](./degraded_audio_tests) - the progressive degradations are described by the respective numbered JSON file, generated using [audio-degradation-toolbox](https://github.com/sevagh/audio-degradation-toolbox). The original clip is a Viola playing E3 from the [University of Iowa MIS](http://theremin.music.uiowa.edu/MIS.html). The results come from parsing the output of wav_analyzer to count how many 0.1s slices of the input clip were in the ballpark of the expected value of 164.81 - I considered anything 160-169 to be acceptable:
+All testing files are [here](./misc/degraded_audio_tests) - the progressive degradations are described by the respective numbered JSON file, generated using [audio-degradation-toolbox](https://github.com/sevagh/audio-degradation-toolbox). The original clip is a Viola playing E3 from the [University of Iowa MIS](http://theremin.music.uiowa.edu/MIS.html). The results come from parsing the output of wav_analyzer to count how many 0.1s slices of the input clip were in the ballpark of the expected value of 164.81 - I considered anything 160-169 to be acceptable:
 
 | Degradation level | MPM # correct | YIN # correct |
 | ------------- | ------------- | ------------- |
@@ -88,7 +88,7 @@ All testing files are [here](./degraded_audio_tests) - the progressive degradati
 ## Build and install
 
 You need Linux, cmake, and gcc (I don't officially support other platforms). The library depends on [ffts](https://github.com/anthonix/ffts) and [mlpack](https://www.mlpack.org/). The tests depend on [libnyquist](https://github.com/ddiakopoulos/libnyquist), [googletest](https://github.com/google/googletest), and [google benchmark](https://github.com/google/benchmark). Dependency graph:
-![dep-graph](./.github/deps.png)
+![dep-graph](./misc/deps.png)
 
 Build and install with cmake:
 ```bash
