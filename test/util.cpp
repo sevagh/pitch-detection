@@ -10,48 +10,28 @@
 #include <string>
 #include <vector>
 
-std::vector<double>
-test_util::sinewave(size_t size, double frequency, int sample_rate)
+template <typename T>
+std::vector<T>
+test_util::sinewave(size_t size, T frequency, int sample_rate)
 {
-	size_t lut_size = size / 4;
+	std::vector<T> tone_single_channel(size / 2);
 
-	std::vector<int> lut{};
-	double *_tone_single_channel = (double *)malloc(sizeof(double) * size / 2);
+	T delta_phi = 2.0 * M_PI * frequency / sample_rate;
+	T phase = 0.0;
 
-	double doublef = (double)frequency;
-	double delta_phi = doublef * lut_size * 1.0 / sample_rate;
-	double phase = 0.0;
-
-	for (int i = 0; i < signed(lut_size); ++i) {
-		lut.push_back((int)roundf(0x7FFF * sinf(2.0 * M_PI * i / lut_size)));
-	}
-
-	double min = DBL_MAX;
-	double max = -DBL_MAX;
-	for (int i = 0; i < signed(size / 2); ++i) {
-		int val = double(lut[(int)phase]);
-		if (val > max) {
-			max = val;
-		}
-		if (val < min) {
-			min = val;
-		}
-		_tone_single_channel[i] = val;
+	for (size_t i = 0; i < size / 2; ++i) {
+		tone_single_channel[i] = sin(phase);
 		phase += delta_phi;
-		if (phase >= lut_size)
-			phase -= lut_size;
 	}
-
-	std::vector<double> tone_single_channel(
-	    _tone_single_channel, _tone_single_channel + size / 2);
 
 	return tone_single_channel;
 }
 
-std::vector<double>
+template <typename T>
+std::vector<T>
 test_util::vec_from_file(std::string path)
 {
-	std::vector<double> data;
+	std::vector<T> data;
 	std::ifstream infile(path);
 
 	if (infile.fail()) {
@@ -60,9 +40,22 @@ test_util::vec_from_file(std::string path)
 		exit(1);
 	}
 
-	double val;
+	T val;
 	while (infile >> val)
 		data.push_back(val);
 
 	return data;
 }
+
+// create float, double template specializations
+template std::vector<float>
+test_util::sinewave<float>(size_t size, float frequency, int sample_rate);
+
+template std::vector<double>
+test_util::sinewave<double>(size_t size, double frequency, int sample_rate);
+
+template std::vector<float>
+test_util::vec_from_file<float>(std::string path);
+
+template std::vector<double>
+test_util::vec_from_file<double>(std::string path);

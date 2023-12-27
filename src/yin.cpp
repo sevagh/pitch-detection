@@ -8,20 +8,22 @@
 #define YIN_THRESHOLD 0.20
 #define PYIN_PA 0.01
 #define PYIN_N_THRESHOLDS 100
-#define PYIN_MIN_THRESHOLD 0.01
+#define PYIN_MIN_THRESHOLD 0.025
 
-static const float Beta_Distribution[100] = {0.012614, 0.022715, 0.030646,
-    0.036712, 0.041184, 0.044301, 0.046277, 0.047298, 0.047528, 0.047110,
-    0.046171, 0.044817, 0.043144, 0.041231, 0.039147, 0.036950, 0.034690,
-    0.032406, 0.030133, 0.027898, 0.025722, 0.023624, 0.021614, 0.019704,
-    0.017900, 0.016205, 0.014621, 0.013148, 0.011785, 0.010530, 0.009377,
-    0.008324, 0.007366, 0.006497, 0.005712, 0.005005, 0.004372, 0.003806,
-    0.003302, 0.002855, 0.002460, 0.002112, 0.001806, 0.001539, 0.001307,
-    0.001105, 0.000931, 0.000781, 0.000652, 0.000542, 0.000449, 0.000370,
-    0.000303, 0.000247, 0.000201, 0.000162, 0.000130, 0.000104, 0.000082,
-    0.000065, 0.000051, 0.000039, 0.000030, 0.000023, 0.000018, 0.000013,
-    0.000010, 0.000007, 0.000005, 0.000004, 0.000003, 0.000002, 0.000001,
-    0.000001, 0.000001, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
+// Beta distribution with mean 0.1 and beta 18
+// generated with /misc/generate_beta_distribution.py, first parameter set '0'
+static const float Beta_Distribution_0[100] = {0.000000, 0.029069, 0.048836,
+    0.061422, 0.068542, 0.071571, 0.071607, 0.069516, 0.065976, 0.061512,
+    0.056523, 0.051309, 0.046089, 0.041021, 0.036211, 0.031727, 0.027608,
+    0.023871, 0.020517, 0.017534, 0.014903, 0.012601, 0.010601, 0.008875,
+    0.007393, 0.006130, 0.005059, 0.004155, 0.003397, 0.002765, 0.002239,
+    0.001806, 0.001449, 0.001157, 0.000920, 0.000727, 0.000572, 0.000448,
+    0.000349, 0.000271, 0.000209, 0.000160, 0.000122, 0.000092, 0.000070,
+    0.000052, 0.000039, 0.000029, 0.000021, 0.000015, 0.000011, 0.000008,
+    0.000006, 0.000004, 0.000003, 0.000002, 0.000001, 0.000001, 0.000001,
+    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
+    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
+    0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000,
     0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.000000};
@@ -57,7 +59,7 @@ probabilistic_threshold(const std::vector<T> &yin_buffer, int sample_rate)
 	T threshold = PYIN_MIN_THRESHOLD;
 
 	for (int n = 0; n < PYIN_N_THRESHOLDS; ++n) {
-		threshold += n * PYIN_MIN_THRESHOLD;
+		threshold = (n + 1) * PYIN_MIN_THRESHOLD;
 		for (tau = 2; tau < size; tau++) {
 			if (yin_buffer[tau] < threshold) {
 				while (
@@ -68,14 +70,15 @@ probabilistic_threshold(const std::vector<T> &yin_buffer, int sample_rate)
 			}
 		}
 		auto a = yin_buffer[tau] < threshold ? 1 : PYIN_PA;
-		t0_with_probability[tau] += a * Beta_Distribution[n];
+		t0_with_probability[tau] += a * Beta_Distribution_0[n];
 	}
 
 	for (auto tau_estimate : t0_with_probability) {
-		auto f0 = (tau_estimate.first != 0)
-		              ? sample_rate / std::get<0>(util::parabolic_interpolation(
-		                                  yin_buffer, tau_estimate.first))
-		              : -1.0;
+		auto f0 =
+		    (tau_estimate.first != 0)
+		        ? sample_rate / std::get<0>(util::parabolic_interpolation<T>(
+		                            yin_buffer, tau_estimate.first))
+		        : -1.0;
 
 		if (f0 != -1.0) {
 			f0_with_probability.push_back(
@@ -92,7 +95,7 @@ difference(const std::vector<T> &audio_buffer, pitch_alloc::Yin<T> *ya)
 {
 	util::acorr_r(audio_buffer, ya);
 
-	for (int tau = 0; tau < ya->N / 2; tau++)
+	for (int tau = 0; tau < ya->yin_buffer_size; tau++)
 		ya->yin_buffer[tau] =
 		    ya->out_real[0] + ya->out_real[1] - 2 * ya->out_real[tau];
 }
@@ -101,7 +104,7 @@ template <typename T>
 static void
 cumulative_mean_normalized_difference(std::vector<T> &yin_buffer)
 {
-	double running_sum = 0.0f;
+	T running_sum = static_cast<T>(0.0f);
 
 	yin_buffer[0] = 1;
 
@@ -123,7 +126,7 @@ pitch_alloc::Yin<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 	tau_estimate = absolute_threshold(this->yin_buffer);
 
 	auto ret = (tau_estimate != -1)
-	               ? sample_rate / std::get<0>(util::parabolic_interpolation(
+	               ? sample_rate / std::get<0>(util::parabolic_interpolation<T>(
 	                                   this->yin_buffer, tau_estimate))
 	               : -1;
 

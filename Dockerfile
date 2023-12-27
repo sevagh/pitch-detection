@@ -11,8 +11,6 @@ git \
 cmake \
 gcc \
 g++ \
-libblas-dev \
-liblapack-dev \
 libboost-dev \
 libarmadillo-dev \
 libmlpack-dev \
@@ -29,6 +27,6 @@ RUN cd /usr/src \
 && make install
 
 # Build and install the pitch-detection library, as well as the tests and benchmarks
-RUN cd /usr/src/pitch-detection && make clean all && make -C test clean all && make install
+RUN cd /usr/src/pitch-detection && cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build "build"
 
 LABEL Name=pitch-detection Version=0.0.1

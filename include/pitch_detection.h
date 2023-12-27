@@ -43,10 +43,6 @@ template <typename T>
 T
 mpm(const std::vector<T> &, int);
 
-template <typename T>
-T
-swipe(const std::vector<T> &, int);
-
 /*
  * pyin and pmpm emit pairs of pitch/probability
  */
@@ -70,28 +66,43 @@ pmpm(const std::vector<T> &, int);
 namespace pitch_alloc
 {
 
-template <typename T> class BaseAlloc
+enum FFTType { REAL_TO_COMPLEX, COMPLEX_TO_COMPLEX };
+
+class BaseAlloc
 {
   public:
-	long N;
+	long nfft;
+	FFTType fft_type;
+	// ffts is better with floats, not doubles
+	std::vector<float> out_real;
 	std::vector<std::complex<float>> out_im;
-	std::vector<T> out_real;
 	ffts_plan_t *fft_forward;
 	ffts_plan_t *fft_backward;
 	mlpack::hmm::HMM<mlpack::distribution::DiscreteDistribution> hmm;
 
 	BaseAlloc(long audio_buffer_size)
-	    : N(audio_buffer_size), out_im(std::vector<std::complex<float>>(N * 2)),
-	      out_real(std::vector<T>(N))
+	    : nfft(audio_buffer_size),
+	      fft_type(
+	          is_power_of_two(nfft) ? REAL_TO_COMPLEX : COMPLEX_TO_COMPLEX),
+	      out_real(std::vector<float>(nfft)),
+	      out_im((fft_type == REAL_TO_COMPLEX) ? (nfft / 2 + 1) : nfft)
 	{
-		if (N == 0) {
-			throw std::bad_alloc();
+		if (fft_type == REAL_TO_COMPLEX) {
+			// For real-to-complex, output size is nfft/2 + 1
+			out_im.resize(nfft / 2 + 1);
+			fft_forward = ffts_init_1d_real(nfft, FFTS_FORWARD);
+			fft_backward = ffts_init_1d_real(nfft, FFTS_BACKWARD);
+		} else {
+			// For complex-to-complex, output size is nfft
+			out_im.resize(nfft);
+			fft_forward = ffts_init_1d(nfft, FFTS_FORWARD);
+			fft_backward = ffts_init_1d(nfft, FFTS_BACKWARD);
 		}
 
-		fft_forward = ffts_init_1d(N * 2, FFTS_FORWARD);
-		fft_backward = ffts_init_1d(N * 2, FFTS_BACKWARD);
 		detail::init_pitch_bins();
 		hmm = detail::build_hmm();
+
+		clear();
 	}
 
 	~BaseAlloc()
@@ -104,7 +115,16 @@ template <typename T> class BaseAlloc
 	void
 	clear()
 	{
-		std::fill(out_im.begin(), out_im.end(), std::complex<T>(0.0, 0.0));
+		std::fill(
+		    out_im.begin(), out_im.end(), std::complex<float>{0.0f, 0.0f});
+	}
+
+  private:
+	// Utility function to check if a number is a power of two
+	static bool
+	is_power_of_two(long x)
+	{
+		return x && !(x & (x - 1));
 	}
 };
 
@@ -113,13 +133,11 @@ template <typename T> class BaseAlloc
  * Intended for multiple consistently-sized audio buffers.
  *
  * Usage: pitch_alloc::Mpm ma(1024)
- *
- * It will throw std::bad_alloc for invalid sizes (<1)
  */
-template <typename T> class Mpm : public BaseAlloc<T>
+template <typename T> class Mpm : public BaseAlloc
 {
   public:
-	Mpm(long audio_buffer_size) : BaseAlloc<T>(audio_buffer_size){};
+	Mpm(long audio_buffer_size) : BaseAlloc(audio_buffer_size){};
 
 	T
 	pitch(const std::vector<T> &, int);
@@ -133,21 +151,17 @@ template <typename T> class Mpm : public BaseAlloc<T>
  * Intended for multiple consistently-sized audio buffers.
  *
  * Usage: pitch_alloc::Yin ya(1024)
- *
- * It will throw std::bad_alloc for invalid sizes (<2)
  */
-template <typename T> class Yin : public BaseAlloc<T>
+template <typename T> class Yin : public BaseAlloc
 {
   public:
-	std::vector<T> yin_buffer;
+	int yin_buffer_size;
+	std::vector<float> yin_buffer;
 
 	Yin(long audio_buffer_size)
-	    : BaseAlloc<T>(audio_buffer_size),
-	      yin_buffer(std::vector<T>(audio_buffer_size / 2))
+	    : BaseAlloc(audio_buffer_size), yin_buffer_size(audio_buffer_size / 2),
+	      yin_buffer(std::vector<float>(yin_buffer_size))
 	{
-		if (audio_buffer_size / 2 == 0) {
-			throw std::bad_alloc();
-		}
 	}
 
 	T
@@ -161,12 +175,12 @@ template <typename T> class Yin : public BaseAlloc<T>
 namespace util
 {
 template <typename T>
-std::pair<T, T>
-parabolic_interpolation(const std::vector<T> &, int);
+std::pair<T, T> // the input is a float, output of FFTS
+parabolic_interpolation(const std::vector<float> &, int);
 
 template <typename T>
 void
-acorr_r(const std::vector<T> &, pitch_alloc::BaseAlloc<T> *);
+acorr_r(const std::vector<T> &, pitch_alloc::BaseAlloc *);
 
 template <typename T>
 T

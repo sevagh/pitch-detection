@@ -70,12 +70,13 @@ pitch_alloc::Mpm<T>::probabilistic_pitch(
 		std::vector<int> max_positions = peak_picking(this->out_real);
 		std::vector<std::pair<T, T>> estimates;
 
-		T highest_amplitude = -DBL_MAX;
+		T highest_amplitude = -FLT_MAX;
 
 		for (int i : max_positions) {
-			highest_amplitude = std::max(highest_amplitude, this->out_real[i]);
+			highest_amplitude =
+			    std::max(highest_amplitude, static_cast<T>(this->out_real[i]));
 			if (this->out_real[i] > MPM_SMALL_CUTOFF) {
-				auto x = util::parabolic_interpolation(this->out_real, i);
+				auto x = util::parabolic_interpolation<T>(this->out_real, i);
 				estimates.push_back(x);
 				highest_amplitude = std::max(highest_amplitude, std::get<1>(x));
 			}
@@ -128,12 +129,13 @@ pitch_alloc::Mpm<T>::pitch(const std::vector<T> &audio_buffer, int sample_rate)
 	std::vector<int> max_positions = peak_picking(this->out_real);
 	std::vector<std::pair<T, T>> estimates;
 
-	T highest_amplitude = -DBL_MAX;
+	T highest_amplitude = -FLT_MAX;
 
 	for (int i : max_positions) {
-		highest_amplitude = std::max(highest_amplitude, this->out_real[i]);
+		highest_amplitude =
+		    std::max(highest_amplitude, static_cast<T>(this->out_real[i]));
 		if (this->out_real[i] > MPM_SMALL_CUTOFF) {
-			auto x = util::parabolic_interpolation(this->out_real, i);
+			auto x = util::parabolic_interpolation<T>(this->out_real, i);
 			estimates.push_back(x);
 			highest_amplitude = std::max(highest_amplitude, std::get<1>(x));
 		}

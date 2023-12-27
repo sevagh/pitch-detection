@@ -1,16 +1,19 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <cmath>
+#include <complex>
 #include <string>
 #include <vector>
 
 namespace test_util
 {
 
-std::vector<double>
-sinewave(size_t, double, int);
+template <typename T>
+std::vector<T>
+sinewave(size_t, T, int);
 
-std::vector<double> vec_from_file(std::string);
+template <typename T> std::vector<T> vec_from_file(std::string);
 
 } // namespace test_util
 
