@@ -30,8 +30,6 @@ util::acorr_r(const std::vector<T> &audio_buffer, pitch_alloc::BaseAlloc *ba)
 
 	if (ba->fft_type == pitch_alloc::FFTType::REAL_TO_COMPLEX) {
 		ffts_execute(ba->fft_backward, ba->out_im.data(), ba->out_real.data());
-		std::copy(ba->out_real.begin(), ba->out_real.begin() + ba->nfft,
-		    ba->out_real.begin());
 	} else {
 		ffts_execute(ba->fft_backward, ba->out_im.data(), ba->out_im.data());
 		std::transform(ba->out_im.begin(), ba->out_im.begin() + ba->nfft,
